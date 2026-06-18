@@ -1,0 +1,36 @@
+# dependencias
+node_modules
+.pnpm-store
+
+# builds
+.next/
+out/
+dist/
+build/
+
+# turbo
+.turbo
+
+# entorno
+.env
+.env*.local
+
+# vercel
+.vercel
+
+# next
+next-env.d.ts
+
+# logs y SO
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# editor
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# tests
+coverage

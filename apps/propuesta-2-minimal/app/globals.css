@@ -1,0 +1,87 @@
+@import 'tailwindcss';
+
+/* ===========================================================================
+   PROPUESTA 2 — MINIMALISTA SUIZO
+   Mucho blanco, tipografía grande (Inter), grid estricta, monocromo + un único
+   acento (azul cobalto), filetes finos, microinteracciones sutiles.
+   =========================================================================== */
+
+@theme {
+  --color-bg: #ffffff;
+  --color-fg: #0a0a0a;
+  --color-muted: #71717a;
+  --color-line: #e4e4e7;
+  --color-accent: #1d4ed8;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, 'SFMono-Regular', monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    letter-spacing: -0.011em;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background-color: var(--color-accent);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+/* Contenido enriquecido de las notas --------------------------------------- */
+.article-content {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: #27272a;
+}
+.article-content > * + * {
+  margin-top: 1.25em;
+}
+.article-content h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-fg);
+  margin-top: 1.8em;
+}
+.article-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-fg);
+  margin-top: 1.5em;
+}
+.article-content a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.article-content blockquote {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 1.25rem;
+  color: #3f3f46;
+}
+.article-content ul,
+.article-content ol {
+  padding-left: 1.4rem;
+}
+.article-content ul {
+  list-style: disc;
+}
+.article-content ol {
+  list-style: decimal;
+}
+.article-content li + li {
+  margin-top: 0.4em;
+}

@@ -1,0 +1,102 @@
+@import 'tailwindcss';
+
+/* ===========================================================================
+   PROPUESTA 4 — CÁLIDO / ORGÁNICO HUMANO
+   Paleta cálida, formas orgánicas (blobs), tipografía amable y redondeada,
+   sensación cercana y personal.
+   =========================================================================== */
+
+@theme {
+  --color-cream: #fdf6ec;
+  --color-cream-2: #f7ecda;
+  --color-ink: #3b2f27;
+  --color-muted: #6b5a4c;
+  --color-line: #ecdcc6;
+  --color-terra: #c75e3a;
+  --color-sage: #5f7d57;
+  --color-sun: #e8a33d;
+
+  --font-display: var(--font-baloo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-blob: 2rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background-color: var(--color-terra);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-terra);
+    outline-offset: 3px;
+  }
+}
+
+/* Formas orgánicas ---------------------------------------------------------- */
+.blob {
+  border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+}
+.blob-2 {
+  border-radius: 63% 37% 38% 62% / 53% 36% 64% 47%;
+}
+
+/* Contenido enriquecido de las notas --------------------------------------- */
+.article-content {
+  font-size: 1.0625rem;
+  line-height: 1.85;
+  color: #4a3d33;
+}
+.article-content > * + * {
+  margin-top: 1.3em;
+}
+.article-content h2 {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-top: 1.7em;
+}
+.article-content h3 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-top: 1.5em;
+}
+.article-content a {
+  color: var(--color-terra);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.article-content blockquote {
+  border-left: 3px solid var(--color-sun);
+  background: var(--color-cream-2);
+  border-radius: 0 1rem 1rem 0;
+  padding: 0.75rem 1.25rem;
+  color: var(--color-ink);
+}
+.article-content ul,
+.article-content ol {
+  padding-left: 1.4rem;
+}
+.article-content ul {
+  list-style: disc;
+}
+.article-content ol {
+  list-style: decimal;
+}
+.article-content li + li {
+  margin-top: 0.4em;
+}

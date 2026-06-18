@@ -1,0 +1,166 @@
+import { z } from 'zod';
+
+/**
+ * Esquemas Zod compartidos por los formularios (React Hook Form en cliente)
+ * y por las Server Actions (validación en servidor). Una sola fuente de verdad.
+ */
+
+// Helpers ----------------------------------------------------------------------
+
+/** URL opcional que también acepta cadena vacía (campos de formulario). */
+const optionalUrl = z
+  .string()
+  .trim()
+  .url('Introduce una URL válida')
+  .or(z.literal(''))
+  .optional();
+
+/** Entero opcional: '' o null -> undefined. */
+const optionalInt = z.preprocess(
+  (v) => (v === '' || v === null || v === undefined ? undefined : Number(v)),
+  z.number({ invalid_type_error: 'Debe ser un número' }).int().optional(),
+);
+
+/** Entero con valor por defecto 0 (campo «orden»). */
+const orderInt = z.preprocess(
+  (v) => (v === '' || v === null || v === undefined ? 0 : Number(v)),
+  z.number({ invalid_type_error: 'Debe ser un número' }).int().min(0),
+);
+
+const requiredText = (label: string, min = 1) =>
+  z.string().trim().min(min, `${label} es obligatorio`);
+
+// Perfil -----------------------------------------------------------------------
+
+export const socialLinksSchema = z.object({
+  twitter: optionalUrl,
+  facebook: optionalUrl,
+  instagram: optionalUrl,
+  linkedin: optionalUrl,
+  youtube: optionalUrl,
+  tiktok: optionalUrl,
+  whatsapp: z.string().trim().optional(),
+  website: optionalUrl,
+});
+
+export const profileSchema = z.object({
+  nombre: requiredText('El nombre'),
+  titular: requiredText('El titular'),
+  bio: requiredText('La biografía', 10),
+  foto_url: optionalUrl,
+  redes: socialLinksSchema.default({}),
+});
+
+// Trayectoria ------------------------------------------------------------------
+
+export const experienceSchema = z.object({
+  titulo: requiredText('El título'),
+  organizacion: z.string().trim().optional(),
+  periodo: z.string().trim().optional(),
+  descripcion: z.string().trim().optional(),
+  orden: orderInt,
+});
+
+// Notas / columnas -------------------------------------------------------------
+
+export const postSchema = z.object({
+  titulo: requiredText('El título'),
+  slug: z
+    .string()
+    .trim()
+    .min(1, 'El slug es obligatorio')
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Solo minúsculas, números y guiones'),
+  resumen: z.string().trim().optional(),
+  contenido: z.string().optional(),
+  portada_url: optionalUrl,
+  publicado: z.boolean().default(false),
+  fecha: z.string().min(1, 'La fecha es obligatoria'),
+});
+
+// Prensa -----------------------------------------------------------------------
+
+export const pressSchema = z.object({
+  titulo: requiredText('El título'),
+  medio: z.string().trim().optional(),
+  url: optionalUrl,
+  fecha: z.string().optional(),
+  imagen_url: optionalUrl,
+});
+
+// Videos -----------------------------------------------------------------------
+
+export const videoSchema = z.object({
+  titulo: requiredText('El título'),
+  url_embed: z.string().trim().min(1, 'La URL del video es obligatoria'),
+  plataforma: z.enum(['youtube', 'vimeo', 'otro']).default('youtube'),
+  descripcion: z.string().trim().optional(),
+  orden: orderInt,
+});
+
+// Enlaces ----------------------------------------------------------------------
+
+export const linkSchema = z.object({
+  titulo: requiredText('El título'),
+  url: z.string().trim().url('Introduce una URL válida'),
+  categoria: z.enum(['proyecto', 'red_social', 'recurso']).default('recurso'),
+  icono: z.string().trim().optional(),
+  orden: orderInt,
+});
+
+// Reconocimientos --------------------------------------------------------------
+
+export const awardSchema = z.object({
+  titulo: requiredText('El título'),
+  entidad: z.string().trim().optional(),
+  anio: optionalInt,
+  descripcion: z.string().trim().optional(),
+  orden: orderInt,
+});
+
+// Contacto (público) -----------------------------------------------------------
+
+export const contactSchema = z.object({
+  nombre: z.string().trim().min(2, 'Tu nombre es obligatorio'),
+  email: z.string().trim().email('Introduce un correo válido'),
+  mensaje: z.string().trim().min(10, 'El mensaje debe tener al menos 10 caracteres'),
+});
+
+// Ajustes SEO / OG -------------------------------------------------------------
+
+export const seoSettingsSchema = z.object({
+  seo_title: z.string().trim().optional(),
+  seo_description: z.string().trim().optional(),
+  og_image: optionalUrl,
+});
+
+// Tipos inferidos --------------------------------------------------------------
+
+export type ProfileInput = z.infer<typeof profileSchema>;
+export type ExperienceInput = z.infer<typeof experienceSchema>;
+export type PostInput = z.infer<typeof postSchema>;
+export type PressInput = z.infer<typeof pressSchema>;
+export type VideoInput = z.infer<typeof videoSchema>;
+export type LinkInput = z.infer<typeof linkSchema>;
+export type AwardInput = z.infer<typeof awardSchema>;
+export type ContactInput = z.infer<typeof contactSchema>;
+export type SeoSettingsInput = z.infer<typeof seoSettingsSchema>;
+
+/**
+ * Mapa de esquemas para las entidades de lista que usan el CRUD genérico
+ * (`saveRow`/`deleteRow`). Perfil, ajustes, mensajes y medios tienen flujos
+ * propios y no entran aquí.
+ */
+export const listSchemas = {
+  experiences: experienceSchema,
+  posts: postSchema,
+  press: pressSchema,
+  videos: videoSchema,
+  links: linkSchema,
+  awards: awardSchema,
+} as const;
+
+export type ListTable = keyof typeof listSchemas;
+
+export function schemaFor(table: ListTable): z.ZodTypeAny {
+  return listSchemas[table];
+}

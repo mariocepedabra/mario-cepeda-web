@@ -1,0 +1,9 @@
+{
+  "extends": "@mario/config/tsconfig/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "scripts/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,99 @@
+@import 'tailwindcss';
+
+/* ===========================================================================
+   PROPUESTA 1 — EDITORIAL PREMIUM
+   Revista de alta gama: serif display (Fraunces) + grotesque sans (Archivo),
+   papel crema, tinta casi negra, acento rojo editorial, retícula marcada.
+   =========================================================================== */
+
+@theme {
+  --color-paper: #f6f1e7;
+  --color-paper-2: #efe8d8;
+  --color-ink: #1b1714;
+  --color-ink-soft: #4b443c;
+  --color-accent: #9a2c1e;
+  --color-line: #d8cdb8;
+
+  --font-display: var(--font-fraunces), Georgia, 'Times New Roman', serif;
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 2px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: 'kern';
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+}
+
+/* Contenido enriquecido de las notas (HTML de Tiptap) ---------------------- */
+.article-content {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--color-ink-soft);
+}
+.article-content > * + * {
+  margin-top: 1.4em;
+}
+.article-content h2 {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  line-height: 1.15;
+  margin-top: 2em;
+}
+.article-content h3 {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-top: 1.6em;
+}
+.article-content a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.article-content blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 1.25rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.35rem;
+  color: var(--color-ink);
+}
+.article-content ul,
+.article-content ol {
+  padding-left: 1.5rem;
+}
+.article-content ul {
+  list-style: disc;
+}
+.article-content ol {
+  list-style: decimal;
+}
+.article-content li + li {
+  margin-top: 0.5em;
+}
