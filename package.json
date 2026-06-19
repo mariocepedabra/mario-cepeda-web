@@ -2,7 +2,7 @@
   "name": "mario-cepeda-web",
   "version": "0.1.0",
   "private": true,
-  "description": "Sitio personal de Mario Cepeda — 4 propuestas de diseño sobre una misma arquitectura (monorepo).",
+  "description": "Sitio personal de Mario Cepeda — 5 propuestas de diseño sobre una misma arquitectura (monorepo).",
   "packageManager": "pnpm@9.15.0",
   "engines": {
     "node": ">=20"

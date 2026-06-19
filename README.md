@@ -1,6 +1,6 @@
-# Mario Cepeda — Sitio personal (4 propuestas de diseño)
+# Mario Cepeda — Sitio personal (5 propuestas de diseño)
 
-Monorepo con **4 propuestas de sitio web personal** para **Mario Cepeda** (director de medios,
+Monorepo con **5 propuestas de sitio web personal** para **Mario Cepeda** (director de medios,
 abogado y periodista; Página 10 y Colombia Positiva). Las 4 comparten **la misma arquitectura,
 el mismo esquema de base de datos y las mismas funcionalidades**; solo cambia el **diseño visual**.
 Cada una se despliega de forma **independiente en Vercel**.
@@ -8,7 +8,7 @@ Cada una se despliega de forma **independiente en Vercel**.
 > Esta entrega es **solo estructura y arquitectura**. El contenido es de **ejemplo** (lorem + imágenes
 > placeholder), claramente marcado. El contenido real se cargará después desde el panel de administración.
 
-## Las 4 propuestas
+## Las 5 propuestas
 
 | Carpeta | Estética | Puerto local |
 | --- | --- | --- |
@@ -16,6 +16,7 @@ Cada una se despliega de forma **independiente en Vercel**.
 | [`apps/propuesta-2-minimal`](apps/propuesta-2-minimal) | Minimalista suizo (blanco/negro + acento) | 3002 |
 | [`apps/propuesta-3-cinematic`](apps/propuesta-3-cinematic) | Cinematográfico inmersivo (dark, glass) | 3003 |
 | [`apps/propuesta-4-organic`](apps/propuesta-4-organic) | Cálido / orgánico (blobs, tipografía amable) | 3004 |
+| [`apps/propuesta-5-magazine`](apps/propuesta-5-magazine) | Blog/revista estilo *Gates Notes* (blanco, azul, Archivo) | 3005 |
 
 ## Stack
 
@@ -30,7 +31,8 @@ Framer Motion · React Hook Form + Zod · Supabase (Postgres + Auth + Storage) �
 │  ├─ propuesta-1-editorial/   # Next.js app (diseño editorial)
 │  ├─ propuesta-2-minimal/     # Next.js app (diseño minimalista)
 │  ├─ propuesta-3-cinematic/   # Next.js app (diseño cinematográfico)
-│  └─ propuesta-4-organic/     # Next.js app (diseño orgánico)
+│  ├─ propuesta-4-organic/     # Next.js app (diseño orgánico)
+│  └─ propuesta-5-magazine/    # Next.js app (diseño blog/revista estilo Gates Notes)
 ├─ packages/
 │  ├─ database/   # cliente Supabase, tipos, queries, migraciones SQL, seed, datos de ejemplo
 │  ├─ core/       # esquemas Zod, utilidades, server actions, auth y EL PANEL ADMIN compartido
@@ -41,7 +43,7 @@ Framer Motion · React Hook Form + Zod · Supabase (Postgres + Auth + Storage) �
 La lógica de datos y **todo el panel admin** se escriben **una sola vez** en `packages/*`. Cada app solo
 aporta su sistema de diseño (tema Tailwind, fuentes y componentes de sección).
 
-## Funcionalidades (idénticas en las 4)
+## Funcionalidades (idénticas en las 5)
 
 **Sitio público:** Hero, Sobre mí, Trayectoria, Notas/Columnas (listado + detalle), Prensa, Multimedia
 (YouTube/Vimeo), Enlaces, Reconocimientos y Contacto (formulario que guarda en Supabase). Navbar
@@ -65,6 +67,7 @@ pnpm --filter propuesta-1-editorial dev   # http://localhost:3001
 pnpm --filter propuesta-2-minimal   dev   # http://localhost:3002
 pnpm --filter propuesta-3-cinematic dev   # http://localhost:3003
 pnpm --filter propuesta-4-organic   dev   # http://localhost:3004
+pnpm --filter propuesta-5-magazine  dev   # http://localhost:3005
 
 # O todo a la vez con Turborepo:
 pnpm dev
@@ -110,6 +113,7 @@ Cada app se importa como un **proyecto independiente** apuntando al mismo reposi
    - `apps/propuesta-2-minimal`
    - `apps/propuesta-3-cinematic`
    - `apps/propuesta-4-organic`
+   - `apps/propuesta-5-magazine`
 
 > Build Command e Install Command por defecto de Vercel funcionan (`next build` con detección de pnpm
 > workspaces). No hace falta configuración extra.

@@ -24,6 +24,12 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "propuesta-4-organic", "dev"],
       "port": 3004
+    },
+    {
+      "name": "magazine",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "propuesta-5-magazine", "dev"],
+      "port": 3005
     }
   ]
 }
