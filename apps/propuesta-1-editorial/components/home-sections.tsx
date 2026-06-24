@@ -8,9 +8,8 @@ import type { Post, Profile, Video } from '@mario/database';
 
 import { Reveal } from './interactive';
 
-/* Temas decorativos para las etiquetas de categoría (la BD aún no las tiene). */
-const TOPICS = ['Medios', 'Región', 'Tecnología', 'Cultura', 'Sociedad'] as const;
-const topicFor = (i: number) => TOPICS[i % TOPICS.length];
+/** Línea de metadatos «Categoría · Fecha» de una nota. */
+const postMeta = (post: Post) => [post.categoria, formatDate(post.fecha)].filter(Boolean).join(' · ');
 
 /* Encabezado de sección reutilizable (estilo editorial). */
 function SectionHead({
@@ -106,7 +105,7 @@ export function FeaturedStories({ posts }: { posts: Post[] }) {
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-12">
           {/* Nota principal */}
           <Reveal>
-            <Link href={`/notas/${lead.slug}`} className="group block">
+            <Link href={`/pensamiento/${lead.slug}`} className="group block">
               <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-paper-2 shadow-soft">
                 {lead.portada_url ? (
                   <Image
@@ -119,7 +118,7 @@ export function FeaturedStories({ posts }: { posts: Post[] }) {
                 ) : null}
               </div>
               <p className="mt-5 text-xs font-semibold uppercase tracking-widest text-accent">
-                {topicFor(0)} · {formatDate(lead.fecha)}
+                {postMeta(lead)}
               </p>
               <h3 className="mt-2 font-display text-3xl font-semibold leading-tight group-hover:text-accent sm:text-4xl">
                 {lead.titulo}
@@ -136,7 +135,7 @@ export function FeaturedStories({ posts }: { posts: Post[] }) {
           <div className="flex flex-col gap-8">
             {secondary.map((post, i) => (
               <Reveal key={post.id} delay={(i + 1) * 0.08}>
-                <Link href={`/notas/${post.slug}`} className="group grid grid-cols-[0.4fr_0.6fr] gap-5">
+                <Link href={`/pensamiento/${post.slug}`} className="group grid grid-cols-[0.4fr_0.6fr] gap-5">
                   <div className="relative aspect-square overflow-hidden rounded-card bg-paper-2 shadow-soft">
                     {post.portada_url ? (
                       <Image
@@ -150,7 +149,7 @@ export function FeaturedStories({ posts }: { posts: Post[] }) {
                   </div>
                   <div className="self-center">
                     <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-                      {topicFor(i + 1)} · {formatDate(post.fecha)}
+                      {postMeta(post)}
                     </p>
                     <h3 className="mt-1.5 font-display text-xl font-semibold leading-snug group-hover:text-accent sm:text-2xl">
                       {post.titulo}
@@ -221,7 +220,7 @@ export function LatestFeed({ posts }: { posts: Post[] }) {
       <div className="mx-auto max-w-5xl px-5 sm:px-8">
         <SectionHead eyebrow="Al día" title="Lo último">
           <Link
-            href="/notas"
+            href="/pensamiento"
             className="link-underline pb-1 font-display text-lg font-semibold hover:text-accent"
           >
             Ver todo
@@ -233,7 +232,7 @@ export function LatestFeed({ posts }: { posts: Post[] }) {
             <li key={post.id}>
               <Reveal delay={i * 0.05}>
                 <Link
-                  href={`/notas/${post.slug}`}
+                  href={`/pensamiento/${post.slug}`}
                   className="group grid grid-cols-[64px_1fr] items-center gap-4 py-5 sm:grid-cols-[88px_1fr] sm:gap-6"
                 >
                   <div className="relative aspect-square overflow-hidden rounded-card bg-paper-2">
@@ -249,7 +248,7 @@ export function LatestFeed({ posts }: { posts: Post[] }) {
                   </div>
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-                      {topicFor(i)} · {formatDate(post.fecha)}
+                      {postMeta(post)}
                     </p>
                     <h3 className="mt-1 font-display text-xl font-semibold leading-snug group-hover:text-accent sm:text-2xl">
                       {post.titulo}

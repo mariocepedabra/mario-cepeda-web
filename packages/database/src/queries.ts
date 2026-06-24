@@ -12,26 +12,32 @@
 import { isSupabaseConfigured } from './env';
 import {
   placeholderAwards,
+  placeholderBooks,
   placeholderExperiences,
   placeholderLinks,
   placeholderMedia,
   placeholderMessages,
+  placeholderNarinoProfiles,
   placeholderPosts,
   placeholderPress,
   placeholderProfile,
+  placeholderProjects,
   placeholderSettingsMap,
   placeholderVideos,
 } from './placeholder';
 import { createServerSupabase } from './server';
 import type {
   Award,
+  Book,
   ContactMessage,
   Experience,
   Link,
   Media,
+  NarinoProfile,
   Post,
   Press,
   Profile,
+  Project,
   Setting,
   Video,
 } from './types';
@@ -85,6 +91,56 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     .maybeSingle();
   if (error || !data) return null;
   return data;
+}
+
+/** Proyectos/hitos de la sección Trabajo. */
+export async function getProjects(): Promise<Project[]> {
+  if (!isSupabaseConfigured) return placeholderProjects;
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .order('orden', { ascending: true });
+  if (error || !data?.length) return placeholderProjects;
+  return data as unknown as Project[];
+}
+
+/** Libros recomendados/reseñados (sección Libros). */
+export async function getBooks(): Promise<Book[]> {
+  if (!isSupabaseConfigured) return placeholderBooks;
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from('books')
+    .select('*')
+    .order('orden', { ascending: true });
+  if (error || !data?.length) return placeholderBooks;
+  return data as unknown as Book[];
+}
+
+/** Perfiles de la sección Nariño. */
+export async function getNarinoProfiles(): Promise<NarinoProfile[]> {
+  if (!isSupabaseConfigured) return placeholderNarinoProfiles;
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from('narino_profiles')
+    .select('*')
+    .order('orden', { ascending: true });
+  if (error || !data?.length) return placeholderNarinoProfiles;
+  return data as unknown as NarinoProfile[];
+}
+
+export async function getNarinoProfileBySlug(slug: string): Promise<NarinoProfile | null> {
+  if (!isSupabaseConfigured) {
+    return placeholderNarinoProfiles.find((p) => p.slug === slug) ?? null;
+  }
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from('narino_profiles')
+    .select('*')
+    .eq('slug', slug)
+    .maybeSingle();
+  if (error || !data) return null;
+  return data as unknown as NarinoProfile;
 }
 
 export async function getPress(): Promise<Press[]> {

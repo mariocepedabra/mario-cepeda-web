@@ -58,12 +58,62 @@ export type Post = {
   id: string;
   titulo: string;
   slug: string;
+  /** Bajada / subtítulo editorial (dek). */
+  bajada: string | null;
+  /** Tema/categoría (Medios, Región, Tecnología, Cultura, Sociedad…). */
+  categoria: string | null;
   resumen: string | null;
   /** HTML producido por el editor Tiptap. */
   contenido: string | null;
   portada_url: string | null;
   publicado: boolean;
   fecha: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Proyecto / hito de la sección Trabajo. */
+export type Project = {
+  id: string;
+  titulo: string;
+  subtitulo: string | null;
+  descripcion: string | null;
+  imagen_url: string | null;
+  url: string | null;
+  orden: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Lista curada a la que pertenece un libro. */
+export type BookList = 'marcaron' | 'temporada';
+
+/** Libro recomendado/reseñado en la sección Libros. */
+export type Book = {
+  id: string;
+  titulo: string;
+  autor: string;
+  portada_url: string | null;
+  /** Valoración 1–5 (null si no aplica). */
+  valoracion: number | null;
+  /** Reseña breve de Mario (texto/markdown ligero). */
+  resena: string | null;
+  lista: BookList;
+  orden: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Perfil de persona/lugar de la sección Nariño. */
+export type NarinoProfile = {
+  id: string;
+  nombre: string;
+  slug: string;
+  lugar: string | null;
+  foto_url: string | null;
+  /** Historia/semblanza (HTML). */
+  historia: string | null;
+  orden: number;
   created_at: string;
   updated_at: string;
 }
@@ -167,8 +217,26 @@ export interface Database {
       };
       posts: {
         Row: Post;
-        Insert: WithDefaults<Post, AutoCols>;
+        Insert: WithDefaults<Post, AutoCols | 'bajada' | 'categoria'>;
         Update: Partial<WithDefaults<Post, AutoCols>>;
+        Relationships: Rel;
+      };
+      projects: {
+        Row: Project;
+        Insert: WithDefaults<Project, AutoCols>;
+        Update: Partial<WithDefaults<Project, AutoCols>>;
+        Relationships: Rel;
+      };
+      books: {
+        Row: Book;
+        Insert: WithDefaults<Book, AutoCols>;
+        Update: Partial<WithDefaults<Book, AutoCols>>;
+        Relationships: Rel;
+      };
+      narino_profiles: {
+        Row: NarinoProfile;
+        Insert: WithDefaults<NarinoProfile, AutoCols>;
+        Update: Partial<WithDefaults<NarinoProfile, AutoCols>>;
         Relationships: Rel;
       };
       press: {

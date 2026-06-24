@@ -12,13 +12,16 @@
 
 import type {
   Award,
+  Book,
   ContactMessage,
   Experience,
   Link,
   Media,
+  NarinoProfile,
   Post,
   Press,
   Profile,
+  Project,
   Setting,
   Video,
 } from './types';
@@ -100,12 +103,17 @@ export const placeholderExperiences: Experience[] = [
   },
 ];
 
+/** Temas de ejemplo para la sección Pensamiento. */
+export const POST_CATEGORIES = ['Medios', 'Región', 'Tecnología', 'Cultura', 'Sociedad'] as const;
+
 export const placeholderPosts: Post[] = Array.from({ length: 6 }, (_, i) => {
   const n = i + 1;
   return {
     id: `post-${n}`,
     titulo: `Título de columna de ejemplo n.º ${n}`,
     slug: `columna-de-ejemplo-${n}`,
+    bajada: '[EJEMPLO] Una bajada breve que adelanta la idea central de la columna.',
+    categoria: POST_CATEGORIES[i % POST_CATEGORIES.length],
     resumen: '[EJEMPLO] ' + LOREM.slice(0, 140) + '…',
     contenido:
       `<p><strong>[CONTENIDO DE EJEMPLO]</strong> ${LOREM}</p>` +
@@ -117,6 +125,132 @@ export const placeholderPosts: Post[] = Array.from({ length: 6 }, (_, i) => {
     updated_at: now,
   } satisfies Post;
 });
+
+export const placeholderProjects: Project[] = [
+  {
+    id: 'proj-1',
+    titulo: 'Página 10',
+    subtitulo: 'Medio digital · Fundador y director',
+    descripcion:
+      '[EJEMPLO] ' +
+      LOREM.slice(0, 180) +
+      ' Un proyecto periodístico que conecta a Nariño con el país.',
+    imagen_url: placeholderImage('proyecto-pagina10', 1200, 900),
+    url: 'https://pagina10.com',
+    orden: 1,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'proj-2',
+    titulo: 'Colombia Positiva',
+    subtitulo: 'Plataforma de buenas noticias · Director',
+    descripcion: '[EJEMPLO] ' + LOREM.slice(0, 180) + ' Periodismo de soluciones para el país.',
+    imagen_url: placeholderImage('proyecto-colombiapositiva', 1200, 900),
+    url: 'https://colombiapositiva.co',
+    orden: 2,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'proj-3',
+    titulo: 'Ejercicio del derecho',
+    subtitulo: 'Abogado litigante',
+    descripcion: '[EJEMPLO] ' + LOREM.slice(0, 160),
+    imagen_url: placeholderImage('proyecto-derecho', 1200, 900),
+    url: null,
+    orden: 3,
+    created_at: now,
+    updated_at: now,
+  },
+];
+
+export const placeholderBooks: Book[] = [
+  {
+    id: 'book-1',
+    titulo: 'Cien años de soledad (EJEMPLO)',
+    autor: 'Autor de ejemplo',
+    portada_url: placeholderImage('libro-1', 600, 900),
+    valoracion: 5,
+    resena: '[EJEMPLO] Una nota breve de Mario sobre por qué este libro lo marcó. ' + LOREM.slice(0, 80),
+    lista: 'marcaron',
+    orden: 1,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'book-2',
+    titulo: 'El olvido que seremos (EJEMPLO)',
+    autor: 'Autor de ejemplo',
+    portada_url: placeholderImage('libro-2', 600, 900),
+    valoracion: 5,
+    resena: '[EJEMPLO] ' + LOREM.slice(0, 90),
+    lista: 'marcaron',
+    orden: 2,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'book-3',
+    titulo: 'Lectura de temporada (EJEMPLO)',
+    autor: 'Autor de ejemplo',
+    portada_url: placeholderImage('libro-3', 600, 900),
+    valoracion: 4,
+    resena: '[EJEMPLO] ' + LOREM.slice(0, 90),
+    lista: 'temporada',
+    orden: 3,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'book-4',
+    titulo: 'Otra recomendación (EJEMPLO)',
+    autor: 'Autor de ejemplo',
+    portada_url: placeholderImage('libro-4', 600, 900),
+    valoracion: 4,
+    resena: '[EJEMPLO] ' + LOREM.slice(0, 90),
+    lista: 'temporada',
+    orden: 4,
+    created_at: now,
+    updated_at: now,
+  },
+];
+
+export const placeholderNarinoProfiles: NarinoProfile[] = [
+  {
+    id: 'narino-1',
+    nombre: 'Maestro artesano (EJEMPLO)',
+    slug: 'maestro-artesano-ejemplo',
+    lugar: 'Pasto, Nariño',
+    foto_url: placeholderImage('narino-1', 1000, 1200),
+    historia: `<p>[EJEMPLO] ${LOREM}</p><p>${LOREM}</p>`,
+    orden: 1,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'narino-2',
+    nombre: 'El Carnaval de Negros y Blancos (EJEMPLO)',
+    slug: 'carnaval-negros-y-blancos-ejemplo',
+    lugar: 'Pasto, Nariño',
+    foto_url: placeholderImage('narino-2', 1000, 1200),
+    historia: `<p>[EJEMPLO] ${LOREM}</p><p>${LOREM}</p>`,
+    orden: 2,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'narino-3',
+    nombre: 'El volcán Galeras (EJEMPLO)',
+    slug: 'volcan-galeras-ejemplo',
+    lugar: 'Nariño',
+    foto_url: placeholderImage('narino-3', 1000, 1200),
+    historia: `<p>[EJEMPLO] ${LOREM}</p><p>${LOREM}</p>`,
+    orden: 3,
+    created_at: now,
+    updated_at: now,
+  },
+];
 
 export const placeholderPress: Press[] = Array.from({ length: 5 }, (_, i) => {
   const n = i + 1;
