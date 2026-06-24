@@ -4,10 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { formatDate, truncate } from '@mario/core/lib';
-import { getPostBySlug, getProfile } from '@mario/database/queries';
-
-import { Navbar } from '@/components/interactive';
-import { Footer } from '@/components/sections';
+import { getPostBySlug } from '@mario/database/queries';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -31,14 +28,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function NotaDetailPage({ params }: Props) {
   const { slug } = await params;
-  const [post, profile] = await Promise.all([getPostBySlug(slug), getProfile()]);
+  const post = await getPostBySlug(slug);
 
   if (!post) notFound();
 
   return (
-    <>
-      <Navbar name={profile.nombre} />
-      <main className="pt-28">
+    <main className="pt-28">
         <article className="mx-auto max-w-3xl px-5 pb-24 sm:px-8">
           <Link
             href="/notas"
@@ -80,8 +75,6 @@ export default async function NotaDetailPage({ params }: Props) {
             />
           ) : null}
         </article>
-      </main>
-      <Footer profile={profile} />
-    </>
+    </main>
   );
 }

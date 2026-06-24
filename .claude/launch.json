@@ -6,30 +6,6 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "propuesta-1-editorial", "dev"],
       "port": 3001
-    },
-    {
-      "name": "minimal",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "propuesta-2-minimal", "dev"],
-      "port": 3002
-    },
-    {
-      "name": "cinematic",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "propuesta-3-cinematic", "dev"],
-      "port": 3003
-    },
-    {
-      "name": "organic",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "propuesta-4-organic", "dev"],
-      "port": 3004
-    },
-    {
-      "name": "magazine",
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "propuesta-5-magazine", "dev"],
-      "port": 3005
     }
   ]
 }

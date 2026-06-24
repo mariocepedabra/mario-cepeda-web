@@ -1,4 +1,56 @@
-/** Secciones públicas del sitio (mismas en las 4 propuestas). */
+/**
+ * Las 4 secciones principales del sitio (estilo Gates Notes).
+ * Nombres FIJOS por requerimiento del proyecto; cada una imita la
+ * maquetación de su equivalente en gatesnotes.com pero con contenido propio.
+ */
+export const MAIN_SECTIONS = [
+  {
+    id: 'pensamiento',
+    label: 'Pensamiento',
+    href: '/pensamiento',
+    blurb: 'Ensayos, columnas e ideas sobre medios, región, tecnología y sociedad.',
+  },
+  {
+    id: 'trabajo',
+    label: 'Trabajo',
+    href: '/trabajo',
+    blurb: 'Quién es Mario a través de lo que hace: Página 10, Colombia Positiva y su propósito.',
+  },
+  {
+    id: 'libros',
+    label: 'Libros',
+    href: '/libros',
+    blurb: 'Lecturas que lo marcaron y recomendaciones de temporada.',
+  },
+  {
+    id: 'narino',
+    label: 'Nariño',
+    href: '/narino',
+    blurb: 'Gente, lugares y tradiciones de su tierra. La sección más cercana.',
+  },
+] as const;
+
+export type MainSectionId = (typeof MAIN_SECTIONS)[number]['id'];
+
+/** Enlaces legales del footer. */
+export const LEGAL_LINKS = [
+  { label: 'Términos de uso', href: '/terminos' },
+  { label: 'Política de privacidad', href: '/privacidad' },
+] as const;
+
+/** Copys del bloque de boletín (editables más adelante desde el panel). */
+export const NEWSLETTER = {
+  eyebrow: 'Boletín',
+  title: 'Únete a la conversación',
+  description:
+    'Ideas, columnas y crónicas de Nariño, directo en tu correo. ' +
+    'Nunca compartiremos tu correo con nadie.',
+  placeholderName: 'Tu nombre',
+  placeholderEmail: 'tucorreo@ejemplo.com',
+  cta: 'Suscribirme',
+} as const;
+
+/** Secciones del antiguo layout de una sola página (en desuso tras el rediseño). */
 export const PUBLIC_SECTIONS = [
   { id: 'inicio', label: 'Inicio' },
   { id: 'sobre-mi', label: 'Sobre mí' },

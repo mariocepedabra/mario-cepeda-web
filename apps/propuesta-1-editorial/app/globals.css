@@ -1,29 +1,36 @@
 @import 'tailwindcss';
 
 /* ===========================================================================
-   PROPUESTA 1 — EDITORIAL PREMIUM
-   Revista de alta gama: serif display (Fraunces) + grotesque sans (Archivo),
-   papel crema, tinta casi negra, acento rojo editorial, retícula marcada.
+   SISTEMA DE DISEÑO — ESTILO GATES NOTES (adaptado a Mario Cepeda)
+   Editorial, cálido y humano. Serif display (Fraunces) + sans (Archivo),
+   papel crema #F6F1E7 (FONDO BASE — NO CAMBIAR), tinta cálida casi negra,
+   acento terracota/dorado, acentos «dibujados a mano» (resaltador).
    =========================================================================== */
 
 @theme {
-  --color-paper: #f6f1e7;
-  --color-paper-2: #efe8d8;
-  --color-ink: #1b1714;
-  --color-ink-soft: #4b443c;
-  --color-accent: #9a2c1e;
-  --color-line: #d8cdb8;
+  --color-paper: #f6f1e7; /* FONDO BASE — NO CAMBIAR */
+  --color-paper-2: #efe8d8; /* superficies sutiles (tarjetas, franjas) */
+  --color-ink: #1e1b16; /* texto principal (casi negro cálido) */
+  --color-ink-soft: #4a453b; /* texto secundario */
+  --color-ink-muted: #847c6d; /* metadatos, fechas, captions */
+  --color-line: #dcd3c0; /* divisores / bordes sutiles */
+  --color-accent: #b5743a; /* acento cálido (terracota/dorado tostado) */
+  --color-accent-deep: #8a551f; /* hover del acento */
+  --color-highlight: #f2d9a0; /* «resaltador» para subrayados dibujados */
 
   --font-display: var(--font-fraunces), Georgia, 'Times New Roman', serif;
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
 
-  --radius-card: 2px;
+  --radius-card: 18px;
+
+  --shadow-soft: 0 10px 30px rgba(30, 27, 22, 0.08);
+  --shadow-lift: 0 18px 50px rgba(30, 27, 22, 0.14);
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 5.5rem;
+    scroll-padding-top: 6rem;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -43,6 +50,60 @@
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Titulares serif: tracking ajustado y equilibrio de línea. */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.018em;
+    text-wrap: balance;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Utilidades de marca (acentos «dibujados a mano» + interacción)
+   --------------------------------------------------------------------------- */
+
+/* Resaltador cálido bajo una palabra clave (estilo marcador). */
+.mark-highlight {
+  background-image: linear-gradient(
+    180deg,
+    transparent 58%,
+    var(--color-highlight) 58%,
+    var(--color-highlight) 92%,
+    transparent 92%
+  );
+  padding-inline: 0.06em;
+  border-radius: 2px;
+}
+
+/* Subrayado que crece al pasar el cursor o en el enlace activo. */
+.link-underline {
+  background-image: linear-gradient(var(--color-accent), var(--color-accent));
+  background-size: 0% 2px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.3s ease;
+}
+.link-underline:hover,
+.link-underline:focus-visible,
+.link-underline[aria-current='page'] {
+  background-size: 100% 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
