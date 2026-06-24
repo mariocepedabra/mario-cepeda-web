@@ -1,7 +1,7 @@
 # @mario/database
 
 Capa de datos compartida: cliente Supabase, tipos, consultas, migraciones SQL y seed.
-La consumen las 4 apps (`apps/*`) y el panel admin de `@mario/core`.
+La consume la web (`apps/propuesta-1-editorial`) y el panel admin de `@mario/core`.
 
 ## Estructura
 
@@ -15,9 +15,10 @@ src/
   queries.ts      # lecturas con fallback    (@mario/database/queries)
   placeholder.ts  # DATOS DE EJEMPLO embebidos
 migrations/
-  0001_init.sql   # esquema
-  0002_rls.sql    # RLS + políticas
-  0003_storage.sql# bucket de Storage
+  0001_init.sql        # esquema base
+  0002_rls.sql         # RLS + políticas
+  0003_storage.sql     # bucket de Storage
+  0004_content_model.sql # secciones: posts(+bajada,categoria), projects, books, narino_profiles
 seed/seed.sql     # datos de ejemplo (SQL)
 scripts/seed.ts   # datos de ejemplo (programático, service_role)
 ```
@@ -32,7 +33,7 @@ completas y son desplegables sin backend. El panel admin sí requiere Supabase.
 
 1. Crea un proyecto en [supabase.com](https://supabase.com).
 2. En el **SQL Editor**, ejecuta en orden:
-   `migrations/0001_init.sql` → `0002_rls.sql` → `0003_storage.sql`.
+   `migrations/0001_init.sql` → `0002_rls.sql` → `0003_storage.sql` → `0004_content_model.sql`.
 3. Carga datos de ejemplo: pega `seed/seed.sql` en el SQL Editor **o** corre el script:
 
    ```bash
@@ -43,7 +44,8 @@ completas y son desplegables sin backend. El panel admin sí requiere Supabase.
    ```
 
 4. Crea el usuario admin en **Authentication → Users → Add user** (email + contraseña).
-   Ese usuario es quien inicia sesión en `/admin`.
+   Ese usuario es quien inicia sesión desde el enlace discreto **«Panel»** del footer
+   (`/panel`, que hoy lleva al login del admin en `/admin/login`).
 
 ## Variables de entorno
 

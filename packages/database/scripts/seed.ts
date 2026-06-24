@@ -12,11 +12,14 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { createAdminSupabase } from '../src/admin';
 import {
   placeholderAwards,
+  placeholderBooks,
   placeholderExperiences,
   placeholderLinks,
+  placeholderNarinoProfiles,
   placeholderPosts,
   placeholderPress,
   placeholderProfile,
+  placeholderProjects,
   placeholderSettings,
   placeholderVideos,
 } from '../src/placeholder';
@@ -43,6 +46,9 @@ async function main() {
     'links',
     'awards',
     'settings',
+    'projects',
+    'books',
+    'narino_profiles',
   ] as const;
 
   for (const table of tables) {
@@ -81,6 +87,19 @@ async function main() {
   ops.push({
     name: 'awards',
     error: (await supabase.from('awards').insert(stripAuto(placeholderAwards))).error,
+  });
+  ops.push({
+    name: 'projects',
+    error: (await supabase.from('projects').insert(stripAuto(placeholderProjects))).error,
+  });
+  ops.push({
+    name: 'books',
+    error: (await supabase.from('books').insert(stripAuto(placeholderBooks))).error,
+  });
+  ops.push({
+    name: 'narino_profiles',
+    error: (await supabase.from('narino_profiles').insert(stripAuto(placeholderNarinoProfiles)))
+      .error,
   });
   ops.push({
     name: 'settings',

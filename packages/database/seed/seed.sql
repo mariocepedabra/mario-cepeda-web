@@ -10,7 +10,8 @@
 -- ============================================================================
 
 truncate table public.profile, public.experiences, public.posts, public.press,
-  public.videos, public.links, public.awards, public.media, public.settings
+  public.videos, public.links, public.awards, public.media, public.settings,
+  public.projects, public.books, public.narino_profiles
   restart identity cascade;
 
 -- profile -----------------------------------------------------------------------
@@ -31,18 +32,60 @@ insert into public.experiences (titulo, organizacion, periodo, descripcion, orde
   ('Columnista invitado', 'Medios regionales (EJEMPLO)', '2010 — Presente', '[EJEMPLO] Lorem ipsum dolor sit amet.', 4);
 
 -- posts -------------------------------------------------------------------------
-insert into public.posts (titulo, slug, resumen, contenido, portada_url, publicado, fecha) values
-  ('Título de columna de ejemplo n.º 1', 'columna-de-ejemplo-1', '[EJEMPLO] Resumen lorem ipsum dolor sit amet…',
+insert into public.posts (titulo, slug, bajada, categoria, resumen, contenido, portada_url, publicado, fecha) values
+  ('Título de columna de ejemplo n.º 1', 'columna-de-ejemplo-1',
+   '[EJEMPLO] Una bajada breve que adelanta la idea central de la columna.', 'Medios',
+   '[EJEMPLO] Resumen lorem ipsum dolor sit amet…',
    '<p><strong>[CONTENIDO DE EJEMPLO]</strong> Lorem ipsum dolor sit amet.</p><p>Consectetur adipiscing elit.</p>',
    'https://picsum.photos/seed/columna-1/1200/800', true, '2025-01-15'),
-  ('Título de columna de ejemplo n.º 2', 'columna-de-ejemplo-2', '[EJEMPLO] Resumen lorem ipsum dolor sit amet…',
+  ('Título de columna de ejemplo n.º 2', 'columna-de-ejemplo-2',
+   '[EJEMPLO] Una bajada breve que adelanta la idea central de la columna.', 'Región',
+   '[EJEMPLO] Resumen lorem ipsum dolor sit amet…',
    '<p><strong>[CONTENIDO DE EJEMPLO]</strong> Lorem ipsum dolor sit amet.</p>',
    'https://picsum.photos/seed/columna-2/1200/800', true, '2025-02-15'),
-  ('Título de columna de ejemplo n.º 3', 'columna-de-ejemplo-3', '[EJEMPLO] Resumen lorem ipsum dolor sit amet…',
+  ('Título de columna de ejemplo n.º 3', 'columna-de-ejemplo-3',
+   '[EJEMPLO] Una bajada breve que adelanta la idea central de la columna.', 'Tecnología',
+   '[EJEMPLO] Resumen lorem ipsum dolor sit amet…',
    '<p><strong>[CONTENIDO DE EJEMPLO]</strong> Lorem ipsum dolor sit amet.</p>',
    'https://picsum.photos/seed/columna-3/1200/800', true, '2025-03-15'),
-  ('Borrador de ejemplo (no publicado)', 'borrador-de-ejemplo', '[EJEMPLO] Esta nota está en borrador.',
+  ('Borrador de ejemplo (no publicado)', 'borrador-de-ejemplo',
+   null, 'Cultura', '[EJEMPLO] Esta nota está en borrador.',
    '<p>[EJEMPLO] Borrador.</p>', 'https://picsum.photos/seed/columna-4/1200/800', false, '2025-04-15');
+
+-- projects (Trabajo) ------------------------------------------------------------
+insert into public.projects (titulo, subtitulo, descripcion, imagen_url, url, orden) values
+  ('Página 10', 'Medio digital · Fundador y director',
+   '[EJEMPLO] Un proyecto periodístico que conecta a Nariño con el país.',
+   'https://picsum.photos/seed/proyecto-pagina10/1200/900', 'https://pagina10.com', 1),
+  ('Colombia Positiva', 'Plataforma de buenas noticias · Director',
+   '[EJEMPLO] Periodismo de soluciones para el país.',
+   'https://picsum.photos/seed/proyecto-colombiapositiva/1200/900', 'https://colombiapositiva.co', 2),
+  ('Ejercicio del derecho', 'Abogado litigante',
+   '[EJEMPLO] Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+   'https://picsum.photos/seed/proyecto-derecho/1200/900', null, 3);
+
+-- books (Libros) ----------------------------------------------------------------
+insert into public.books (titulo, autor, portada_url, valoracion, resena, lista, orden) values
+  ('Cien años de soledad (EJEMPLO)', 'Autor de ejemplo', 'https://picsum.photos/seed/libro-1/600/900',
+   5, '[EJEMPLO] Una nota breve de Mario sobre por qué este libro lo marcó.', 'marcaron', 1),
+  ('El olvido que seremos (EJEMPLO)', 'Autor de ejemplo', 'https://picsum.photos/seed/libro-2/600/900',
+   5, '[EJEMPLO] Lorem ipsum dolor sit amet, consectetur adipiscing.', 'marcaron', 2),
+  ('Lectura de temporada (EJEMPLO)', 'Autor de ejemplo', 'https://picsum.photos/seed/libro-3/600/900',
+   4, '[EJEMPLO] Lorem ipsum dolor sit amet, consectetur adipiscing.', 'temporada', 3),
+  ('Otra recomendación (EJEMPLO)', 'Autor de ejemplo', 'https://picsum.photos/seed/libro-4/600/900',
+   4, '[EJEMPLO] Lorem ipsum dolor sit amet, consectetur adipiscing.', 'temporada', 4);
+
+-- narino_profiles (Nariño) ------------------------------------------------------
+insert into public.narino_profiles (nombre, slug, lugar, foto_url, historia, orden) values
+  ('Maestro artesano (EJEMPLO)', 'maestro-artesano-ejemplo', 'Pasto, Nariño',
+   'https://picsum.photos/seed/narino-1/1000/1200',
+   '<p>[EJEMPLO] Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p><p>Sed do eiusmod tempor.</p>', 1),
+  ('El Carnaval de Negros y Blancos (EJEMPLO)', 'carnaval-negros-y-blancos-ejemplo', 'Pasto, Nariño',
+   'https://picsum.photos/seed/narino-2/1000/1200',
+   '<p>[EJEMPLO] Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p><p>Sed do eiusmod tempor.</p>', 2),
+  ('El volcán Galeras (EJEMPLO)', 'volcan-galeras-ejemplo', 'Nariño',
+   'https://picsum.photos/seed/narino-3/1000/1200',
+   '<p>[EJEMPLO] Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p><p>Sed do eiusmod tempor.</p>', 3);
 
 -- press -------------------------------------------------------------------------
 insert into public.press (titulo, medio, url, fecha, imagen_url) values
