@@ -63,18 +63,56 @@ export const experienceSchema = z.object({
 
 // Notas / columnas -------------------------------------------------------------
 
+const slugField = z
+  .string()
+  .trim()
+  .min(1, 'El slug es obligatorio')
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Solo minúsculas, números y guiones');
+
 export const postSchema = z.object({
   titulo: requiredText('El título'),
-  slug: z
-    .string()
-    .trim()
-    .min(1, 'El slug es obligatorio')
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Solo minúsculas, números y guiones'),
+  slug: slugField,
+  categoria: z.string().trim().optional(),
+  bajada: z.string().trim().optional(),
   resumen: z.string().trim().optional(),
   contenido: z.string().optional(),
   portada_url: optionalUrl,
   publicado: z.boolean().default(false),
   fecha: z.string().min(1, 'La fecha es obligatoria'),
+});
+
+// Proyectos (Trabajo) ----------------------------------------------------------
+
+export const projectSchema = z.object({
+  titulo: requiredText('El título'),
+  subtitulo: z.string().trim().optional(),
+  descripcion: z.string().trim().optional(),
+  imagen_url: optionalUrl,
+  url: optionalUrl,
+  orden: orderInt,
+});
+
+// Libros -----------------------------------------------------------------------
+
+export const bookSchema = z.object({
+  titulo: requiredText('El título'),
+  autor: z.string().trim().optional(),
+  portada_url: optionalUrl,
+  valoracion: optionalInt,
+  resena: z.string().trim().optional(),
+  lista: z.enum(['marcaron', 'temporada']).default('temporada'),
+  orden: orderInt,
+});
+
+// Perfiles de Nariño -----------------------------------------------------------
+
+export const narinoProfileSchema = z.object({
+  nombre: requiredText('El nombre'),
+  slug: slugField,
+  lugar: z.string().trim().optional(),
+  foto_url: optionalUrl,
+  historia: z.string().optional(),
+  orden: orderInt,
 });
 
 // Prensa -----------------------------------------------------------------------
@@ -138,10 +176,10 @@ export const seoSettingsSchema = z.object({
 export type ProfileInput = z.infer<typeof profileSchema>;
 export type ExperienceInput = z.infer<typeof experienceSchema>;
 export type PostInput = z.infer<typeof postSchema>;
-export type PressInput = z.infer<typeof pressSchema>;
+export type ProjectInput = z.infer<typeof projectSchema>;
+export type BookInput = z.infer<typeof bookSchema>;
+export type NarinoProfileInput = z.infer<typeof narinoProfileSchema>;
 export type VideoInput = z.infer<typeof videoSchema>;
-export type LinkInput = z.infer<typeof linkSchema>;
-export type AwardInput = z.infer<typeof awardSchema>;
 export type ContactInput = z.infer<typeof contactSchema>;
 export type SeoSettingsInput = z.infer<typeof seoSettingsSchema>;
 
@@ -153,10 +191,10 @@ export type SeoSettingsInput = z.infer<typeof seoSettingsSchema>;
 export const listSchemas = {
   experiences: experienceSchema,
   posts: postSchema,
-  press: pressSchema,
+  projects: projectSchema,
+  books: bookSchema,
+  narino_profiles: narinoProfileSchema,
   videos: videoSchema,
-  links: linkSchema,
-  awards: awardSchema,
 } as const;
 
 export type ListTable = keyof typeof listSchemas;

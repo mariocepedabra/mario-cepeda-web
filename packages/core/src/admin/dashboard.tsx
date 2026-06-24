@@ -1,15 +1,15 @@
 import Link from 'next/link';
-import { ArrowRight, FileText, Mail, Newspaper, Video } from 'lucide-react';
+import { ArrowRight, BookOpen, Briefcase, FileText, Mail, Mountain } from 'lucide-react';
 
 import type { DashboardStats } from '@mario/database/queries';
 
 import { Card, CardContent } from '../ui';
 
 const QUICK_LINKS = [
-  { href: '/admin/notas', label: 'Notas', icon: FileText },
-  { href: '/admin/prensa', label: 'Prensa', icon: Newspaper },
-  { href: '/admin/videos', label: 'Videos', icon: Video },
-  { href: '/admin/mensajes', label: 'Mensajes', icon: Mail },
+  { href: '/admin/notas', label: 'Pensamiento', icon: FileText },
+  { href: '/admin/proyectos', label: 'Proyectos', icon: Briefcase },
+  { href: '/admin/libros', label: 'Libros', icon: BookOpen },
+  { href: '/admin/narino', label: 'Nariño', icon: Mountain },
 ];
 
 function Stat({ label, value, hint }: { label: string; value: number; hint?: string }) {
@@ -40,7 +40,7 @@ export function Dashboard({ stats }: { stats: DashboardStats }) {
         />
         <Stat label="Notas publicadas" value={stats.notasPublicadas} hint={`${stats.notasBorrador} en borrador`} />
         <Stat label="Videos" value={stats.videos} />
-        <Stat label="Prensa" value={stats.prensa} />
+        <Stat label="Perfiles de Nariño" value={stats.narino} />
       </div>
 
       <div>

@@ -31,6 +31,7 @@ import {
   Textarea,
   toast,
 } from '../ui';
+import { crudConfigs } from './resources';
 import { EmptyState } from './states';
 import { TiptapEditor } from './tiptap-editor';
 
@@ -67,11 +68,13 @@ export interface CrudConfig<T> {
 type FormValues = Record<string, unknown>;
 
 interface CrudManagerProps<T extends { id: string }> {
-  config: CrudConfig<T>;
+  /** Tabla a gestionar. La config (con funciones) se resuelve en cliente. */
+  table: ListTable;
   rows: T[];
 }
 
-export function CrudManager<T extends { id: string }>({ config, rows }: CrudManagerProps<T>) {
+export function CrudManager<T extends { id: string }>({ table, rows }: CrudManagerProps<T>) {
+  const config = crudConfigs[table] as unknown as CrudConfig<T>;
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [editingId, setEditingId] = React.useState<string | null>(null);

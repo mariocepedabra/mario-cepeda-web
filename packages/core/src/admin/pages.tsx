@@ -8,15 +8,15 @@
 import * as React from 'react';
 
 import {
-  getAwards,
+  getBooks,
   getContactMessages,
   getDashboardStats,
   getExperiences,
-  getLinks,
   getMedia,
+  getNarinoProfiles,
   getPostsAdmin,
-  getPress,
   getProfile,
+  getProjects,
   getSettings,
   getVideos,
 } from '@mario/database/queries';
@@ -28,14 +28,6 @@ import { LoginForm } from './login-form';
 import { MediaManager } from './media-manager';
 import { MessagesInbox } from './messages-inbox';
 import { ProfileForm } from './profile-form';
-import {
-  awardsConfig,
-  experiencesConfig,
-  linksConfig,
-  postsConfig,
-  pressConfig,
-  videosConfig,
-} from './resources';
 import { SeoForm } from './seo-form';
 
 function PageTitle({ title, description }: { title: string; description?: string }) {
@@ -69,32 +61,32 @@ export async function ProfilePage() {
 
 export async function ExperiencesPage() {
   const rows = await getExperiences();
-  return <CrudManager config={experiencesConfig} rows={rows} />;
+  return <CrudManager table="experiences" rows={rows} />;
 }
 
 export async function PostsPage() {
   const rows = await getPostsAdmin();
-  return <CrudManager config={postsConfig} rows={rows} />;
+  return <CrudManager table="posts" rows={rows} />;
 }
 
-export async function PressPage() {
-  const rows = await getPress();
-  return <CrudManager config={pressConfig} rows={rows} />;
+export async function ProjectsPage() {
+  const rows = await getProjects();
+  return <CrudManager table="projects" rows={rows} />;
+}
+
+export async function BooksPage() {
+  const rows = await getBooks();
+  return <CrudManager table="books" rows={rows} />;
+}
+
+export async function NarinoProfilesPage() {
+  const rows = await getNarinoProfiles();
+  return <CrudManager table="narino_profiles" rows={rows} />;
 }
 
 export async function VideosPage() {
   const rows = await getVideos();
-  return <CrudManager config={videosConfig} rows={rows} />;
-}
-
-export async function LinksPage() {
-  const rows = await getLinks();
-  return <CrudManager config={linksConfig} rows={rows} />;
-}
-
-export async function AwardsPage() {
-  const rows = await getAwards();
-  return <CrudManager config={awardsConfig} rows={rows} />;
+  return <CrudManager table="videos" rows={rows} />;
 }
 
 export async function MessagesPage() {

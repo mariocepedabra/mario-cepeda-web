@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { isSupabaseConfigured } from '@mario/database';
 import { createServerSupabase } from '@mario/database/server';
 
+import { isAllowedAdmin } from '../auth';
 import {
   contactSchema,
   listSchemas,
@@ -28,13 +29,16 @@ async function untypedServer(): Promise<SupabaseClient> {
   return (await createServerSupabase()) as unknown as SupabaseClient;
 }
 
-/** Verifica que haya un usuario autenticado (admin). */
-async function requireUser(): Promise<{ ok: true } | { ok: false; error: string }> {
+/** Verifica que haya un usuario autenticado Y autorizado (el admin de la allowlist). */
+async function requireAdmin(): Promise<{ ok: true } | { ok: false; error: string }> {
   const supabase = await createServerSupabase();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: 'Sesión no válida. Inicia sesión de nuevo.' };
+  if (!isAllowedAdmin(user.email)) {
+    return { ok: false, error: 'Tu cuenta no está autorizada para administrar el sitio.' };
+  }
   return { ok: true };
 }
 
@@ -74,7 +78,7 @@ export async function saveRow(
 ): Promise<ActionResult> {
   if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
 
-  const auth = await requireUser();
+  const auth = await requireAdmin();
   if (!auth.ok) return auth;
 
   const parsed = listSchemas[table].safeParse(raw);
@@ -95,7 +99,7 @@ export async function saveRow(
 
 export async function deleteRow(table: ListTable, id: string): Promise<ActionResult> {
   if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
-  const auth = await requireUser();
+  const auth = await requireAdmin();
   if (!auth.ok) return auth;
 
   const db = await untypedServer();
@@ -111,7 +115,7 @@ export async function deleteRow(table: ListTable, id: string): Promise<ActionRes
 
 export async function saveProfile(raw: unknown): Promise<ActionResult> {
   if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
-  const auth = await requireUser();
+  const auth = await requireAdmin();
   if (!auth.ok) return auth;
 
   const parsed = profileSchema.safeParse(raw);
@@ -145,7 +149,7 @@ export async function saveProfile(raw: unknown): Promise<ActionResult> {
 
 export async function setMessageRead(id: string, leido: boolean): Promise<ActionResult> {
   if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
-  const auth = await requireUser();
+  const auth = await requireAdmin();
   if (!auth.ok) return auth;
 
   const supabase = await untypedServer();
@@ -157,7 +161,7 @@ export async function setMessageRead(id: string, leido: boolean): Promise<Action
 
 export async function deleteMessage(id: string): Promise<ActionResult> {
   if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
-  const auth = await requireUser();
+  const auth = await requireAdmin();
   if (!auth.ok) return auth;
 
   const supabase = await createServerSupabase();
@@ -173,7 +177,7 @@ export async function deleteMessage(id: string): Promise<ActionResult> {
 
 export async function saveSettings(raw: unknown): Promise<ActionResult> {
   if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
-  const auth = await requireUser();
+  const auth = await requireAdmin();
   if (!auth.ok) return auth;
 
   const parsed = seoSettingsSchema.safeParse(raw);

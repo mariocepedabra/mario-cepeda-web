@@ -244,7 +244,7 @@ export interface DashboardStats {
   notasPublicadas: number;
   notasBorrador: number;
   videos: number;
-  prensa: number;
+  narino: number;
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
@@ -255,20 +255,20 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       notasPublicadas: placeholderPosts.filter((p) => p.publicado).length,
       notasBorrador: placeholderPosts.filter((p) => !p.publicado).length,
       videos: placeholderVideos.length,
-      prensa: placeholderPress.length,
+      narino: placeholderNarinoProfiles.length,
     };
   }
   const supabase = await createServerSupabase();
-  const count = (table: 'contact_messages' | 'posts' | 'videos' | 'press') =>
+  const count = (table: 'contact_messages' | 'posts' | 'videos' | 'narino_profiles') =>
     supabase.from(table).select('*', { count: 'exact', head: true });
 
-  const [mensajes, noLeidos, publicadas, borradores, videos, prensa] = await Promise.all([
+  const [mensajes, noLeidos, publicadas, borradores, videos, narino] = await Promise.all([
     count('contact_messages'),
     count('contact_messages').eq('leido', false),
     count('posts').eq('publicado', true),
     count('posts').eq('publicado', false),
     count('videos'),
-    count('press'),
+    count('narino_profiles'),
   ]);
 
   return {
@@ -277,6 +277,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     notasPublicadas: publicadas.count ?? 0,
     notasBorrador: borradores.count ?? 0,
     videos: videos.count ?? 0,
-    prensa: prensa.count ?? 0,
+    narino: narino.count ?? 0,
   };
 }
