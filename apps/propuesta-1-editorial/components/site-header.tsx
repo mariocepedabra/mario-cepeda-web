@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
 import { MAIN_SECTIONS } from '@mario/core/lib';
@@ -19,6 +19,7 @@ function isActive(pathname: string, href: string): boolean {
 /* -------------------------------------------------------------------------- */
 export function SiteHeader({ brand }: { brand: string }) {
   const pathname = usePathname() || '/';
+  const reduceMotion = useReducedMotion();
   const [scrolled, setScrolled] = React.useState(false);
   const [open, setOpen] = React.useState(false);
 
@@ -115,7 +116,7 @@ export function SiteHeader({ brand }: { brand: string }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: reduceMotion ? 0 : 0.25 }}
             className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto bg-paper px-5 pb-10 pt-6 sm:top-20 sm:px-8 lg:hidden"
           >
             <ul className="flex flex-col">
@@ -126,7 +127,7 @@ export function SiteHeader({ brand }: { brand: string }) {
                     key={s.id}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.05 + i * 0.06 }}
+                    transition={{ delay: reduceMotion ? 0 : 0.05 + i * 0.06 }}
                     className="border-b border-line"
                   >
                     <Link

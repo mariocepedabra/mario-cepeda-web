@@ -13,8 +13,16 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
   return (
     <>
+      <a
+        href="#contenido"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-5 focus:py-2.5 focus:font-semibold focus:text-paper"
+      >
+        Saltar al contenido
+      </a>
       <SiteHeader brand={profile.nombre} />
-      {children}
+      <div id="contenido" tabIndex={-1} className="outline-none">
+        {children}
+      </div>
       <SiteFooter
         brand={profile.nombre}
         tagline={profile.titular}
