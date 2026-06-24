@@ -171,6 +171,10 @@ export const seoSettingsSchema = z.object({
   og_image: optionalUrl,
 });
 
+// Textos editables del sitio (clave/valor) -------------------------------------
+
+export const siteContentSchema = z.record(z.string());
+
 // Tipos inferidos --------------------------------------------------------------
 
 export type ProfileInput = z.infer<typeof profileSchema>;
@@ -182,6 +186,7 @@ export type NarinoProfileInput = z.infer<typeof narinoProfileSchema>;
 export type VideoInput = z.infer<typeof videoSchema>;
 export type ContactInput = z.infer<typeof contactSchema>;
 export type SeoSettingsInput = z.infer<typeof seoSettingsSchema>;
+export type SiteContentInput = z.infer<typeof siteContentSchema>;
 
 /**
  * Mapa de esquemas para las entidades de lista que usan el CRUD genérico

@@ -22,6 +22,7 @@ import {
 } from '@mario/database/queries';
 
 import { AdminShell } from './admin-shell';
+import { ContentForm } from './content-form';
 import { CrudManager } from './crud-manager';
 import { Dashboard } from './dashboard';
 import { LoginForm } from './login-form';
@@ -102,6 +103,19 @@ export async function MessagesPage() {
 export async function MediaPage() {
   const media = await getMedia();
   return <MediaManager media={media} />;
+}
+
+export async function ContentPage() {
+  const settings = await getSettings();
+  return (
+    <div>
+      <PageTitle
+        title="Textos del sitio"
+        description="Edita los textos editoriales de la web pública. Si dejas un campo vacío, se usa el texto por defecto."
+      />
+      <ContentForm initial={settings} />
+    </div>
+  );
 }
 
 export async function SeoPage() {

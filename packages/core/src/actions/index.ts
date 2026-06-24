@@ -7,11 +7,13 @@ import { isSupabaseConfigured } from '@mario/database';
 import { createServerSupabase } from '@mario/database/server';
 
 import { isAllowedAdmin } from '../auth';
+import { CONTENT_KEYS } from '../lib';
 import {
   contactSchema,
   listSchemas,
   profileSchema,
   seoSettingsSchema,
+  siteContentSchema,
   type ListTable,
 } from '../schemas';
 
@@ -190,6 +192,32 @@ export async function saveSettings(raw: unknown): Promise<ActionResult> {
     clave,
     valor: valor ?? '',
   }));
+  const { error } = await supabase.from('settings').upsert(rows, { onConflict: 'clave' });
+  if (error) return { ok: false, error: error.message };
+  revalidateAll();
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+//  Admin: textos editables del sitio (clave/valor)
+// ---------------------------------------------------------------------------
+
+export async function saveContent(raw: unknown): Promise<ActionResult> {
+  if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth;
+
+  const parsed = siteContentSchema.safeParse(raw);
+  if (!parsed.success) return { ok: false, error: 'Datos inválidos.' };
+
+  // Solo claves conocidas (evita escribir claves arbitrarias en `settings`).
+  const allowed = new Set(CONTENT_KEYS);
+  const rows = Object.entries(parsed.data)
+    .filter(([clave]) => allowed.has(clave))
+    .map(([clave, valor]) => ({ clave, valor: valor ?? '' }));
+  if (rows.length === 0) return { ok: true };
+
+  const supabase = await untypedServer();
   const { error } = await supabase.from('settings').upsert(rows, { onConflict: 'clave' });
   if (error) return { ok: false, error: error.message };
   revalidateAll();

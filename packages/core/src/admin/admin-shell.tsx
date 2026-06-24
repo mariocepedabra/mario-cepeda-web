@@ -14,6 +14,7 @@ import {
   Menu,
   Mountain,
   Search,
+  Type,
   User,
   Video,
   Workflow,
@@ -45,6 +46,7 @@ const NAV: NavItem[] = [
   { href: '/admin/videos', label: 'Videos', icon: Video },
   { href: '/admin/mensajes', label: 'Mensajes', icon: Mail },
   { href: '/admin/medios', label: 'Medios', icon: ImageIcon },
+  { href: '/admin/textos', label: 'Textos', icon: Type },
   { href: '/admin/seo', label: 'SEO', icon: Search },
 ];
 

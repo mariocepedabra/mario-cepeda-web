@@ -28,7 +28,7 @@ const SOCIAL: { key: keyof SocialLinks; label: string; Icon: LucideIcon }[] = [
 /*  Bloque de boletín (franja sobre papel)                                     */
 /*  Envío en modo demostración hasta conectar un proveedor real (fase later).  */
 /* -------------------------------------------------------------------------- */
-function NewsletterBand() {
+function NewsletterBand({ title, description }: { title?: string; description?: string }) {
   const [done, setDone] = React.useState(false);
 
   return (
@@ -42,10 +42,10 @@ function NewsletterBand() {
             {NEWSLETTER.eyebrow}
           </p>
           <h2 className="mt-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">
-            {NEWSLETTER.title}
+            {title || NEWSLETTER.title}
           </h2>
           <p className="mt-4 max-w-md text-lg leading-relaxed text-ink-soft">
-            {NEWSLETTER.description}
+            {description || NEWSLETTER.description}
           </p>
         </div>
 
@@ -104,16 +104,20 @@ export function SiteFooter({
   brand,
   tagline,
   redes,
+  newsletterTitle,
+  newsletterDescription,
 }: {
   brand: string;
   tagline: string;
   redes: SocialLinks;
+  newsletterTitle?: string;
+  newsletterDescription?: string;
 }) {
   const socials = SOCIAL.filter((s) => redes[s.key]);
 
   return (
     <>
-      <NewsletterBand />
+      <NewsletterBand title={newsletterTitle} description={newsletterDescription} />
 
       <footer className="bg-ink text-paper">
         <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-16">

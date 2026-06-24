@@ -1,4 +1,5 @@
-import { getProfile } from '@mario/database/queries';
+import { siteText } from '@mario/core/lib';
+import { getProfile, getSettings } from '@mario/database/queries';
 
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
@@ -8,13 +9,19 @@ import { SiteFooter } from '@/components/site-footer';
  * El panel `/admin` queda fuera de este grupo y no hereda esta envoltura.
  */
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const profile = await getProfile();
+  const [profile, content] = await Promise.all([getProfile(), getSettings()]);
 
   return (
     <>
       <SiteHeader brand={profile.nombre} />
       {children}
-      <SiteFooter brand={profile.nombre} tagline={profile.titular} redes={profile.redes} />
+      <SiteFooter
+        brand={profile.nombre}
+        tagline={profile.titular}
+        redes={profile.redes}
+        newsletterTitle={siteText(content, 'newsletter.title')}
+        newsletterDescription={siteText(content, 'newsletter.description')}
+      />
     </>
   );
 }

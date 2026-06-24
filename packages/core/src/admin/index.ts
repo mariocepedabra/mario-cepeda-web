@@ -14,6 +14,7 @@ export {
   VideosPage,
   MessagesPage,
   MediaPage,
+  ContentPage,
   SeoPage,
   LoginPage,
 } from './pages';

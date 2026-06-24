@@ -2,14 +2,29 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 
-import { formatDate, MAIN_SECTIONS, toEmbed, truncate } from '@mario/core/lib';
+import { formatDate, MAIN_SECTIONS, siteText, toEmbed, truncate } from '@mario/core/lib';
 import { placeholderImage } from '@mario/database';
 import type { Post, Profile, Video } from '@mario/database';
 
 import { Reveal } from './interactive';
 
+type Content = Record<string, string>;
+
 /** Línea de metadatos «Categoría · Fecha» de una nota. */
 const postMeta = (post: Post) => [post.categoria, formatDate(post.fecha)].filter(Boolean).join(' · ');
+
+/** Renderiza un titular resaltando (estilo marcador) la palabra indicada. */
+function HeroTitle({ title, highlight }: { title: string; highlight: string }) {
+  const idx = highlight ? title.toLowerCase().indexOf(highlight.toLowerCase()) : -1;
+  if (idx === -1) return <>{title}</>;
+  return (
+    <>
+      {title.slice(0, idx)}
+      <span className="mark-highlight">{title.slice(idx, idx + highlight.length)}</span>
+      {title.slice(idx + highlight.length)}
+    </>
+  );
+}
 
 /* Encabezado de sección reutilizable (estilo editorial). */
 function SectionHead({
@@ -37,34 +52,36 @@ function SectionHead({
 /* -------------------------------------------------------------------------- */
 /*  1. Hero inmersivo                                                          */
 /* -------------------------------------------------------------------------- */
-export function Hero({ profile }: { profile: Profile }) {
-  const bio = profile.bio.replace(/^\[.*?\]\s*/, '');
+export function Hero({ profile, content }: { profile: Profile; content?: Content }) {
   return (
     <section className="relative overflow-hidden">
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-16 pt-28 sm:px-8 sm:pt-40 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pb-24">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.25em] text-accent">
-            Sitio personal · Nariño, Colombia
+            {siteText(content, 'home.hero.eyebrow')}
           </p>
           <h1 className="mt-5 font-display text-5xl font-semibold leading-[0.98] sm:text-6xl lg:text-7xl">
-            Ideas que mueven a <span className="mark-highlight">Nariño</span> y al mundo
+            <HeroTitle
+              title={siteText(content, 'home.hero.title')}
+              highlight={siteText(content, 'home.hero.highlight')}
+            />
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
-            {truncate(bio, 220)}
+            {siteText(content, 'home.hero.lead')}
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-4">
             <Link
               href="/pensamiento"
               className="inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-semibold text-paper transition-colors hover:bg-accent"
             >
-              Explorar Pensamiento
+              {siteText(content, 'home.hero.cta_primary')}
               <ArrowRight className="size-4" />
             </Link>
             <a
               href="#newsletter"
               className="inline-flex items-center gap-2 rounded-full border border-ink px-7 py-3.5 font-semibold transition-colors hover:bg-ink hover:text-paper"
             >
-              Suscríbete
+              {siteText(content, 'home.hero.cta_secondary')}
             </a>
           </div>
         </div>
@@ -168,11 +185,14 @@ export function FeaturedStories({ posts }: { posts: Post[] }) {
 /* -------------------------------------------------------------------------- */
 /*  3. Accesos a las 4 secciones principales                                   */
 /* -------------------------------------------------------------------------- */
-export function SectionAccess() {
+export function SectionAccess({ content }: { content?: Content }) {
   return (
     <section className="border-t border-line py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <SectionHead eyebrow="Explora" title="Cuatro miradas" />
+        <SectionHead
+          eyebrow={siteText(content, 'home.sections.eyebrow')}
+          title={siteText(content, 'home.sections.title')}
+        />
 
         <div className="grid gap-8 sm:grid-cols-2">
           {MAIN_SECTIONS.map((s, i) => (
@@ -195,7 +215,9 @@ export function SectionAccess() {
                     <h3 className="font-display text-2xl font-semibold group-hover:text-accent">
                       {s.label}
                     </h3>
-                    <p className="mt-2 max-w-sm leading-relaxed text-ink-soft">{s.blurb}</p>
+                    <p className="mt-2 max-w-sm leading-relaxed text-ink-soft">
+                      {siteText(content, `section.${s.id}.blurb`)}
+                    </p>
                   </div>
                   <ArrowUpRight className="mt-1 size-6 shrink-0 text-ink-muted transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
                 </div>
