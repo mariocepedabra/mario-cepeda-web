@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+/* Incluye en el escaneo de Tailwind el panel admin compartido (vive en otro
+   paquete del monorepo). Sin esto, las clases del panel no se generan en el
+   build de producción y el admin sale sin estilos. */
+@source '../../../packages/core/src';
+
 /* ===========================================================================
    SISTEMA DE DISEÑO — ESTILO GATES NOTES (adaptado a Mario Cepeda)
    Editorial, cálido y humano. Serif display (Fraunces) + sans (Archivo),
