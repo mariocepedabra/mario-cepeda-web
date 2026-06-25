@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 
 import { getNarinoProfileBySlug } from '@mario/database/queries';
 
+import { Cover } from '@/components/cover';
 import { ReadingProgress } from '@/components/reading-progress';
 
 interface Props {
@@ -62,12 +62,10 @@ export default async function NarinoDetailPage({ params }: Props) {
           {profile.foto_url ? (
             <figure className="mx-auto mt-10 max-w-5xl px-5 sm:px-8">
               <div className="relative aspect-[16/10] overflow-hidden rounded-card bg-paper-2 shadow-soft">
-                <Image
-                  src={profile.foto_url}
-                  alt={`${profile.nombre} (imagen de ejemplo)`}
-                  fill
+                <Cover
+                  url={profile.foto_url}
+                  alt={profile.nombre}
                   sizes="(max-width: 1024px) 100vw, 1024px"
-                  className="object-cover"
                   priority
                 />
               </div>

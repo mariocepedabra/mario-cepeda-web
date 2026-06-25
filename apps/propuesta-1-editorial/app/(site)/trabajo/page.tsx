@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
 
 import { getExperiences, getProfile, getProjects } from '@mario/database/queries';
 
+import { Cover } from '@/components/cover';
 import { ContactForm, Reveal } from '@/components/interactive';
 
 export const metadata: Metadata = {
@@ -32,16 +32,12 @@ export default async function TrabajoPage() {
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">{bio}</p>
           </div>
           <div className="relative aspect-[4/5] overflow-hidden rounded-card bg-paper-2 shadow-lift">
-            {profile.foto_url ? (
-              <Image
-                src={profile.foto_url}
-                alt={`Retrato de ${profile.nombre} (imagen de ejemplo)`}
-                fill
-                sizes="(max-width: 1024px) 100vw, 45vw"
-                className="object-cover"
-                priority
-              />
-            ) : null}
+            <Cover
+              url={profile.foto_url}
+              alt={`Retrato de ${profile.nombre}`}
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              priority
+            />
           </div>
         </div>
       </section>
@@ -57,15 +53,11 @@ export default async function TrabajoPage() {
               <Reveal key={project.id}>
                 <article className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
                   <div className={`relative aspect-[4/3] overflow-hidden rounded-card bg-paper-2 shadow-soft ${i % 2 === 1 ? 'lg:order-2' : ''}`}>
-                    {project.imagen_url ? (
-                      <Image
-                        src={project.imagen_url}
-                        alt={`${project.titulo} (imagen de ejemplo)`}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                        className="object-cover"
-                      />
-                    ) : null}
+                    <Cover
+                      url={project.imagen_url}
+                      alt={project.titulo}
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
                   </div>
                   <div>
                     {project.subtitulo ? (

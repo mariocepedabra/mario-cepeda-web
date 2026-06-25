@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import { Star } from 'lucide-react';
 
 import { getBooks } from '@mario/database/queries';
 import type { Book, BookList } from '@mario/database';
 
+import { Cover } from '@/components/cover';
 import { Reveal } from '@/components/interactive';
 
 export const metadata: Metadata = {
@@ -63,15 +63,7 @@ function BookCard({ book }: { book: Book }) {
   return (
     <article className="flex gap-5">
       <div className="relative aspect-[2/3] w-28 shrink-0 overflow-hidden rounded-card bg-paper-2 shadow-soft sm:w-32">
-        {book.portada_url ? (
-          <Image
-            src={book.portada_url}
-            alt={`Portada de «${book.titulo}» (imagen de ejemplo)`}
-            fill
-            sizes="128px"
-            className="object-cover"
-          />
-        ) : null}
+        <Cover url={book.portada_url} alt={`Portada de «${book.titulo}»`} sizes="128px" />
       </div>
       <div className="min-w-0">
         <h3 className="font-display text-xl font-semibold leading-snug">{book.titulo}</h3>

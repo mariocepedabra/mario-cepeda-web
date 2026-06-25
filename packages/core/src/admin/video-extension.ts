@@ -53,7 +53,11 @@ export const VideoNode = Node.create({
     };
 
     if (kind === 'file') {
-      const videoAttrs: Record<string, string> = { src, playsinline: 'true' };
+      const videoAttrs: Record<string, string> = {
+        src,
+        playsinline: 'true',
+        preload: loop ? 'auto' : 'metadata',
+      };
       if (loop) {
         // Comportamiento tipo GIF: bucle, autoplay y silenciado.
         videoAttrs.loop = 'true';

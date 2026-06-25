@@ -6,6 +6,7 @@ import { formatDate, MAIN_SECTIONS, siteText, toEmbed, truncate } from '@mario/c
 import { placeholderImage } from '@mario/database';
 import type { Post, Profile, Video } from '@mario/database';
 
+import { Cover } from './cover';
 import { Reveal } from './interactive';
 
 type Content = Record<string, string>;
@@ -88,16 +89,12 @@ export function Hero({ profile, content }: { profile: Profile; content?: Content
 
         <div className="relative">
           <div className="relative aspect-[4/5] w-full overflow-hidden rounded-card bg-paper-2 shadow-lift">
-            {profile.foto_url ? (
-              <Image
-                src={profile.foto_url}
-                alt={`Retrato de ${profile.nombre} (imagen de ejemplo)`}
-                fill
-                sizes="(max-width: 1024px) 100vw, 45vw"
-                className="object-cover"
-                priority
-              />
-            ) : null}
+            <Cover
+              url={profile.foto_url}
+              alt={`Retrato de ${profile.nombre}`}
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              priority
+            />
           </div>
           <p className="mt-3 text-sm text-ink-muted">{profile.titular}</p>
         </div>
@@ -124,15 +121,12 @@ export function FeaturedStories({ posts }: { posts: Post[] }) {
           <Reveal>
             <Link href={`/pensamiento/${lead.slug}`} className="group block">
               <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-paper-2 shadow-soft">
-                {lead.portada_url ? (
-                  <Image
-                    src={lead.portada_url}
-                    alt={`Portada de «${lead.titulo}» (imagen de ejemplo)`}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : null}
+                <Cover
+                  url={lead.portada_url}
+                  alt={`Portada de «${lead.titulo}»`}
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="transition-transform duration-500 group-hover:scale-105"
+                />
               </div>
               <p className="mt-5 text-xs font-semibold uppercase tracking-widest text-accent">
                 {postMeta(lead)}
@@ -154,15 +148,12 @@ export function FeaturedStories({ posts }: { posts: Post[] }) {
               <Reveal key={post.id} delay={(i + 1) * 0.08}>
                 <Link href={`/pensamiento/${post.slug}`} className="group grid grid-cols-[0.4fr_0.6fr] gap-5">
                   <div className="relative aspect-square overflow-hidden rounded-card bg-paper-2 shadow-soft">
-                    {post.portada_url ? (
-                      <Image
-                        src={post.portada_url}
-                        alt={`Portada de «${post.titulo}» (imagen de ejemplo)`}
-                        fill
-                        sizes="(max-width: 1024px) 40vw, 20vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : null}
+                    <Cover
+                      url={post.portada_url}
+                      alt={`Portada de «${post.titulo}»`}
+                      sizes="(max-width: 1024px) 40vw, 20vw"
+                      className="transition-transform duration-500 group-hover:scale-105"
+                    />
                   </div>
                   <div className="self-center">
                     <p className="text-xs font-semibold uppercase tracking-widest text-accent">
@@ -258,15 +249,12 @@ export function LatestFeed({ posts }: { posts: Post[] }) {
                   className="group grid grid-cols-[64px_1fr] items-center gap-4 py-5 sm:grid-cols-[88px_1fr] sm:gap-6"
                 >
                   <div className="relative aspect-square overflow-hidden rounded-card bg-paper-2">
-                    {post.portada_url ? (
-                      <Image
-                        src={post.portada_url}
-                        alt={`Portada de «${post.titulo}» (imagen de ejemplo)`}
-                        fill
-                        sizes="88px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : null}
+                    <Cover
+                      url={post.portada_url}
+                      alt={`Portada de «${post.titulo}»`}
+                      sizes="88px"
+                      className="transition-transform duration-500 group-hover:scale-105"
+                    />
                   </div>
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-widest text-accent">

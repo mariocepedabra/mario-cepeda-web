@@ -33,7 +33,8 @@ import {
   Label,
   toast,
 } from '../ui';
-import { toVideoSource, uploadToStorage } from './media-upload';
+import { toVideoSource } from '../lib';
+import { uploadToStorage } from './media-upload';
 import { VideoNode } from './video-extension';
 
 interface TiptapEditorProps {

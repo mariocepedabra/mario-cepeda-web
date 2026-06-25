@@ -60,7 +60,7 @@ export const postsConfig: CrudConfig<Post> = {
     { name: 'categoria', label: 'Tema', type: 'text', placeholder: 'Medios, Región, Tecnología…' },
     { name: 'fecha', label: 'Fecha', type: 'date' },
     { name: 'publicado', label: 'Publicada', type: 'switch' },
-    { name: 'portada_url', label: 'Imagen de portada (URL)', type: 'url', full: true },
+    { name: 'portada_url', label: 'Portada (imagen o video, con opción GIF)', type: 'media', full: true },
     { name: 'bajada', label: 'Bajada (subtítulo)', type: 'textarea', full: true },
     { name: 'resumen', label: 'Resumen', type: 'textarea', full: true },
     { name: 'contenido', label: 'Contenido', type: 'richtext', full: true },
@@ -129,7 +129,7 @@ export const projectsConfig: CrudConfig<Project> = {
     { name: 'subtitulo', label: 'Subtítulo', type: 'text', placeholder: 'Medio digital · Director' },
     { name: 'url', label: 'Enlace (URL)', type: 'url' },
     { name: 'orden', label: 'Orden', type: 'number', help: 'Menor = aparece antes.' },
-    { name: 'imagen_url', label: 'Imagen (URL)', type: 'url', full: true },
+    { name: 'imagen_url', label: 'Imagen o video (con opción GIF)', type: 'media', full: true },
     { name: 'descripcion', label: 'Descripción', type: 'textarea', full: true },
   ],
   columns: [
@@ -160,7 +160,7 @@ export const booksConfig: CrudConfig<Book> = {
     },
     { name: 'valoracion', label: 'Valoración (1–5)', type: 'number', placeholder: '5' },
     { name: 'orden', label: 'Orden', type: 'number' },
-    { name: 'portada_url', label: 'Portada (URL)', type: 'url', full: true },
+    { name: 'portada_url', label: 'Portada (imagen o video, con opción GIF)', type: 'media', full: true },
     { name: 'resena', label: 'Reseña', type: 'textarea', full: true },
   ],
   columns: [
@@ -183,7 +183,7 @@ export const narinoConfig: CrudConfig<NarinoProfile> = {
     { name: 'slug', label: 'Slug', type: 'text', generateFrom: 'nombre', help: 'URL del perfil.' },
     { name: 'lugar', label: 'Lugar', type: 'text', placeholder: 'Pasto, Nariño' },
     { name: 'orden', label: 'Orden', type: 'number' },
-    { name: 'foto_url', label: 'Foto (URL)', type: 'url', full: true },
+    { name: 'foto_url', label: 'Foto o video (con opción GIF)', type: 'media', full: true },
     { name: 'historia', label: 'Historia', type: 'richtext', full: true },
   ],
   columns: [

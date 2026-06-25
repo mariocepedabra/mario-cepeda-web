@@ -1,8 +1,9 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { formatDate, truncate } from '@mario/core/lib';
 import type { Post } from '@mario/database';
+
+import { Cover } from './cover';
 
 /** Tarjeta de artículo reutilizable (listado de Pensamiento, relacionados…). */
 export function PostCard({ post }: { post: Post }) {
@@ -10,15 +11,12 @@ export function PostCard({ post }: { post: Post }) {
   return (
     <Link href={`/pensamiento/${post.slug}`} className="group block">
       <div className="relative mb-4 aspect-[3/2] overflow-hidden rounded-card bg-paper-2 shadow-soft">
-        {post.portada_url ? (
-          <Image
-            src={post.portada_url}
-            alt={`Portada de «${post.titulo}» (imagen de ejemplo)`}
-            fill
-            sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : null}
+        <Cover
+          url={post.portada_url}
+          alt={`Portada de «${post.titulo}»`}
+          sizes="(max-width: 768px) 100vw, 33vw"
+          className="transition-transform duration-500 group-hover:scale-105"
+        />
       </div>
       {meta ? (
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">{meta}</p>

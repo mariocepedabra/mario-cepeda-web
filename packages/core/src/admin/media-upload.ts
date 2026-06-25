@@ -18,6 +18,7 @@ export async function uploadToStorage(file: File): Promise<UploadResult> {
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
     cacheControl: '3600',
     upsert: false,
+    contentType: file.type || undefined,
   });
   if (error) return { error: error.message };
 
@@ -34,55 +35,4 @@ export async function uploadToStorage(file: File): Promise<UploadResult> {
   await supabase.from('media').insert({ nombre: file.name, url: publicUrl, tipo });
 
   return { url: publicUrl };
-}
-
-/** ¿La URL apunta a un archivo de video directo (no un embed)? */
-export function isVideoFileUrl(url: string): boolean {
-  return /\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i.test(url.trim());
-}
-
-/**
- * Normaliza un enlace de video a su forma «embed» y detecta si es un archivo
- * directo. Soporta YouTube, Vimeo, TikTok e Instagram. `loop` aplica parámetros
- * de bucle/autoplay cuando la plataforma lo permite (YouTube/Vimeo).
- */
-export function toVideoSource(raw: string, loop: boolean): { src: string; kind: 'file' | 'embed' } {
-  const url = raw.trim();
-
-  // Archivo de video directo (incluye URLs de Supabase Storage .mp4/.webm…)
-  if (isVideoFileUrl(url)) return { src: url, kind: 'file' };
-
-  // YouTube
-  const yt = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|v\/)|youtu\.be\/)([\w-]{11})/,
-  );
-  if (yt?.[1]) {
-    const id = yt[1];
-    const params = loop
-      ? `?loop=1&playlist=${id}&autoplay=1&mute=1&playsinline=1`
-      : '';
-    return { src: `https://www.youtube.com/embed/${id}${params}`, kind: 'embed' };
-  }
-
-  // Vimeo
-  const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (vm?.[1]) {
-    const params = loop ? '?loop=1&autoplay=1&muted=1' : '';
-    return { src: `https://player.vimeo.com/video/${vm[1]}${params}`, kind: 'embed' };
-  }
-
-  // TikTok
-  const tt = url.match(/tiktok\.com\/.*?\/video\/(\d+)/) || url.match(/tiktok\.com\/.*?(\d{10,})/);
-  if (tt?.[1]) {
-    return { src: `https://www.tiktok.com/embed/v2/${tt[1]}`, kind: 'embed' };
-  }
-
-  // Instagram (post / reel / tv)
-  const ig = url.match(/instagram\.com\/(?:p|reel|tv)\/([\w-]+)/);
-  if (ig?.[1]) {
-    return { src: `https://www.instagram.com/p/${ig[1]}/embed`, kind: 'embed' };
-  }
-
-  // Por defecto: tratarlo como embed genérico (iframe).
-  return { src: url, kind: 'embed' };
 }

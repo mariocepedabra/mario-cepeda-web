@@ -31,6 +31,7 @@ import {
   Textarea,
   toast,
 } from '../ui';
+import { MediaField } from './media-field';
 import { crudConfigs } from './resources';
 import { EmptyState } from './states';
 import { TiptapEditor } from './tiptap-editor';
@@ -38,7 +39,7 @@ import { TiptapEditor } from './tiptap-editor';
 export interface CrudField {
   name: string;
   label: string;
-  type: 'text' | 'textarea' | 'number' | 'url' | 'date' | 'switch' | 'select' | 'richtext';
+  type: 'text' | 'textarea' | 'number' | 'url' | 'date' | 'switch' | 'select' | 'richtext' | 'media';
   placeholder?: string;
   options?: readonly { value: string; label: string }[];
   full?: boolean;
@@ -228,7 +229,10 @@ export function CrudManager<T extends { id: string }>({ table, rows }: CrudManag
                   <div
                     key={field.name}
                     className={
-                      field.full || field.type === 'textarea' || field.type === 'richtext'
+                      field.full ||
+                      field.type === 'textarea' ||
+                      field.type === 'richtext' ||
+                      field.type === 'media'
                         ? 'sm:col-span-2'
                         : ''
                     }
@@ -277,6 +281,18 @@ export function CrudManager<T extends { id: string }>({ table, rows }: CrudManag
                         name={field.name}
                         render={({ field: f }) => (
                           <TiptapEditor value={(f.value as string) ?? ''} onChange={f.onChange} />
+                        )}
+                      />
+                    ) : field.type === 'media' ? (
+                      <Controller
+                        control={form.control}
+                        name={field.name}
+                        render={({ field: f }) => (
+                          <MediaField
+                            value={(f.value as string) ?? ''}
+                            onChange={f.onChange}
+                            placeholder={field.placeholder}
+                          />
                         )}
                       />
                     ) : (

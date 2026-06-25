@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { getNarinoProfiles } from '@mario/database/queries';
 
+import { Cover } from '@/components/cover';
 import { Reveal } from '@/components/interactive';
 
 export const metadata: Metadata = {
@@ -37,15 +37,12 @@ export default async function NarinoPage() {
             <Reveal key={profile.id} delay={(i % 3) * 0.08}>
               <Link href={`/narino/${profile.slug}`} className="group block">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-card bg-paper-2 shadow-soft">
-                  {profile.foto_url ? (
-                    <Image
-                      src={profile.foto_url}
-                      alt={`${profile.nombre} (imagen de ejemplo)`}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : null}
+                  <Cover
+                    url={profile.foto_url}
+                    alt={profile.nombre}
+                    sizes="(max-width: 640px) 100vw, 33vw"
+                    className="transition-transform duration-500 group-hover:scale-105"
+                  />
                 </div>
                 <h2 className="mt-4 font-display text-2xl font-semibold leading-tight group-hover:text-accent">
                   {profile.nombre}

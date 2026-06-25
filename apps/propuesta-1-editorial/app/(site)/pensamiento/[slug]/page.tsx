@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
@@ -7,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { formatDate, SITE_DEFAULTS, truncate } from '@mario/core/lib';
 import { getPostBySlug, getPosts } from '@mario/database/queries';
 
+import { Cover } from '@/components/cover';
 import { PostCard } from '@/components/cards';
 import { Reveal } from '@/components/interactive';
 import { ReadingProgress } from '@/components/reading-progress';
@@ -79,18 +79,14 @@ export default async function PensamientoDetailPage({ params }: Props) {
           {post.portada_url ? (
             <figure className="mx-auto mt-10 max-w-5xl px-5 sm:px-8">
               <div className="relative aspect-[16/9] overflow-hidden rounded-card bg-paper-2 shadow-soft">
-                <Image
-                  src={post.portada_url}
-                  alt={`Portada de «${post.titulo}» (imagen de ejemplo)`}
-                  fill
+                <Cover
+                  url={post.portada_url}
+                  alt={`Portada de «${post.titulo}»`}
                   sizes="(max-width: 1024px) 100vw, 1024px"
-                  className="object-cover"
                   priority
                 />
               </div>
-              <figcaption className="mt-3 text-sm text-ink-muted">
-                Imagen de ejemplo. {post.titulo}.
-              </figcaption>
+              <figcaption className="mt-3 text-sm text-ink-muted">{post.titulo}</figcaption>
             </figure>
           ) : null}
 
