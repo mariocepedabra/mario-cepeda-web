@@ -106,6 +106,10 @@ ninguna credencial en el repositorio (Supabase gestiona el hash de la contraseñ
 3. **Environment Variables** → añade las variables de la tabla anterior.
 4. **Deploy.** Build e Install por defecto de Vercel funcionan; no hace falta configuración extra.
 
+> **Plan Hobby (gratis):** Vercel solo construye commits cuyo **autor** sea el dueño de la cuenta.
+> Si haces commits con otra identidad de git, configúrala como el dueño en el repo:
+> `git config user.email "<id>+<usuario>@users.noreply.github.com"`.
+
 ## Estándares
 
 TypeScript strict, ESLint + Prettier, responsive _mobile-first_, accesibilidad (contraste, foco
