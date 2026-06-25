@@ -94,286 +94,6 @@ importers:
         specifier: ^5.7.3
         version: 5.9.3
 
-  apps/propuesta-2-minimal:
-    dependencies:
-      '@hookform/resolvers':
-        specifier: ^3.9.1
-        version: 3.10.0(react-hook-form@7.79.0(react@19.2.7))
-      '@mario/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@mario/database':
-        specifier: workspace:*
-        version: link:../../packages/database
-      framer-motion:
-        specifier: ^11.15.0
-        version: 11.18.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      lucide-react:
-        specifier: ^0.469.0
-        version: 0.469.0(react@19.2.7)
-      next:
-        specifier: ^15.1.4
-        version: 15.5.19(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      next-themes:
-        specifier: ^0.4.4
-        version: 0.4.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      react:
-        specifier: ^19.0.0
-        version: 19.2.7
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.2.7(react@19.2.7)
-      react-hook-form:
-        specifier: ^7.54.2
-        version: 7.79.0(react@19.2.7)
-      sonner:
-        specifier: ^1.7.1
-        version: 1.7.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      zod:
-        specifier: ^3.24.1
-        version: 3.25.76
-    devDependencies:
-      '@eslint/eslintrc':
-        specifier: ^3.2.0
-        version: 3.3.5
-      '@mario/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@tailwindcss/postcss':
-        specifier: ^4.0.0
-        version: 4.3.1
-      '@types/node':
-        specifier: ^22.10.5
-        version: 22.19.21
-      '@types/react':
-        specifier: ^19.0.4
-        version: 19.2.17
-      '@types/react-dom':
-        specifier: ^19.0.2
-        version: 19.2.3(@types/react@19.2.17)
-      eslint:
-        specifier: ^9.18.0
-        version: 9.39.4(jiti@2.7.0)
-      eslint-config-next:
-        specifier: ^15.1.4
-        version: 15.5.19(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)
-      tailwindcss:
-        specifier: ^4.0.0
-        version: 4.3.1
-      typescript:
-        specifier: ^5.7.3
-        version: 5.9.3
-
-  apps/propuesta-3-cinematic:
-    dependencies:
-      '@hookform/resolvers':
-        specifier: ^3.9.1
-        version: 3.10.0(react-hook-form@7.79.0(react@19.2.7))
-      '@mario/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@mario/database':
-        specifier: workspace:*
-        version: link:../../packages/database
-      framer-motion:
-        specifier: ^11.15.0
-        version: 11.18.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      lucide-react:
-        specifier: ^0.469.0
-        version: 0.469.0(react@19.2.7)
-      next:
-        specifier: ^15.1.4
-        version: 15.5.19(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      next-themes:
-        specifier: ^0.4.4
-        version: 0.4.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      react:
-        specifier: ^19.0.0
-        version: 19.2.7
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.2.7(react@19.2.7)
-      react-hook-form:
-        specifier: ^7.54.2
-        version: 7.79.0(react@19.2.7)
-      sonner:
-        specifier: ^1.7.1
-        version: 1.7.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      zod:
-        specifier: ^3.24.1
-        version: 3.25.76
-    devDependencies:
-      '@eslint/eslintrc':
-        specifier: ^3.2.0
-        version: 3.3.5
-      '@mario/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@tailwindcss/postcss':
-        specifier: ^4.0.0
-        version: 4.3.1
-      '@types/node':
-        specifier: ^22.10.5
-        version: 22.19.21
-      '@types/react':
-        specifier: ^19.0.4
-        version: 19.2.17
-      '@types/react-dom':
-        specifier: ^19.0.2
-        version: 19.2.3(@types/react@19.2.17)
-      eslint:
-        specifier: ^9.18.0
-        version: 9.39.4(jiti@2.7.0)
-      eslint-config-next:
-        specifier: ^15.1.4
-        version: 15.5.19(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)
-      tailwindcss:
-        specifier: ^4.0.0
-        version: 4.3.1
-      typescript:
-        specifier: ^5.7.3
-        version: 5.9.3
-
-  apps/propuesta-4-organic:
-    dependencies:
-      '@hookform/resolvers':
-        specifier: ^3.9.1
-        version: 3.10.0(react-hook-form@7.79.0(react@19.2.7))
-      '@mario/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@mario/database':
-        specifier: workspace:*
-        version: link:../../packages/database
-      framer-motion:
-        specifier: ^11.15.0
-        version: 11.18.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      lucide-react:
-        specifier: ^0.469.0
-        version: 0.469.0(react@19.2.7)
-      next:
-        specifier: ^15.1.4
-        version: 15.5.19(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      next-themes:
-        specifier: ^0.4.4
-        version: 0.4.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      react:
-        specifier: ^19.0.0
-        version: 19.2.7
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.2.7(react@19.2.7)
-      react-hook-form:
-        specifier: ^7.54.2
-        version: 7.79.0(react@19.2.7)
-      sonner:
-        specifier: ^1.7.1
-        version: 1.7.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      zod:
-        specifier: ^3.24.1
-        version: 3.25.76
-    devDependencies:
-      '@eslint/eslintrc':
-        specifier: ^3.2.0
-        version: 3.3.5
-      '@mario/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@tailwindcss/postcss':
-        specifier: ^4.0.0
-        version: 4.3.1
-      '@types/node':
-        specifier: ^22.10.5
-        version: 22.19.21
-      '@types/react':
-        specifier: ^19.0.4
-        version: 19.2.17
-      '@types/react-dom':
-        specifier: ^19.0.2
-        version: 19.2.3(@types/react@19.2.17)
-      eslint:
-        specifier: ^9.18.0
-        version: 9.39.4(jiti@2.7.0)
-      eslint-config-next:
-        specifier: ^15.1.4
-        version: 15.5.19(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)
-      tailwindcss:
-        specifier: ^4.0.0
-        version: 4.3.1
-      typescript:
-        specifier: ^5.7.3
-        version: 5.9.3
-
-  apps/propuesta-5-magazine:
-    dependencies:
-      '@hookform/resolvers':
-        specifier: ^3.9.1
-        version: 3.10.0(react-hook-form@7.79.0(react@19.2.7))
-      '@mario/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@mario/database':
-        specifier: workspace:*
-        version: link:../../packages/database
-      framer-motion:
-        specifier: ^11.15.0
-        version: 11.18.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      lucide-react:
-        specifier: ^0.469.0
-        version: 0.469.0(react@19.2.7)
-      next:
-        specifier: ^15.1.4
-        version: 15.5.19(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      next-themes:
-        specifier: ^0.4.4
-        version: 0.4.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      react:
-        specifier: ^19.0.0
-        version: 19.2.7
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.2.7(react@19.2.7)
-      react-hook-form:
-        specifier: ^7.54.2
-        version: 7.79.0(react@19.2.7)
-      sonner:
-        specifier: ^1.7.1
-        version: 1.7.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      zod:
-        specifier: ^3.24.1
-        version: 3.25.76
-    devDependencies:
-      '@eslint/eslintrc':
-        specifier: ^3.2.0
-        version: 3.3.5
-      '@mario/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@tailwindcss/postcss':
-        specifier: ^4.0.0
-        version: 4.3.1
-      '@types/node':
-        specifier: ^22.10.5
-        version: 22.19.21
-      '@types/react':
-        specifier: ^19.0.4
-        version: 19.2.17
-      '@types/react-dom':
-        specifier: ^19.0.2
-        version: 19.2.3(@types/react@19.2.17)
-      eslint:
-        specifier: ^9.18.0
-        version: 9.39.4(jiti@2.7.0)
-      eslint-config-next:
-        specifier: ^15.1.4
-        version: 15.5.19(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)
-      tailwindcss:
-        specifier: ^4.0.0
-        version: 4.3.1
-      typescript:
-        specifier: ^5.7.3
-        version: 5.9.3
-
   packages/config: {}
 
   packages/core:
@@ -399,6 +119,12 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.47.10
         version: 2.108.2
+      '@tiptap/core':
+        specifier: ^2.10.4
+        version: 2.27.2(@tiptap/pm@2.27.2)
+      '@tiptap/extension-image':
+        specifier: ^2.10.4
+        version: 2.27.2(@tiptap/core@2.27.2(@tiptap/pm@2.27.2))
       '@tiptap/extension-link':
         specifier: ^2.10.4
         version: 2.27.2(@tiptap/core@2.27.2(@tiptap/pm@2.27.2))(@tiptap/pm@2.27.2)
@@ -1380,6 +1106,11 @@ packages:
     peerDependencies:
       '@tiptap/core': ^2.7.0
       '@tiptap/pm': ^2.7.0
+
+  '@tiptap/extension-image@2.27.2':
+    resolution: {integrity: sha512-5zL/BY41FIt72azVrCrv3n+2YJ/JyO8wxCcA4Dk1eXIobcgVyIdo4rG39gCqIOiqziAsqnqoj12QHTBtHsJ6mQ==}
+    peerDependencies:
+      '@tiptap/core': ^2.7.0
 
   '@tiptap/extension-italic@2.27.2':
     resolution: {integrity: sha512-1OFsw2SZqfaqx5Fa5v90iNlPRcqyt+lVSjBwTDzuPxTPFY4Q0mL89mKgkq2gVHYNCiaRkXvFLDxaSvBWbmthgg==}
@@ -3882,6 +3613,10 @@ snapshots:
     dependencies:
       '@tiptap/core': 2.27.2(@tiptap/pm@2.27.2)
       '@tiptap/pm': 2.27.2
+
+  '@tiptap/extension-image@2.27.2(@tiptap/core@2.27.2(@tiptap/pm@2.27.2))':
+    dependencies:
+      '@tiptap/core': 2.27.2(@tiptap/pm@2.27.2)
 
   '@tiptap/extension-italic@2.27.2(@tiptap/core@2.27.2(@tiptap/pm@2.27.2))':
     dependencies:
