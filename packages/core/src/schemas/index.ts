@@ -43,12 +43,24 @@ export const socialLinksSchema = z.object({
   website: optionalUrl,
 });
 
+/**
+ * Media (URL de imagen o video) por sección del menú. Mismo formato que
+ * `foto_url`: URL válida o cadena vacía (admite el marcador `#loop`).
+ */
+export const navMediaSchema = z.object({
+  pensamiento: optionalUrl,
+  trabajo: optionalUrl,
+  libros: optionalUrl,
+  narino: optionalUrl,
+});
+
 export const profileSchema = z.object({
   nombre: requiredText('El nombre'),
   titular: requiredText('El titular'),
   bio: requiredText('La biografía', 10),
   foto_url: optionalUrl,
   redes: socialLinksSchema.default({}),
+  nav_media: navMediaSchema.default({}),
 });
 
 // Trayectoria ------------------------------------------------------------------

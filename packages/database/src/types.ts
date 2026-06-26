@@ -32,6 +32,18 @@ export type SocialLinks = {
   website?: string;
 }
 
+/**
+ * Media (imagen o video) que se muestra al pasar el cursor sobre cada sección
+ * del menú superior. Cada valor es una URL de medio (admite el marcador `#loop`
+ * igual que `foto_url`). Las claves coinciden con los ids de `MAIN_SECTIONS`.
+ */
+export type NavMedia = {
+  pensamiento?: string;
+  trabajo?: string;
+  libros?: string;
+  narino?: string;
+}
+
 export type Profile = {
   id: string;
   nombre: string;
@@ -39,6 +51,7 @@ export type Profile = {
   bio: string;
   foto_url: string | null;
   redes: SocialLinks;
+  nav_media: NavMedia;
   created_at: string;
   updated_at: string;
 }

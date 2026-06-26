@@ -134,6 +134,7 @@ export async function saveProfile(raw: unknown): Promise<ActionResult> {
     bio: parsed.data.bio,
     foto_url: parsed.data.foto_url || null,
     redes: parsed.data.redes,
+    nav_media: parsed.data.nav_media,
   };
 
   const { error } = existing

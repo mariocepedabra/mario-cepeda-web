@@ -56,6 +56,12 @@ export const placeholderProfile: Profile = {
     youtube: 'https://youtube.com/@ejemplo',
     website: 'https://pagina10.com',
   },
+  nav_media: {
+    pensamiento: placeholderImage('nav-pensamiento', 1200, 800),
+    trabajo: placeholderImage('nav-trabajo', 1200, 800),
+    libros: placeholderImage('nav-libros', 1200, 800),
+    narino: placeholderImage('nav-narino', 1200, 800),
+  },
   created_at: now,
   updated_at: now,
 };

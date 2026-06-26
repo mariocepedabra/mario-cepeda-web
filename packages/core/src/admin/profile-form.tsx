@@ -31,6 +31,14 @@ const SOCIAL_FIELDS = [
   ['website', 'Sitio web'],
 ] as const;
 
+/** Secciones del menú superior que aceptan media en el desplegable (hover). */
+const NAV_MEDIA_FIELDS = [
+  ['pensamiento', 'Pensamiento'],
+  ['trabajo', 'Trabajo'],
+  ['libros', 'Libros'],
+  ['narino', 'Nariño'],
+] as const;
+
 export function ProfileForm({ initial }: { initial: Profile }) {
   const router = useRouter();
   const [pending, setPending] = React.useState(false);
@@ -49,6 +57,12 @@ export function ProfileForm({ initial }: { initial: Profile }) {
         linkedin: initial.redes?.linkedin ?? '',
         youtube: initial.redes?.youtube ?? '',
         website: initial.redes?.website ?? '',
+      },
+      nav_media: {
+        pensamiento: initial.nav_media?.pensamiento ?? '',
+        trabajo: initial.nav_media?.trabajo ?? '',
+        libros: initial.nav_media?.libros ?? '',
+        narino: initial.nav_media?.narino ?? '',
       },
     },
   });
@@ -126,6 +140,37 @@ export function ProfileForm({ initial }: { initial: Profile }) {
                 className="mt-1.5"
                 {...form.register(`redes.${key}` as const)}
               />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Imágenes de navegación (menú)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-zinc-500">
+            Media que aparece al pasar el cursor sobre cada sección del menú superior (solo en
+            escritorio). Mismo comportamiento que la foto de perfil: pega una URL, elige de Medios o
+            sube un archivo. Si es un video, márcalo en bucle para que se reproduzca tipo GIF.
+          </p>
+          {NAV_MEDIA_FIELDS.map(([key, label]) => (
+            <div key={key}>
+              <Label htmlFor={`nav_media.${key}`}>{label}</Label>
+              <div className="mt-1.5">
+                <Controller
+                  control={form.control}
+                  name={`nav_media.${key}` as const}
+                  render={({ field }) => (
+                    <MediaField
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      placeholder="Pega una URL, elige de Medios o sube un archivo →"
+                    />
+                  )}
+                />
+              </div>
             </div>
           ))}
         </CardContent>
