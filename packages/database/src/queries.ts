@@ -216,6 +216,68 @@ export async function getPostsAdmin(): Promise<Post[]> {
   return data ?? [];
 }
 
+/**
+ * Variantes admin del resto de tablas CRUD. A diferencia de las lecturas
+ * públicas, NO caen a los datos de ejemplo cuando la tabla está vacía: el panel
+ * debe mostrar lo que hay de verdad (vacío si está vacío) para poder
+ * crear/editar/eliminar registros reales. Los ejemplos solo aparecen si Supabase
+ * no está configurado (modo demostración local).
+ */
+export async function getExperiencesAdmin(): Promise<Experience[]> {
+  if (!isSupabaseConfigured) return placeholderExperiences;
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from('experiences')
+    .select('*')
+    .order('orden', { ascending: true });
+  if (error || !data) return [];
+  return data;
+}
+
+export async function getProjectsAdmin(): Promise<Project[]> {
+  if (!isSupabaseConfigured) return placeholderProjects;
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .order('orden', { ascending: true });
+  if (error || !data) return [];
+  return data as unknown as Project[];
+}
+
+export async function getBooksAdmin(): Promise<Book[]> {
+  if (!isSupabaseConfigured) return placeholderBooks;
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from('books')
+    .select('*')
+    .order('orden', { ascending: true });
+  if (error || !data) return [];
+  return data as unknown as Book[];
+}
+
+export async function getNarinoProfilesAdmin(): Promise<NarinoProfile[]> {
+  if (!isSupabaseConfigured) return placeholderNarinoProfiles;
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from('narino_profiles')
+    .select('*')
+    .order('orden', { ascending: true });
+  if (error || !data) return [];
+  return data as unknown as NarinoProfile[];
+}
+
+export async function getVideosAdmin(): Promise<Video[]> {
+  if (!isSupabaseConfigured) return placeholderVideos;
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from('videos')
+    .select('*')
+    .order('orden', { ascending: true });
+  if (error || !data) return [];
+  return data;
+}
+
 export async function getContactMessages(): Promise<ContactMessage[]> {
   if (!isSupabaseConfigured) return placeholderMessages;
   const supabase = await createServerSupabase();

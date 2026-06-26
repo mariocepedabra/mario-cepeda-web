@@ -8,17 +8,17 @@
 import * as React from 'react';
 
 import {
-  getBooks,
+  getBooksAdmin,
   getContactMessages,
   getDashboardStats,
-  getExperiences,
+  getExperiencesAdmin,
   getMedia,
-  getNarinoProfiles,
+  getNarinoProfilesAdmin,
   getPostsAdmin,
   getProfile,
-  getProjects,
+  getProjectsAdmin,
   getSettings,
-  getVideos,
+  getVideosAdmin,
 } from '@mario/database/queries';
 
 import { AdminShell } from './admin-shell';
@@ -61,7 +61,7 @@ export async function ProfilePage() {
 }
 
 export async function ExperiencesPage() {
-  const rows = await getExperiences();
+  const rows = await getExperiencesAdmin();
   return <CrudManager table="experiences" rows={rows} />;
 }
 
@@ -71,22 +71,22 @@ export async function PostsPage() {
 }
 
 export async function ProjectsPage() {
-  const rows = await getProjects();
+  const rows = await getProjectsAdmin();
   return <CrudManager table="projects" rows={rows} />;
 }
 
 export async function BooksPage() {
-  const rows = await getBooks();
+  const rows = await getBooksAdmin();
   return <CrudManager table="books" rows={rows} />;
 }
 
 export async function NarinoProfilesPage() {
-  const rows = await getNarinoProfiles();
+  const rows = await getNarinoProfilesAdmin();
   return <CrudManager table="narino_profiles" rows={rows} />;
 }
 
 export async function VideosPage() {
-  const rows = await getVideos();
+  const rows = await getVideosAdmin();
   return <CrudManager table="videos" rows={rows} />;
 }
 

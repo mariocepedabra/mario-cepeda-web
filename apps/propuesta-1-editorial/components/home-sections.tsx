@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 
-import { formatDate, MAIN_SECTIONS, siteText, toEmbed, truncate } from '@mario/core/lib';
+import { formatDate, MAIN_SECTIONS, siteText, truncate } from '@mario/core/lib';
 import { placeholderImage } from '@mario/database';
 import type { Post, Profile, Video } from '@mario/database';
 
@@ -288,19 +288,11 @@ export function MultimediaStrip({ videos }: { videos: Video[] }) {
 
         <div className="grid gap-8 md:grid-cols-2">
           {items.map((video, i) => {
-            const embed = toEmbed(video.url_embed);
             return (
               <Reveal key={video.id} delay={i * 0.08}>
                 <div className="overflow-hidden rounded-card border border-line bg-paper shadow-soft">
                   <div className="relative aspect-video overflow-hidden bg-paper-2">
-                    <iframe
-                      src={embed.url}
-                      title={video.titulo}
-                      loading="lazy"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="absolute inset-0 size-full"
-                    />
+                    <Cover url={video.url_embed} alt={video.titulo} sizes="(max-width: 768px) 100vw, 50vw" />
                   </div>
                   <div className="p-6">
                     <h3 className="font-display text-xl font-semibold">{video.titulo}</h3>

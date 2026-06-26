@@ -85,7 +85,7 @@ export const videosConfig: CrudConfig<Video> = {
   table: 'videos',
   title: 'Multimedia · Videos',
   singular: 'video',
-  description: 'Videos insertados de YouTube/Vimeo.',
+  description: 'Videos de YouTube/Vimeo, archivos subidos o elegidos de Medios.',
   schema: videoSchema,
   defaultValues: { titulo: '', url_embed: '', plataforma: 'youtube', descripcion: '', orden: 0 },
   fields: [
@@ -97,15 +97,15 @@ export const videosConfig: CrudConfig<Video> = {
       options: [
         { value: 'youtube', label: 'YouTube' },
         { value: 'vimeo', label: 'Vimeo' },
-        { value: 'otro', label: 'Otro' },
+        { value: 'otro', label: 'Subido / otro' },
       ],
     },
     {
       name: 'url_embed',
-      label: 'URL del video',
-      type: 'text',
+      label: 'Video o imagen (enlace, subida o galería)',
+      type: 'media',
       full: true,
-      help: 'Pega el enlace normal o de inserción; se normaliza al mostrarse.',
+      help: 'Pega un enlace de YouTube/Vimeo, sube un archivo o elígelo de «Medios».',
     },
     { name: 'orden', label: 'Orden', type: 'number' },
     { name: 'descripcion', label: 'Descripción', type: 'textarea', full: true },
