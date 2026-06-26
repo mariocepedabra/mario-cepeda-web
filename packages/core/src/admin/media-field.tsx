@@ -68,6 +68,12 @@ export function MediaField({
         </Button>
       </div>
 
+      <p className="text-xs text-zinc-400">
+        Imágenes: JPG/PNG/WebP. Videos: usa <strong>MP4 H.264</strong>. Los videos de iPhone o 4K
+        suelen ser HEVC/H.265 y los navegadores no los muestran (se ven en blanco); conviértelos
+        (p. ej. con HandBrake) o pega un enlace de YouTube.
+      </p>
+
       {isVideo ? (
         <label className="flex items-center gap-2 text-xs text-zinc-600">
           <input
