@@ -19,7 +19,11 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       >
         Saltar al contenido
       </a>
-      <SiteHeader brand={profile.nombre} navMedia={profile.nav_media} />
+      <SiteHeader
+        brand={profile.nombre}
+        navMedia={profile.nav_media}
+        navText={profile.nav_text}
+      />
       <div id="contenido" tabIndex={-1} className="outline-none">
         {children}
       </div>

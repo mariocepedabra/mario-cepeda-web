@@ -8,7 +8,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
 import { MAIN_SECTIONS, type MainSectionId } from '@mario/core/lib';
-import type { NavMedia } from '@mario/database';
+import type { NavMedia, NavText } from '@mario/database';
 
 import { Cover } from './cover';
 
@@ -26,7 +26,15 @@ type Section = (typeof MAIN_SECTIONS)[number];
 /*  a todo el ancho con la media configurada para esa sección (estilo          */
 /*  Gates Notes). En móvil se mantiene el menú a pantalla completa de siempre. */
 /* -------------------------------------------------------------------------- */
-export function SiteHeader({ brand, navMedia }: { brand: string; navMedia?: NavMedia }) {
+export function SiteHeader({
+  brand,
+  navMedia,
+  navText,
+}: {
+  brand: string;
+  navMedia?: NavMedia;
+  navText?: NavText;
+}) {
   const pathname = usePathname() || '/';
   const reduceMotion = useReducedMotion();
   const [scrolled, setScrolled] = React.useState(false);
@@ -164,13 +172,15 @@ export function SiteHeader({ brand, navMedia }: { brand: string; navMedia?: NavM
           </div>
         </div>
 
-        {/* Panel desplegable de escritorio (hover): media por sección */}
+        {/* Panel desplegable de escritorio (hover): media a sangre completa + textos */}
         <AnimatePresence>
           {activeSection ? (
             <NavFlyout
               key={activeSection.id}
               section={activeSection}
               media={navMedia?.[activeSection.id] ?? ''}
+              titulo={navText?.[activeSection.id]?.titulo?.trim() || activeSection.label}
+              texto={navText?.[activeSection.id]?.texto?.trim() || activeSection.blurb}
               reduceMotion={!!reduceMotion}
               onMouseEnter={cancelClose}
               onMouseLeave={scheduleClose}
@@ -231,23 +241,30 @@ export function SiteHeader({ brand, navMedia }: { brand: string; navMedia?: NavM
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Panel desplegable a todo el ancho con la media de la sección.              */
-/*  Se monta solo en escritorio. AnimatePresence «congela» sus props durante   */
-/*  la salida, por eso recibe la sección y la media como props (no del estado). */
+/*  Panel desplegable a todo el ancho. La media (imagen o video) se pinta a     */
+/*  sangre completa como fondo y el título/descripción van encima, sobre un     */
+/*  velo en gradiente para que el texto siempre se lea. Se monta solo en        */
+/*  escritorio. AnimatePresence «congela» sus props durante la salida, por eso  */
+/*  recibe sección, media y textos como props (no del estado).                  */
 /* -------------------------------------------------------------------------- */
 function NavFlyout({
   section,
   media,
+  titulo,
+  texto,
   reduceMotion,
   onMouseEnter,
   onMouseLeave,
 }: {
   section: Section;
   media: string;
+  titulo: string;
+  texto: string;
   reduceMotion: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) {
+  const hasMedia = !!media;
   return (
     <motion.div
       onMouseEnter={onMouseEnter}
@@ -256,33 +273,42 @@ function NavFlyout({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: reduceMotion ? 0 : -8 }}
       transition={{ duration: reduceMotion ? 0 : 0.2 }}
-      className="absolute inset-x-0 top-full hidden border-t border-line bg-paper shadow-soft lg:block"
+      className="absolute inset-x-0 top-full hidden h-[420px] overflow-hidden border-t border-line bg-paper shadow-soft lg:block"
     >
-      <div
-        className={`mx-auto grid max-w-7xl items-center gap-10 px-8 py-10 ${
-          media ? 'grid-cols-[1fr_minmax(0,1.1fr)]' : 'grid-cols-1'
-        }`}
-      >
-        <div className="flex flex-col justify-center">
-          <p className="font-display text-3xl font-semibold text-ink">{section.label}</p>
-          <p className="mt-3 max-w-md text-ink-soft">{section.blurb}</p>
+      {/* Media de fondo a sangre completa + velo para legibilidad */}
+      {hasMedia ? (
+        <>
+          <Cover url={media} alt={titulo} sizes="100vw" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/10" />
+        </>
+      ) : null}
+
+      {/* Contenido al frente */}
+      <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-8">
+        <div className="max-w-lg">
+          <p
+            className={`font-display text-4xl font-semibold ${
+              hasMedia ? 'text-white' : 'text-ink'
+            }`}
+          >
+            {titulo}
+          </p>
+          <p
+            className={`mt-3 text-lg leading-relaxed ${
+              hasMedia ? 'text-white/90' : 'text-ink-soft'
+            }`}
+          >
+            {texto}
+          </p>
           <Link
             href={section.href}
-            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent transition-colors hover:text-accent-deep"
+            className={`mt-6 inline-flex items-center gap-2 text-sm font-semibold transition-colors ${
+              hasMedia ? 'text-white hover:text-white/80' : 'text-accent hover:text-accent-deep'
+            }`}
           >
             Ver sección <span aria-hidden>→</span>
           </Link>
         </div>
-
-        {media ? (
-          <div className="relative h-[300px] overflow-hidden rounded-xl bg-paper-2">
-            <Cover
-              url={media}
-              alt={section.label}
-              sizes="(min-width: 1024px) 40vw, 100vw"
-            />
-          </div>
-        ) : null}
       </div>
     </motion.div>
   );

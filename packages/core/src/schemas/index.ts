@@ -54,6 +54,21 @@ export const navMediaSchema = z.object({
   narino: optionalUrl,
 });
 
+/** Título y descripción editables que se muestran sobre la media de cada sección. */
+const navTextEntrySchema = z
+  .object({
+    titulo: z.string().trim().optional(),
+    texto: z.string().trim().optional(),
+  })
+  .default({});
+
+export const navTextSchema = z.object({
+  pensamiento: navTextEntrySchema,
+  trabajo: navTextEntrySchema,
+  libros: navTextEntrySchema,
+  narino: navTextEntrySchema,
+});
+
 export const profileSchema = z.object({
   nombre: requiredText('El nombre'),
   titular: requiredText('El titular'),
@@ -61,6 +76,7 @@ export const profileSchema = z.object({
   foto_url: optionalUrl,
   redes: socialLinksSchema.default({}),
   nav_media: navMediaSchema.default({}),
+  nav_text: navTextSchema.default({}),
 });
 
 // Trayectoria ------------------------------------------------------------------

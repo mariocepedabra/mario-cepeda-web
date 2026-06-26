@@ -62,6 +62,7 @@ export const placeholderProfile: Profile = {
     libros: placeholderImage('nav-libros', 1200, 800),
     narino: placeholderImage('nav-narino', 1200, 800),
   },
+  nav_text: {},
   created_at: now,
   updated_at: now,
 };

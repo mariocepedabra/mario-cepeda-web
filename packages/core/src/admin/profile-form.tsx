@@ -31,8 +31,8 @@ const SOCIAL_FIELDS = [
   ['website', 'Sitio web'],
 ] as const;
 
-/** Secciones del menú superior que aceptan media en el desplegable (hover). */
-const NAV_MEDIA_FIELDS = [
+/** Secciones del menú superior con su panel desplegable (media + textos). */
+const NAV_SECTIONS = [
   ['pensamiento', 'Pensamiento'],
   ['trabajo', 'Trabajo'],
   ['libros', 'Libros'],
@@ -63,6 +63,24 @@ export function ProfileForm({ initial }: { initial: Profile }) {
         trabajo: initial.nav_media?.trabajo ?? '',
         libros: initial.nav_media?.libros ?? '',
         narino: initial.nav_media?.narino ?? '',
+      },
+      nav_text: {
+        pensamiento: {
+          titulo: initial.nav_text?.pensamiento?.titulo ?? '',
+          texto: initial.nav_text?.pensamiento?.texto ?? '',
+        },
+        trabajo: {
+          titulo: initial.nav_text?.trabajo?.titulo ?? '',
+          texto: initial.nav_text?.trabajo?.texto ?? '',
+        },
+        libros: {
+          titulo: initial.nav_text?.libros?.titulo ?? '',
+          texto: initial.nav_text?.libros?.texto ?? '',
+        },
+        narino: {
+          titulo: initial.nav_text?.narino?.titulo ?? '',
+          texto: initial.nav_text?.narino?.texto ?? '',
+        },
       },
     },
   });
@@ -147,29 +165,53 @@ export function ProfileForm({ initial }: { initial: Profile }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Imágenes de navegación (menú)</CardTitle>
+          <CardTitle>Menú desplegable por sección</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <p className="text-sm text-zinc-500">
-            Media que aparece al pasar el cursor sobre cada sección del menú superior (solo en
-            escritorio). Mismo comportamiento que la foto de perfil: pega una URL, elige de Medios o
-            sube un archivo. Si es un video, márcalo en bucle para que se reproduzca tipo GIF.
+            Al pasar el cursor sobre cada sección del menú superior (solo en escritorio) se despliega
+            un panel a todo el ancho. La media se muestra como fondo a sangre completa y el título y
+            la descripción van encima. Si dejas el título o la descripción en blanco, se usa el texto
+            por defecto de la sección. Si la media es un video, márcalo en bucle para que se reproduzca
+            tipo GIF.
           </p>
-          {NAV_MEDIA_FIELDS.map(([key, label]) => (
-            <div key={key}>
-              <Label htmlFor={`nav_media.${key}`}>{label}</Label>
-              <div className="mt-1.5">
-                <Controller
-                  control={form.control}
-                  name={`nav_media.${key}` as const}
-                  render={({ field }) => (
-                    <MediaField
-                      value={field.value ?? ''}
-                      onChange={field.onChange}
-                      placeholder="Pega una URL, elige de Medios o sube un archivo →"
-                    />
-                  )}
+          {NAV_SECTIONS.map(([key, label]) => (
+            <div key={key} className="space-y-3 rounded-lg border border-zinc-200 p-4">
+              <p className="text-sm font-semibold text-zinc-900">{label}</p>
+              <div>
+                <Label htmlFor={`nav_text.${key}.titulo`}>Título</Label>
+                <Input
+                  id={`nav_text.${key}.titulo`}
+                  placeholder={label}
+                  className="mt-1.5"
+                  {...form.register(`nav_text.${key}.titulo` as const)}
                 />
+              </div>
+              <div>
+                <Label htmlFor={`nav_text.${key}.texto`}>Descripción</Label>
+                <Textarea
+                  id={`nav_text.${key}.texto`}
+                  rows={2}
+                  placeholder="Texto que aparece bajo el título"
+                  className="mt-1.5"
+                  {...form.register(`nav_text.${key}.texto` as const)}
+                />
+              </div>
+              <div>
+                <Label>Imagen o video de fondo</Label>
+                <div className="mt-1.5">
+                  <Controller
+                    control={form.control}
+                    name={`nav_media.${key}` as const}
+                    render={({ field }) => (
+                      <MediaField
+                        value={field.value ?? ''}
+                        onChange={field.onChange}
+                        placeholder="Pega una URL, elige de Medios o sube un archivo →"
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
           ))}

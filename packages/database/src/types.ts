@@ -44,6 +44,23 @@ export type NavMedia = {
   narino?: string;
 }
 
+/** Título y descripción que se muestran (sobre la media) en el panel de una sección. */
+export type NavTextEntry = {
+  titulo?: string;
+  texto?: string;
+}
+
+/**
+ * Textos editables del panel desplegable por sección. Si un campo va vacío, la
+ * web usa el texto por defecto de la sección (label/blurb de `MAIN_SECTIONS`).
+ */
+export type NavText = {
+  pensamiento?: NavTextEntry;
+  trabajo?: NavTextEntry;
+  libros?: NavTextEntry;
+  narino?: NavTextEntry;
+}
+
 export type Profile = {
   id: string;
   nombre: string;
@@ -52,6 +69,7 @@ export type Profile = {
   foto_url: string | null;
   redes: SocialLinks;
   nav_media: NavMedia;
+  nav_text: NavText;
   created_at: string;
   updated_at: string;
 }

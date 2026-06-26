@@ -135,11 +135,23 @@ export async function saveProfile(raw: unknown): Promise<ActionResult> {
     foto_url: parsed.data.foto_url || null,
     redes: parsed.data.redes,
     nav_media: parsed.data.nav_media,
+    nav_text: parsed.data.nav_text,
   };
 
-  const { error } = existing
-    ? await supabase.from('profile').update(values).eq('id', existing.id)
-    : await supabase.from('profile').insert(values);
+  const write = (vals: Record<string, unknown>) =>
+    existing
+      ? supabase.from('profile').update(vals).eq('id', existing.id)
+      : supabase.from('profile').insert(vals);
+
+  let { error } = await write(values);
+
+  // Tolerancia: si las columnas de navegación aún no se han migrado en la base
+  // de datos, no rompemos el guardado del perfil. Reintentamos sin esos campos
+  // (la media/textos del menú se persistirán en cuanto se aplique la migración).
+  if (error && (error.code === 'PGRST204' || /nav_(media|text)/i.test(error.message))) {
+    const { nav_media: _m, nav_text: _t, ...base } = values;
+    ({ error } = await write(base));
+  }
 
   if (error) return { ok: false, error: error.message };
   revalidateAll();
