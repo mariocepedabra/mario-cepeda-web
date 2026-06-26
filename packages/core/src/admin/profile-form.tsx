@@ -40,6 +40,11 @@ const NAV_SECTIONS = [
   ['narino', 'Nariño'],
 ] as const;
 
+/** Alto por defecto del panel desplegado (px) y límites del control. */
+const DEFAULT_NAV_HEIGHT = 420;
+const NAV_HEIGHT_MIN = 240;
+const NAV_HEIGHT_MAX = 640;
+
 export function ProfileForm({ initial }: { initial: Profile }) {
   const router = useRouter();
   const [pending, setPending] = React.useState(false);
@@ -70,21 +75,25 @@ export function ProfileForm({ initial }: { initial: Profile }) {
           titulo: initial.nav_text?.pensamiento?.titulo ?? '',
           texto: initial.nav_text?.pensamiento?.texto ?? '',
           foco: initial.nav_text?.pensamiento?.foco ?? '',
+          alto: initial.nav_text?.pensamiento?.alto ?? DEFAULT_NAV_HEIGHT,
         },
         trabajo: {
           titulo: initial.nav_text?.trabajo?.titulo ?? '',
           texto: initial.nav_text?.trabajo?.texto ?? '',
           foco: initial.nav_text?.trabajo?.foco ?? '',
+          alto: initial.nav_text?.trabajo?.alto ?? DEFAULT_NAV_HEIGHT,
         },
         libros: {
           titulo: initial.nav_text?.libros?.titulo ?? '',
           texto: initial.nav_text?.libros?.texto ?? '',
           foco: initial.nav_text?.libros?.foco ?? '',
+          alto: initial.nav_text?.libros?.alto ?? DEFAULT_NAV_HEIGHT,
         },
         narino: {
           titulo: initial.nav_text?.narino?.titulo ?? '',
           texto: initial.nav_text?.narino?.texto ?? '',
           foco: initial.nav_text?.narino?.foco ?? '',
+          alto: initial.nav_text?.narino?.alto ?? DEFAULT_NAV_HEIGHT,
         },
       },
     },
@@ -182,6 +191,7 @@ export function ProfileForm({ initial }: { initial: Profile }) {
           </p>
           {NAV_SECTIONS.map(([key, label]) => {
             const mediaValue = form.watch(`nav_media.${key}` as const) ?? '';
+            const altoValue = Number(form.watch(`nav_text.${key}.alto` as const)) || DEFAULT_NAV_HEIGHT;
             return (
               <div key={key} className="space-y-3 rounded-lg border border-zinc-200 p-4">
                 <p className="text-sm font-semibold text-zinc-900">{label}</p>
@@ -220,6 +230,21 @@ export function ProfileForm({ initial }: { initial: Profile }) {
                     />
                   </div>
                 </div>
+                <div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor={`nav_text.${key}.alto`}>Alto del panel</Label>
+                    <span className="text-xs text-zinc-500">{altoValue} px</span>
+                  </div>
+                  <input
+                    id={`nav_text.${key}.alto`}
+                    type="range"
+                    min={NAV_HEIGHT_MIN}
+                    max={NAV_HEIGHT_MAX}
+                    step={10}
+                    className="mt-1.5 w-full accent-zinc-900"
+                    {...form.register(`nav_text.${key}.alto` as const, { valueAsNumber: true })}
+                  />
+                </div>
                 <Controller
                   control={form.control}
                   name={`nav_text.${key}.foco` as const}
@@ -228,6 +253,7 @@ export function ProfileForm({ initial }: { initial: Profile }) {
                       media={mediaValue}
                       value={field.value ?? ''}
                       onChange={field.onChange}
+                      height={altoValue}
                     />
                   )}
                 />

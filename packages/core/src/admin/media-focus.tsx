@@ -24,14 +24,21 @@ function parsePos(value?: string): { x: number; y: number } {
   return { x: clamp(Number(m[1])), y: clamp(Number(m[2])) };
 }
 
+/** Ancho de referencia del panel (≈ max-w-7xl) para que la vista previa
+ *  reproduzca la proporción real recorte = ancho / alto configurado. */
+const REF_WIDTH = 1280;
+
 export function MediaFocusField({
   media,
   value,
   onChange,
+  height = 420,
 }: {
   media: string;
   value: string;
   onChange: (v: string) => void;
+  /** Alto del panel (px) para fijar la proporción de la vista previa. */
+  height?: number;
 }) {
   const parsed = parseMedia(media);
   const boxRef = React.useRef<HTMLDivElement>(null);
@@ -85,7 +92,8 @@ export function MediaFocusField({
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
-        className="relative aspect-[3/1] w-full cursor-grab touch-none select-none overflow-hidden rounded-md border border-zinc-200 bg-zinc-100 active:cursor-grabbing"
+        style={{ aspectRatio: `${REF_WIDTH} / ${Math.max(160, height)}` }}
+        className="relative w-full cursor-grab touch-none select-none overflow-hidden rounded-md border border-zinc-200 bg-zinc-100 active:cursor-grabbing"
       >
         {parsed.type === 'image' ? (
           // eslint-disable-next-line @next/next/no-img-element

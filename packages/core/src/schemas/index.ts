@@ -54,12 +54,19 @@ export const navMediaSchema = z.object({
   narino: optionalUrl,
 });
 
-/** Textos editables sobre la media de cada sección + su punto de encuadre. */
+/** Alto del panel en píxeles (con límites razonables); '' o null -> undefined. */
+const navHeight = z.preprocess(
+  (v) => (v === '' || v === null || v === undefined ? undefined : Number(v)),
+  z.number({ invalid_type_error: 'Debe ser un número' }).int().min(160).max(800).optional(),
+);
+
+/** Textos editables sobre la media de cada sección + encuadre y alto del panel. */
 const navTextEntrySchema = z
   .object({
     titulo: z.string().trim().optional(),
     texto: z.string().trim().optional(),
     foco: z.string().trim().optional(),
+    alto: navHeight,
   })
   .default({});
 

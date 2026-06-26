@@ -44,12 +44,14 @@ export type NavMedia = {
   narino?: string;
 }
 
-/** Configuración del panel de una sección: textos sobre la media y su encuadre. */
+/** Configuración del panel de una sección: textos sobre la media, encuadre y alto. */
 export type NavTextEntry = {
   titulo?: string;
   texto?: string;
   /** Punto de encuadre de la media (`object-position` CSS, p. ej. "50% 30%"). */
   foco?: string;
+  /** Alto del panel desplegado, en píxeles. Si falta, se usa el valor por defecto. */
+  alto?: number;
 }
 
 /**

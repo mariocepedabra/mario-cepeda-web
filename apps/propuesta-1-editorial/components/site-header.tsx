@@ -182,6 +182,7 @@ export function SiteHeader({
               titulo={navText?.[activeSection.id]?.titulo?.trim() || activeSection.label}
               texto={navText?.[activeSection.id]?.texto?.trim() || activeSection.blurb}
               foco={navText?.[activeSection.id]?.foco?.trim() || undefined}
+              alto={navText?.[activeSection.id]?.alto}
               reduceMotion={!!reduceMotion}
               onMouseEnter={cancelClose}
               onMouseLeave={scheduleClose}
@@ -248,12 +249,15 @@ export function SiteHeader({
 /*  escritorio. AnimatePresence «congela» sus props durante la salida, por eso  */
 /*  recibe sección, media y textos como props (no del estado).                  */
 /* -------------------------------------------------------------------------- */
+const DEFAULT_NAV_HEIGHT = 420;
+
 function NavFlyout({
   section,
   media,
   titulo,
   texto,
   foco,
+  alto,
   reduceMotion,
   onMouseEnter,
   onMouseLeave,
@@ -263,11 +267,13 @@ function NavFlyout({
   titulo: string;
   texto: string;
   foco?: string;
+  alto?: number;
   reduceMotion: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) {
   const hasMedia = !!media;
+  const height = alto && alto > 0 ? alto : DEFAULT_NAV_HEIGHT;
   return (
     <motion.div
       onMouseEnter={onMouseEnter}
@@ -276,7 +282,8 @@ function NavFlyout({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: reduceMotion ? 0 : -8 }}
       transition={{ duration: reduceMotion ? 0 : 0.2 }}
-      className="absolute inset-x-0 top-full hidden h-[420px] overflow-hidden border-t border-line bg-paper shadow-soft lg:block"
+      style={{ height: `${height}px` }}
+      className="absolute inset-x-0 top-full hidden overflow-hidden border-t border-line bg-paper shadow-soft lg:block"
     >
       {/* Media de fondo a sangre completa + velo para legibilidad */}
       {hasMedia ? (
