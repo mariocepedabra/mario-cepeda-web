@@ -1,10 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { Upload } from 'lucide-react';
+import { Images, Upload } from 'lucide-react';
 
 import { parseMedia, toVideoSource, withLoop } from '../lib';
 import { Button, Input, toast } from '../ui';
+import { MediaLibraryDialog } from './media-library';
 import { probeVideoPlayable, uploadToStorage } from './media-upload';
 
 /**
@@ -23,6 +24,7 @@ export function MediaField({
 }) {
   const parsed = parseMedia(value);
   const [uploading, setUploading] = React.useState(false);
+  const [libraryOpen, setLibraryOpen] = React.useState(false);
   const fileRef = React.useRef<HTMLInputElement>(null);
 
   const onFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,6 +77,15 @@ export function MediaField({
         <Button
           type="button"
           variant="outline"
+          onClick={() => setLibraryOpen(true)}
+          disabled={uploading}
+          className="shrink-0"
+        >
+          <Images /> Galería
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
           className="shrink-0"
@@ -82,6 +93,13 @@ export function MediaField({
           <Upload /> {uploading ? 'Subiendo…' : 'Subir'}
         </Button>
       </div>
+
+      <MediaLibraryDialog
+        open={libraryOpen}
+        onOpenChange={setLibraryOpen}
+        onSelect={(url) => onChange(url)}
+        accept="all"
+      />
 
       <p className="text-xs text-zinc-400">
         Imágenes: JPG/PNG/WebP. Videos: usa <strong>MP4 H.264</strong>. Los videos de iPhone o 4K

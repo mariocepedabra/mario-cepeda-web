@@ -9,6 +9,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { createBrowserSupabase } from '@mario/database/client';
 import { isSupabaseConfigured, type Media } from '@mario/database';
 
+import { isVideoFileUrl } from '../lib';
 import {
   Button,
   Dialog,
@@ -20,6 +21,7 @@ import {
   toast,
 } from '../ui';
 import { ConfigNotice } from './config-banner';
+import { probeVideoPlayable } from './media-upload';
 import { EmptyState } from './states';
 
 const BUCKET = 'media';
@@ -45,12 +47,28 @@ export function MediaManager({ media }: { media: Media[] }) {
     const file = event.target.files?.[0];
     if (!file) return;
     setUploading(true);
+
+    // Para videos, comprobamos que el navegador pueda decodificarlos: los
+    // HEVC/H.265 (iPhone/4K) se guardarían pero se verían en blanco en la web.
+    if (file.type.startsWith('video/')) {
+      const playable = await probeVideoPlayable(file);
+      if (playable === false) {
+        setUploading(false);
+        if (inputRef.current) inputRef.current.value = '';
+        toast.error(
+          'Este video no se reproduce en el navegador (suele ser HEVC/H.265 de iPhone o 4K): se vería en blanco. Conviértelo a MP4 H.264 (p. ej. con HandBrake) y vuelve a subirlo.',
+        );
+        return;
+      }
+    }
+
     const supabase = createBrowserSupabase() as unknown as SupabaseClient;
     const path = `${Date.now()}-${file.name.replace(/[^\w.\-]/g, '_')}`;
 
     const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, {
       cacheControl: '3600',
       upsert: false,
+      contentType: file.type || undefined,
     });
     if (upErr) {
       setUploading(false);
@@ -62,7 +80,11 @@ export function MediaManager({ media }: { media: Media[] }) {
       data: { publicUrl },
     } = supabase.storage.from(BUCKET).getPublicUrl(path);
 
-    const tipo = file.type.startsWith('image/') ? 'imagen' : 'documento';
+    const tipo = file.type.startsWith('image/')
+      ? 'imagen'
+      : file.type.startsWith('video/')
+        ? 'otro'
+        : 'documento';
     const { error: dbErr } = await supabase
       .from('media')
       .insert({ nombre: file.name, url: publicUrl, tipo });
@@ -102,13 +124,15 @@ export function MediaManager({ media }: { media: Media[] }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold text-zinc-900">Gestión de medios</h1>
-          <p className="text-sm text-zinc-500">Sube imágenes y archivos a Supabase Storage.</p>
+          <p className="text-sm text-zinc-500">
+            Sube imágenes y videos a Supabase Storage para reutilizarlos en todo el sitio.
+          </p>
         </div>
         <div>
           <input
             ref={inputRef}
             type="file"
-            accept="image/*,application/pdf"
+            accept="image/*,video/*,application/pdf"
             className="hidden"
             onChange={onUpload}
           />
@@ -128,6 +152,8 @@ export function MediaManager({ media }: { media: Media[] }) {
                 {item.tipo === 'imagen' ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={item.url} alt={item.nombre} className="size-full object-cover" />
+                ) : isVideoFileUrl(item.url) ? (
+                  <video src={item.url} muted preload="metadata" className="size-full object-cover" />
                 ) : (
                   <div className="flex size-full items-center justify-center text-xs text-zinc-400">
                     {item.tipo}

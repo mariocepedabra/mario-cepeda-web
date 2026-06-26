@@ -10,6 +10,7 @@ import {
   Heading2,
   Heading3,
   Image as ImageIcon,
+  Images,
   Italic,
   Link as LinkIcon,
   List,
@@ -34,6 +35,7 @@ import {
   toast,
 } from '../ui';
 import { toVideoSource } from '../lib';
+import { MediaLibraryDialog } from './media-library';
 import { uploadToStorage } from './media-upload';
 import { VideoNode } from './video-extension';
 
@@ -75,6 +77,7 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
   const [url, setUrl] = React.useState('');
   const [loop, setLoop] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
+  const [libraryOpen, setLibraryOpen] = React.useState(false);
   const fileRef = React.useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
@@ -153,6 +156,17 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
       const { src, kind } = toVideoSource(value, loop);
       insertVideo(src, kind, loop);
     }
+    closeMedia();
+  };
+
+  const insertFromLibrary = (picked: string) => {
+    if (mediaKind === 'image') {
+      insertImage(picked);
+    } else {
+      const { src, kind } = toVideoSource(picked, loop);
+      insertVideo(src, kind, loop);
+    }
+    setLibraryOpen(false);
     closeMedia();
   };
 
@@ -242,6 +256,22 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
               <span className="h-px flex-1 bg-zinc-200" />
             </div>
 
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={() => setLibraryOpen(true)}
+              disabled={uploading}
+            >
+              <Images /> Elegir de Medios
+            </Button>
+
+            <div className="flex items-center gap-2">
+              <span className="h-px flex-1 bg-zinc-200" />
+              <span className="text-xs text-zinc-400">o</span>
+              <span className="h-px flex-1 bg-zinc-200" />
+            </div>
+
             <div>
               <Label htmlFor="media-url">Pega un enlace</Label>
               <Input
@@ -283,6 +313,15 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {mediaKind ? (
+        <MediaLibraryDialog
+          open={libraryOpen}
+          onOpenChange={setLibraryOpen}
+          onSelect={insertFromLibrary}
+          accept={mediaKind}
+        />
+      ) : null}
     </div>
   );
 }

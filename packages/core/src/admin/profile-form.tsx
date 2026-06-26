@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import type { Profile } from '@mario/database';
 
@@ -20,6 +20,7 @@ import {
   Textarea,
   toast,
 } from '../ui';
+import { MediaField } from './media-field';
 
 const SOCIAL_FIELDS = [
   ['twitter', 'Twitter / X'],
@@ -87,8 +88,20 @@ export function ProfileForm({ initial }: { initial: Profile }) {
             {err('titular') ? <p className="mt-1 text-xs text-red-600">{err('titular')}</p> : null}
           </div>
           <div>
-            <Label htmlFor="foto_url">Foto (URL)</Label>
-            <Input id="foto_url" className="mt-1.5" {...form.register('foto_url')} />
+            <Label htmlFor="foto_url">Foto o video (con opción GIF)</Label>
+            <div className="mt-1.5">
+              <Controller
+                control={form.control}
+                name="foto_url"
+                render={({ field }) => (
+                  <MediaField
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    placeholder="Pega una URL, elige de Medios o sube un archivo →"
+                  />
+                )}
+              />
+            </div>
             {err('foto_url') ? <p className="mt-1 text-xs text-red-600">{err('foto_url')}</p> : null}
           </div>
           <div>
