@@ -13,11 +13,14 @@ export function VideoCover({
   loop,
   alt,
   className = '',
+  objectPosition,
 }: {
   src: string;
   loop: boolean;
   alt: string;
   className?: string;
+  /** Punto de encuadre CSS (`object-position`, p. ej. "50% 30%"). */
+  objectPosition?: string;
 }) {
   const ref = React.useRef<HTMLVideoElement>(null);
 
@@ -40,6 +43,7 @@ export function VideoCover({
       autoPlay={loop}
       loop={loop}
       muted={loop}
+      style={objectPosition ? { objectPosition } : undefined}
       className={`absolute inset-0 size-full object-cover ${className}`}
     />
   );

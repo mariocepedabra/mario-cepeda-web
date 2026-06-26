@@ -21,6 +21,7 @@ import {
   toast,
 } from '../ui';
 import { MediaField } from './media-field';
+import { MediaFocusField } from './media-focus';
 
 const SOCIAL_FIELDS = [
   ['twitter', 'Twitter / X'],
@@ -68,18 +69,22 @@ export function ProfileForm({ initial }: { initial: Profile }) {
         pensamiento: {
           titulo: initial.nav_text?.pensamiento?.titulo ?? '',
           texto: initial.nav_text?.pensamiento?.texto ?? '',
+          foco: initial.nav_text?.pensamiento?.foco ?? '',
         },
         trabajo: {
           titulo: initial.nav_text?.trabajo?.titulo ?? '',
           texto: initial.nav_text?.trabajo?.texto ?? '',
+          foco: initial.nav_text?.trabajo?.foco ?? '',
         },
         libros: {
           titulo: initial.nav_text?.libros?.titulo ?? '',
           texto: initial.nav_text?.libros?.texto ?? '',
+          foco: initial.nav_text?.libros?.foco ?? '',
         },
         narino: {
           titulo: initial.nav_text?.narino?.titulo ?? '',
           texto: initial.nav_text?.narino?.texto ?? '',
+          foco: initial.nav_text?.narino?.foco ?? '',
         },
       },
     },
@@ -175,46 +180,60 @@ export function ProfileForm({ initial }: { initial: Profile }) {
             por defecto de la sección. Si la media es un video, márcalo en bucle para que se reproduzca
             tipo GIF.
           </p>
-          {NAV_SECTIONS.map(([key, label]) => (
-            <div key={key} className="space-y-3 rounded-lg border border-zinc-200 p-4">
-              <p className="text-sm font-semibold text-zinc-900">{label}</p>
-              <div>
-                <Label htmlFor={`nav_text.${key}.titulo`}>Título</Label>
-                <Input
-                  id={`nav_text.${key}.titulo`}
-                  placeholder={label}
-                  className="mt-1.5"
-                  {...form.register(`nav_text.${key}.titulo` as const)}
-                />
-              </div>
-              <div>
-                <Label htmlFor={`nav_text.${key}.texto`}>Descripción</Label>
-                <Textarea
-                  id={`nav_text.${key}.texto`}
-                  rows={2}
-                  placeholder="Texto que aparece bajo el título"
-                  className="mt-1.5"
-                  {...form.register(`nav_text.${key}.texto` as const)}
-                />
-              </div>
-              <div>
-                <Label>Imagen o video de fondo</Label>
-                <div className="mt-1.5">
-                  <Controller
-                    control={form.control}
-                    name={`nav_media.${key}` as const}
-                    render={({ field }) => (
-                      <MediaField
-                        value={field.value ?? ''}
-                        onChange={field.onChange}
-                        placeholder="Pega una URL, elige de Medios o sube un archivo →"
-                      />
-                    )}
+          {NAV_SECTIONS.map(([key, label]) => {
+            const mediaValue = form.watch(`nav_media.${key}` as const) ?? '';
+            return (
+              <div key={key} className="space-y-3 rounded-lg border border-zinc-200 p-4">
+                <p className="text-sm font-semibold text-zinc-900">{label}</p>
+                <div>
+                  <Label htmlFor={`nav_text.${key}.titulo`}>Título</Label>
+                  <Input
+                    id={`nav_text.${key}.titulo`}
+                    placeholder={label}
+                    className="mt-1.5"
+                    {...form.register(`nav_text.${key}.titulo` as const)}
                   />
                 </div>
+                <div>
+                  <Label htmlFor={`nav_text.${key}.texto`}>Descripción</Label>
+                  <Textarea
+                    id={`nav_text.${key}.texto`}
+                    rows={2}
+                    placeholder="Texto que aparece bajo el título"
+                    className="mt-1.5"
+                    {...form.register(`nav_text.${key}.texto` as const)}
+                  />
+                </div>
+                <div>
+                  <Label>Imagen o video de fondo</Label>
+                  <div className="mt-1.5">
+                    <Controller
+                      control={form.control}
+                      name={`nav_media.${key}` as const}
+                      render={({ field }) => (
+                        <MediaField
+                          value={field.value ?? ''}
+                          onChange={field.onChange}
+                          placeholder="Pega una URL, elige de Medios o sube un archivo →"
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+                <Controller
+                  control={form.control}
+                  name={`nav_text.${key}.foco` as const}
+                  render={({ field }) => (
+                    <MediaFocusField
+                      media={mediaValue}
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
               </div>
-            </div>
-          ))}
+            );
+          })}
         </CardContent>
       </Card>
 

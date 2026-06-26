@@ -44,10 +44,12 @@ export type NavMedia = {
   narino?: string;
 }
 
-/** Título y descripción que se muestran (sobre la media) en el panel de una sección. */
+/** Configuración del panel de una sección: textos sobre la media y su encuadre. */
 export type NavTextEntry = {
   titulo?: string;
   texto?: string;
+  /** Punto de encuadre de la media (`object-position` CSS, p. ej. "50% 30%"). */
+  foco?: string;
 }
 
 /**

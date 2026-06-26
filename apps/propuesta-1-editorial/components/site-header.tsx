@@ -181,6 +181,7 @@ export function SiteHeader({
               media={navMedia?.[activeSection.id] ?? ''}
               titulo={navText?.[activeSection.id]?.titulo?.trim() || activeSection.label}
               texto={navText?.[activeSection.id]?.texto?.trim() || activeSection.blurb}
+              foco={navText?.[activeSection.id]?.foco?.trim() || undefined}
               reduceMotion={!!reduceMotion}
               onMouseEnter={cancelClose}
               onMouseLeave={scheduleClose}
@@ -252,6 +253,7 @@ function NavFlyout({
   media,
   titulo,
   texto,
+  foco,
   reduceMotion,
   onMouseEnter,
   onMouseLeave,
@@ -260,6 +262,7 @@ function NavFlyout({
   media: string;
   titulo: string;
   texto: string;
+  foco?: string;
   reduceMotion: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
@@ -278,7 +281,7 @@ function NavFlyout({
       {/* Media de fondo a sangre completa + velo para legibilidad */}
       {hasMedia ? (
         <>
-          <Cover url={media} alt={titulo} sizes="100vw" />
+          <Cover url={media} alt={titulo} sizes="100vw" objectPosition={foco} />
           <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/10" />
         </>
       ) : null}

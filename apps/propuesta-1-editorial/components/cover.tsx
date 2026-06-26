@@ -15,12 +15,15 @@ export function Cover({
   sizes,
   className = '',
   priority,
+  objectPosition,
 }: {
   url: string | null | undefined;
   alt: string;
   sizes?: string;
   className?: string;
   priority?: boolean;
+  /** Punto de encuadre CSS (`object-position`, p. ej. "50% 30%") para imágenes y videos. */
+  objectPosition?: string;
 }) {
   const { src, type, loop } = parseMedia(url);
   if (!src) return null;
@@ -33,13 +36,22 @@ export function Cover({
         fill
         sizes={sizes}
         priority={priority}
+        style={objectPosition ? { objectPosition } : undefined}
         className={`object-cover ${className}`}
       />
     );
   }
 
   if (type === 'video') {
-    return <VideoCover src={src} loop={loop} alt={alt} className={className} />;
+    return (
+      <VideoCover
+        src={src}
+        loop={loop}
+        alt={alt}
+        className={className}
+        objectPosition={objectPosition}
+      />
+    );
   }
 
   // Embed (YouTube/Vimeo/TikTok/Instagram)

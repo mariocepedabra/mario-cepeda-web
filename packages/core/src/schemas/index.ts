@@ -54,11 +54,12 @@ export const navMediaSchema = z.object({
   narino: optionalUrl,
 });
 
-/** Título y descripción editables que se muestran sobre la media de cada sección. */
+/** Textos editables sobre la media de cada sección + su punto de encuadre. */
 const navTextEntrySchema = z
   .object({
     titulo: z.string().trim().optional(),
     texto: z.string().trim().optional(),
+    foco: z.string().trim().optional(),
   })
   .default({});
 
