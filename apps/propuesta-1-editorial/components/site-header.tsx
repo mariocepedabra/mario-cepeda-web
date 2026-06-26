@@ -23,8 +23,9 @@ type Section = (typeof MAIN_SECTIONS)[number];
 /*  Cabecera del sitio                                                         */
 /*  Arranca transparente sobre el papel y se vuelve sólida al hacer scroll.    */
 /*  En escritorio, al pasar el cursor sobre una sección despliega un panel     */
-/*  a todo el ancho con la media configurada para esa sección (estilo          */
-/*  Gates Notes). En móvil se mantiene el menú a pantalla completa de siempre. */
+/*  a todo el ancho (estilo Gates Notes) con la media de fondo a sangre        */
+/*  completa, y su título, descripción, encuadre y alto configurables desde    */
+/*  Perfil. En móvil se mantiene el menú a pantalla completa de siempre.       */
 /* -------------------------------------------------------------------------- */
 export function SiteHeader({
   brand,
