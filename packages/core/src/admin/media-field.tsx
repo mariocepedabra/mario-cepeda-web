@@ -3,9 +3,9 @@
 import * as React from 'react';
 import { Upload } from 'lucide-react';
 
-import { parseMedia, withLoop } from '../lib';
+import { parseMedia, toVideoSource, withLoop } from '../lib';
 import { Button, Input, toast } from '../ui';
-import { uploadToStorage } from './media-upload';
+import { probeVideoPlayable, uploadToStorage } from './media-upload';
 
 /**
  * Campo de medio para el panel: permite pegar una URL o subir un archivo
@@ -29,6 +29,21 @@ export function MediaField({
     const file = event.target.files?.[0];
     if (!file) return;
     setUploading(true);
+
+    // Para videos, comprobamos que el navegador pueda decodificarlos antes de
+    // subirlos: los HEVC/H.265 (iPhone/4K) se guardarían pero se verían en blanco.
+    if (file.type.startsWith('video/')) {
+      const playable = await probeVideoPlayable(file);
+      if (playable === false) {
+        setUploading(false);
+        if (fileRef.current) fileRef.current.value = '';
+        toast.error(
+          'Este video no se reproduce en el navegador (suele ser HEVC/H.265 de iPhone o 4K): se vería en blanco. Conviértelo a MP4 H.264 (p. ej. con HandBrake) y vuelve a subirlo.',
+        );
+        return;
+      }
+    }
+
     const res = await uploadToStorage(file);
     setUploading(false);
     if (fileRef.current) fileRef.current.value = '';
@@ -93,7 +108,13 @@ export function MediaField({
           ) : parsed.type === 'video' ? (
             <video src={parsed.src} controls className="mx-auto max-h-40" />
           ) : (
-            <p className="truncate p-2 text-xs text-zinc-500">Embed: {parsed.src}</p>
+            <iframe
+              src={toVideoSource(parsed.src, parsed.loop).src}
+              title="Vista previa"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allowFullScreen
+              className="mx-auto h-40 w-full border-0"
+            />
           )}
         </div>
       ) : null}

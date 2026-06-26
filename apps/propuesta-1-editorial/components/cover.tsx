@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-import { parseMedia } from '@mario/core/lib';
+import { parseMedia, toVideoSource } from '@mario/core/lib';
 
 import { VideoCover } from './video-cover';
 
@@ -43,9 +43,10 @@ export function Cover({
   }
 
   // Embed (YouTube/Vimeo/TikTok/Instagram)
+  const { src: embedSrc } = toVideoSource(src, loop);
   return (
     <iframe
-      src={src}
+      src={embedSrc}
       title={alt}
       loading="lazy"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
