@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
@@ -57,9 +58,18 @@ export function SiteHeader({ brand }: { brand: string }) {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5 sm:h-20 sm:px-8">
         <Link
           href="/"
-          className="font-display text-xl font-semibold tracking-tight sm:text-2xl"
+          className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight sm:text-2xl"
           aria-label={`${brand} — inicio`}
         >
+          <Image
+            src="/logo-lion.png"
+            alt=""
+            aria-hidden
+            width={32}
+            height={32}
+            priority
+            className="size-7 sm:size-8"
+          />
           {brand}
         </Link>
 
