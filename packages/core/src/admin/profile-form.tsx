@@ -43,7 +43,7 @@ const NAV_SECTIONS = [
 /** Alto por defecto del panel desplegado (px) y límites del control. */
 const DEFAULT_NAV_HEIGHT = 420;
 const NAV_HEIGHT_MIN = 240;
-const NAV_HEIGHT_MAX = 640;
+const NAV_HEIGHT_MAX = 800;
 
 export function ProfileForm({ initial }: { initial: Profile }) {
   const router = useRouter();
