@@ -78,7 +78,7 @@ export function MediaLibraryDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>Elegir de Medios</DialogTitle>
           <DialogDescription>
@@ -98,26 +98,37 @@ export function MediaLibraryDialog({
               : 'No hay archivos para elegir todavía. Súbelos en la sección «Medios».'}
           </div>
         ) : (
-          <div className="grid max-h-[60vh] grid-cols-2 gap-3 overflow-y-auto p-1 sm:grid-cols-3">
-            {visible.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => choose(item.url)}
-                title={item.nombre}
-                className="group overflow-hidden rounded-lg border border-zinc-200 bg-white text-left transition-shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-zinc-900"
-              >
-                <div className="aspect-square bg-zinc-100">
-                  {kindOf(item) === 'image' ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.url} alt={item.nombre} className="size-full object-cover" />
-                  ) : (
-                    <video src={item.url} muted preload="metadata" className="size-full object-cover" />
-                  )}
-                </div>
-                <p className="truncate p-2 text-xs text-zinc-600">{item.nombre}</p>
-              </button>
-            ))}
+          // Contenedor de scroll (bloque) separado de la rejilla: dentro del
+          // DialogContent (grid) una rejilla con max-h+overflow comprime las
+          // filas en vez de hacer scroll; un bloque con overflow sí scrollea.
+          <div className="max-h-[60vh] min-h-0 overflow-y-auto p-1">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+              {visible.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => choose(item.url)}
+                  title={item.nombre}
+                  className="group overflow-hidden rounded-lg border border-zinc-200 bg-white text-left transition-shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-zinc-900"
+                >
+                  {/* Alto fijo: `aspect-square` colapsa dentro del DialogContent (grid). */}
+                  <div className="h-28 w-full bg-zinc-100 sm:h-32">
+                    {kindOf(item) === 'image' ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.url} alt={item.nombre} className="size-full object-cover" />
+                    ) : (
+                      <video
+                        src={item.url}
+                        muted
+                        preload="metadata"
+                        className="size-full object-cover"
+                      />
+                    )}
+                  </div>
+                  <p className="truncate p-2 text-xs text-zinc-600">{item.nombre}</p>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </DialogContent>

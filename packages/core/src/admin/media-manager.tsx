@@ -36,6 +36,7 @@ function storagePath(url: string): string | null {
 export function MediaManager({ media }: { media: Media[] }) {
   const router = useRouter();
   const [uploading, setUploading] = React.useState(false);
+  const [progress, setProgress] = React.useState<{ done: number; total: number } | null>(null);
   const [deleting, setDeleting] = React.useState<Media | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -43,38 +44,29 @@ export function MediaManager({ media }: { media: Media[] }) {
     return <ConfigNotice feature="La gestión de medios" />;
   }
 
-  const onUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-
+  /** Sube un único archivo. Devuelve null si fue bien o un mensaje de error. */
+  const uploadOne = async (
+    supabase: SupabaseClient,
+    file: File,
+    index: number,
+  ): Promise<string | null> => {
     // Para videos, comprobamos que el navegador pueda decodificarlos: los
     // HEVC/H.265 (iPhone/4K) se guardarían pero se verían en blanco en la web.
     if (file.type.startsWith('video/')) {
       const playable = await probeVideoPlayable(file);
       if (playable === false) {
-        setUploading(false);
-        if (inputRef.current) inputRef.current.value = '';
-        toast.error(
-          'Este video no se reproduce en el navegador (suele ser HEVC/H.265 de iPhone o 4K): se vería en blanco. Conviértelo a MP4 H.264 (p. ej. con HandBrake) y vuelve a subirlo.',
-        );
-        return;
+        return `${file.name}: no se reproduce en el navegador (HEVC/H.265). Conviértelo a MP4 H.264.`;
       }
     }
 
-    const supabase = createBrowserSupabase() as unknown as SupabaseClient;
-    const path = `${Date.now()}-${file.name.replace(/[^\w.\-]/g, '_')}`;
-
+    // Sufijo con índice para evitar colisiones de ruta al subir varios en el mismo ms.
+    const path = `${Date.now()}-${index}-${file.name.replace(/[^\w.\-]/g, '_')}`;
     const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, {
       cacheControl: '3600',
       upsert: false,
       contentType: file.type || undefined,
     });
-    if (upErr) {
-      setUploading(false);
-      toast.error(`No se pudo subir: ${upErr.message}`);
-      return;
-    }
+    if (upErr) return `${file.name}: ${upErr.message}`;
 
     const {
       data: { publicUrl },
@@ -88,14 +80,37 @@ export function MediaManager({ media }: { media: Media[] }) {
     const { error: dbErr } = await supabase
       .from('media')
       .insert({ nombre: file.name, url: publicUrl, tipo });
+    if (dbErr) return `${file.name}: subido pero no se registró (${dbErr.message})`;
+    return null;
+  };
+
+  const onUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) return;
+    setUploading(true);
+
+    const supabase = createBrowserSupabase() as unknown as SupabaseClient;
+    let okCount = 0;
+    const errors: string[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      setProgress({ done: i, total: files.length });
+      const err = await uploadOne(supabase, files[i], i);
+      if (err) errors.push(err);
+      else okCount++;
+    }
 
     setUploading(false);
+    setProgress(null);
     if (inputRef.current) inputRef.current.value = '';
-    if (dbErr) {
-      toast.error(`Subido, pero no se registró: ${dbErr.message}`);
-    } else {
-      toast.success('Archivo subido.');
+
+    if (okCount > 0) {
+      toast.success(`${okCount} archivo${okCount > 1 ? 's' : ''} subido${okCount > 1 ? 's' : ''}.`);
       router.refresh();
+    }
+    if (errors.length > 0) {
+      const extra = errors.length > 1 ? ` (y ${errors.length - 1} más)` : '';
+      toast.error(`${errors.length} no se ${errors.length > 1 ? 'subieron' : 'subió'}: ${errors[0]}${extra}`);
     }
   };
 
@@ -125,7 +140,8 @@ export function MediaManager({ media }: { media: Media[] }) {
         <div>
           <h1 className="text-xl font-semibold text-zinc-900">Gestión de medios</h1>
           <p className="text-sm text-zinc-500">
-            Sube imágenes y videos a Supabase Storage para reutilizarlos en todo el sitio.
+            Sube imágenes y videos a Supabase Storage para reutilizarlos en todo el sitio. Puedes
+            seleccionar varios archivos a la vez.
           </p>
         </div>
         <div>
@@ -133,11 +149,17 @@ export function MediaManager({ media }: { media: Media[] }) {
             ref={inputRef}
             type="file"
             accept="image/*,video/*,application/pdf"
+            multiple
             className="hidden"
             onChange={onUpload}
           />
           <Button onClick={() => inputRef.current?.click()} disabled={uploading}>
-            <Upload /> {uploading ? 'Subiendo…' : 'Subir archivo'}
+            <Upload />{' '}
+            {uploading
+              ? progress
+                ? `Subiendo ${progress.done + 1}/${progress.total}…`
+                : 'Subiendo…'
+              : 'Subir archivos'}
           </Button>
         </div>
       </div>
