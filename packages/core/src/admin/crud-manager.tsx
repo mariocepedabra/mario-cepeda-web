@@ -87,14 +87,32 @@ export function CrudManager<T extends { id: string }>({ table, rows }: CrudManag
     defaultValues: config.defaultValues,
   });
 
+  // Autogeneración del slug a partir de su campo origen (p. ej. el título).
+  // Se sincroniza mientras el usuario no lo edite a mano y no se esté editando
+  // un registro existente (cambiar un slug ya publicado rompería su URL).
+  const slugField = config.fields.find((f) => f.generateFrom);
+  const slugLockedRef = React.useRef(false);
+  const slugSource = form.watch(slugField?.generateFrom ?? '__no_slug_source__');
+
+  React.useEffect(() => {
+    if (!slugField || slugLockedRef.current) return;
+    const src = typeof slugSource === 'string' ? slugSource : '';
+    form.setValue(slugField.name, slugify(src), { shouldValidate: src.length > 0 });
+    // Solo re-sincroniza al cambiar el origen; el resto de deps son estables.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slugSource]);
+
   const openNew = () => {
     setEditingId(null);
+    slugLockedRef.current = false; // notas nuevas: el slug sigue al título
     form.reset(config.defaultValues);
     setOpen(true);
   };
 
   const openEdit = (row: T) => {
     setEditingId(row.id);
+    slugLockedRef.current = true; // no recalcular un slug ya establecido
+
     const values: FormValues = { ...config.defaultValues };
     for (const field of config.fields) {
       const raw = (row as Record<string, unknown>)[field.name];
@@ -246,6 +264,7 @@ export function CrudManager<T extends { id: string }>({ table, rows }: CrudManag
                           onClick={() => {
                             const src = form.getValues(field.generateFrom as string);
                             if (typeof src === 'string') {
+                              slugLockedRef.current = false; // reanuda la sincronización
                               form.setValue(field.name, slugify(src), { shouldValidate: true });
                             }
                           }}
@@ -300,7 +319,13 @@ export function CrudManager<T extends { id: string }>({ table, rows }: CrudManag
                         id={field.name}
                         type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'}
                         placeholder={field.placeholder}
-                        {...form.register(field.name)}
+                        {...form.register(
+                          field.name,
+                          // Editar el slug a mano detiene la autogeneración.
+                          field.generateFrom
+                            ? { onChange: () => (slugLockedRef.current = true) }
+                            : undefined,
+                        )}
                       />
                     )}
 
