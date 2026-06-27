@@ -211,6 +211,10 @@ export const seoSettingsSchema = z.object({
 
 export const siteContentSchema = z.record(z.string());
 
+// Mosaico de imágenes/videos de la sección Trabajo -----------------------------
+
+export const mosaicSchema = z.array(z.string().trim());
+
 // Tipos inferidos --------------------------------------------------------------
 
 export type ProfileInput = z.infer<typeof profileSchema>;

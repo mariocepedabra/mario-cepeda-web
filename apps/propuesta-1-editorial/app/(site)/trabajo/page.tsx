@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { ArrowUpRight } from 'lucide-react';
 
-import { getExperiences, getProfile, getProjects } from '@mario/database/queries';
+import { parseMosaic } from '@mario/core/lib';
+import { getExperiences, getProfile, getProjects, getSettings } from '@mario/database/queries';
 
 import { Cover } from '@/components/cover';
 import { ContactForm, Reveal } from '@/components/interactive';
+import { WorkMosaic } from '@/components/work-mosaic';
 
 export const metadata: Metadata = {
   title: 'Trabajo',
@@ -12,12 +14,14 @@ export const metadata: Metadata = {
 };
 
 export default async function TrabajoPage() {
-  const [profile, projects, experiences] = await Promise.all([
+  const [profile, projects, experiences, settings] = await Promise.all([
     getProfile(),
     getProjects(),
     getExperiences(),
+    getSettings(),
   ]);
   const bio = profile.bio.replace(/^\[.*?\]\s*/, '');
+  const mosaic = parseMosaic(settings);
 
   return (
     <main className="pb-24 pt-28 sm:pt-32">
@@ -126,6 +130,18 @@ export default async function TrabajoPage() {
                 </div>
               </Reveal>
             ))}
+          </div>
+        </section>
+      ) : null}
+
+      {/* Mosaico / collage de imágenes */}
+      {mosaic.length > 0 ? (
+        <section className="mx-auto mt-20 max-w-7xl px-5 sm:mt-28 sm:px-8">
+          <Reveal>
+            <h2 className="font-display text-3xl font-semibold sm:text-4xl">En imágenes</h2>
+          </Reveal>
+          <div className="mt-10">
+            <WorkMosaic images={mosaic} />
           </div>
         </section>
       ) : null}

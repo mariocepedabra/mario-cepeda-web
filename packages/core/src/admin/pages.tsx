@@ -21,6 +21,7 @@ import {
   getVideosAdmin,
 } from '@mario/database/queries';
 
+import { parseMosaic } from '../lib';
 import { AdminShell } from './admin-shell';
 import { ContentForm } from './content-form';
 import { CrudManager } from './crud-manager';
@@ -28,6 +29,7 @@ import { Dashboard } from './dashboard';
 import { LoginForm } from './login-form';
 import { MediaManager } from './media-manager';
 import { MessagesInbox } from './messages-inbox';
+import { MosaicManager } from './mosaic-manager';
 import { ProfileForm } from './profile-form';
 import { SeoForm } from './seo-form';
 
@@ -71,8 +73,13 @@ export async function PostsPage() {
 }
 
 export async function ProjectsPage() {
-  const rows = await getProjectsAdmin();
-  return <CrudManager table="projects" rows={rows} />;
+  const [rows, settings] = await Promise.all([getProjectsAdmin(), getSettings()]);
+  return (
+    <div className="space-y-10">
+      <CrudManager table="projects" rows={rows} />
+      <MosaicManager initial={parseMosaic(settings)} />
+    </div>
+  );
 }
 
 export async function BooksPage() {

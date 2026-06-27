@@ -413,6 +413,20 @@ export const placeholderSettings: Setting[] = [
     updated_at: now,
   },
   { clave: 'og_image', valor: placeholderImage('og-mario', 1200, 630), updated_at: now },
+  {
+    // Mosaico de Trabajo (EJEMPLO): proporciones variadas para mostrar el collage.
+    clave: 'mosaico_trabajo',
+    valor: JSON.stringify([
+      placeholderImage('mosaico-1', 900, 1200),
+      placeholderImage('mosaico-2', 1200, 800),
+      placeholderImage('mosaico-3', 1000, 1000),
+      placeholderImage('mosaico-4', 1200, 900),
+      placeholderImage('mosaico-5', 800, 1100),
+      placeholderImage('mosaico-6', 1200, 700),
+      placeholderImage('mosaico-7', 1100, 1300),
+    ]),
+    updated_at: now,
+  },
 ];
 
 /** Mapa clave/valor de settings, como lo consumen las páginas para SEO. */

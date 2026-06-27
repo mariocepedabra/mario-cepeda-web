@@ -7,10 +7,11 @@ import { isSupabaseConfigured } from '@mario/database';
 import { createServerSupabase } from '@mario/database/server';
 
 import { isAllowedAdmin } from '../auth';
-import { CONTENT_KEYS } from '../lib';
+import { CONTENT_KEYS, MOSAIC_KEY } from '../lib';
 import {
   contactSchema,
   listSchemas,
+  mosaicSchema,
   profileSchema,
   seoSettingsSchema,
   siteContentSchema,
@@ -206,6 +207,28 @@ export async function saveSettings(raw: unknown): Promise<ActionResult> {
     valor: valor ?? '',
   }));
   const { error } = await supabase.from('settings').upsert(rows, { onConflict: 'clave' });
+  if (error) return { ok: false, error: error.message };
+  revalidateAll();
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+//  Admin: mosaico de imágenes/videos de la sección Trabajo
+// ---------------------------------------------------------------------------
+
+export async function saveMosaic(raw: unknown): Promise<ActionResult> {
+  if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth;
+
+  const parsed = mosaicSchema.safeParse(raw);
+  if (!parsed.success) return { ok: false, error: 'Datos inválidos.' };
+  const urls = parsed.data.filter((u) => u.length > 0);
+
+  const supabase = await untypedServer();
+  const { error } = await supabase
+    .from('settings')
+    .upsert({ clave: MOSAIC_KEY, valor: JSON.stringify(urls) }, { onConflict: 'clave' });
   if (error) return { ok: false, error: error.message };
   revalidateAll();
   return { ok: true };

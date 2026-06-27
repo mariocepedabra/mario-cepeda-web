@@ -137,3 +137,24 @@ export function siteText(map: Record<string, string> | undefined, key: string): 
   const value = map?.[key];
   return value && value.trim() ? value : CONTENT_DEFAULTS[key] ?? '';
 }
+
+/**
+ * Mosaico de imágenes/videos de la sección Trabajo. Se guarda como un array
+ * JSON de URLs de medio bajo esta clave en `settings`. Cada URL admite el
+ * marcador `#loop` igual que el resto de medios del sitio.
+ */
+export const MOSAIC_KEY = 'mosaico_trabajo';
+
+/** Lee y valida la lista de medios del mosaico desde el mapa de `settings`. */
+export function parseMosaic(map: Record<string, string> | undefined): string[] {
+  const raw = map?.[MOSAIC_KEY];
+  if (!raw) return [];
+  try {
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr)
+      ? arr.filter((x): x is string => typeof x === 'string' && x.trim().length > 0)
+      : [];
+  } catch {
+    return [];
+  }
+}
