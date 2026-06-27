@@ -68,8 +68,18 @@ export async function ExperiencesPage() {
 }
 
 export async function PostsPage() {
-  const rows = await getPostsAdmin();
-  return <CrudManager table="posts" rows={rows} />;
+  const [rows, settings] = await Promise.all([getPostsAdmin(), getSettings()]);
+  return (
+    <div className="space-y-10">
+      <CrudManager table="posts" rows={rows} />
+      <MosaicManager
+        section="pensamiento"
+        initial={parseMosaic(settings, 'pensamiento')}
+        sectionName="Pensamiento"
+        belowName="Ensayos, columnas e ideas"
+      />
+    </div>
+  );
 }
 
 export async function ProjectsPage() {
@@ -77,7 +87,12 @@ export async function ProjectsPage() {
   return (
     <div className="space-y-10">
       <CrudManager table="projects" rows={rows} />
-      <MosaicManager initial={parseMosaic(settings)} />
+      <MosaicManager
+        section="trabajo"
+        initial={parseMosaic(settings, 'trabajo')}
+        sectionName="Trabajo"
+        belowName="Trayectoria"
+      />
     </div>
   );
 }

@@ -21,7 +21,7 @@ export default async function TrabajoPage() {
     getSettings(),
   ]);
   const bio = profile.bio.replace(/^\[.*?\]\s*/, '');
-  const mosaic = parseMosaic(settings);
+  const mosaic = parseMosaic(settings, 'trabajo');
 
   return (
     <main className="pb-24 pt-28 sm:pt-32">

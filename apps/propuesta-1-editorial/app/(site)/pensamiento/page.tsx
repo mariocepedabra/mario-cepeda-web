@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { getPosts } from '@mario/database/queries';
+import { parseMosaic } from '@mario/core/lib';
+import { getPosts, getSettings } from '@mario/database/queries';
 
 import { PostCard } from '@/components/cards';
 import { Reveal } from '@/components/interactive';
+import { WorkMosaic } from '@/components/work-mosaic';
 
 export const metadata: Metadata = {
   title: 'Pensamiento',
@@ -17,7 +19,8 @@ interface Props {
 
 export default async function PensamientoPage({ searchParams }: Props) {
   const { tema } = await searchParams;
-  const posts = await getPosts();
+  const [posts, settings] = await Promise.all([getPosts(), getSettings()]);
+  const mosaic = parseMosaic(settings, 'pensamiento');
 
   const temas = Array.from(
     new Set(posts.map((p) => p.categoria).filter((c): c is string => Boolean(c))),
@@ -40,6 +43,18 @@ export default async function PensamientoPage({ searchParams }: Props) {
           </p>
         </header>
       </Reveal>
+
+      {/* Mosaico / collage de imágenes */}
+      {mosaic.length > 0 ? (
+        <section className="mt-12">
+          <Reveal>
+            <h2 className="font-display text-3xl font-semibold sm:text-4xl">En imágenes</h2>
+          </Reveal>
+          <div className="mt-8">
+            <WorkMosaic images={mosaic} />
+          </div>
+        </section>
+      ) : null}
 
       {/* Filtros por tema */}
       {temas.length > 0 ? (

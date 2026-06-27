@@ -7,7 +7,7 @@ import { isSupabaseConfigured } from '@mario/database';
 import { createServerSupabase } from '@mario/database/server';
 
 import { isAllowedAdmin } from '../auth';
-import { CONTENT_KEYS, MOSAIC_KEY } from '../lib';
+import { CONTENT_KEYS, MOSAIC_KEYS } from '../lib';
 import {
   contactSchema,
   listSchemas,
@@ -216,10 +216,14 @@ export async function saveSettings(raw: unknown): Promise<ActionResult> {
 //  Admin: mosaico de imágenes/videos de la sección Trabajo
 // ---------------------------------------------------------------------------
 
-export async function saveMosaic(raw: unknown): Promise<ActionResult> {
+export async function saveMosaic(section: string, raw: unknown): Promise<ActionResult> {
   if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
   const auth = await requireAdmin();
   if (!auth.ok) return auth;
+
+  // Solo claves conocidas (evita escribir claves arbitrarias en `settings`).
+  const clave = MOSAIC_KEYS[section as keyof typeof MOSAIC_KEYS];
+  if (!clave) return { ok: false, error: 'Sección de mosaico inválida.' };
 
   const parsed = mosaicSchema.safeParse(raw);
   if (!parsed.success) return { ok: false, error: 'Datos inválidos.' };
@@ -228,7 +232,7 @@ export async function saveMosaic(raw: unknown): Promise<ActionResult> {
   const supabase = await untypedServer();
   const { error } = await supabase
     .from('settings')
-    .upsert({ clave: MOSAIC_KEY, valor: JSON.stringify(urls) }, { onConflict: 'clave' });
+    .upsert({ clave, valor: JSON.stringify(urls) }, { onConflict: 'clave' });
   if (error) return { ok: false, error: error.message };
   revalidateAll();
   return { ok: true };

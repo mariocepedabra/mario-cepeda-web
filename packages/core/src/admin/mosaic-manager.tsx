@@ -11,12 +11,25 @@ import { MediaLibraryDialog } from './media-library';
 import { probeVideoPlayable, uploadToStorage } from './media-upload';
 
 /**
- * Gestor del mosaico de la sección Trabajo: una lista ordenada de imágenes/
- * videos. Se añaden VARIOS a la vez desde la Galería de Medios o subiendo
- * varios archivos. En la web se pintan en un collage que respeta la proporción
- * de cada archivo, sin recortarlo.
+ * Gestor del mosaico de una sección: una lista ordenada de imágenes/videos.
+ * Se añaden VARIOS a la vez desde la Galería de Medios o subiendo varios
+ * archivos. En la web se pintan en un collage que respeta la proporción de
+ * cada archivo, sin recortarlo. Cada sección es INDEPENDIENTE (`section`).
  */
-export function MosaicManager({ initial }: { initial: string[] }) {
+export function MosaicManager({
+  section,
+  initial,
+  sectionName,
+  belowName,
+}: {
+  /** Clave de sección del mosaico (p. ej. "trabajo" o "pensamiento"). */
+  section: string;
+  initial: string[];
+  /** Nombre legible de la sección (para los textos del panel). */
+  sectionName: string;
+  /** Apartado bajo el que aparece en la web (para el texto de ayuda). */
+  belowName: string;
+}) {
   const router = useRouter();
   const [items, setItems] = React.useState<string[]>(initial);
   const [draft, setDraft] = React.useState('');
@@ -78,7 +91,7 @@ export function MosaicManager({ initial }: { initial: string[] }) {
 
   const onSave = async () => {
     setPending(true);
-    const res = await saveMosaic(items);
+    const res = await saveMosaic(section, items);
     setPending(false);
     if (res.ok) {
       toast.success('Mosaico guardado.');
@@ -93,14 +106,14 @@ export function MosaicManager({ initial }: { initial: string[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Mosaico de imágenes (sección Trabajo)</CardTitle>
+        <CardTitle>Mosaico de imágenes (sección {sectionName})</CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
         <p className="text-sm text-zinc-500">
-          Imágenes o videos que aparecen en un collage al final de la sección{' '}
-          <strong>Trabajo</strong>, debajo de «Trayectoria». Se muestran respetando la proporción de
-          cada archivo (sin recortar). Puedes añadir <strong>varios a la vez</strong> desde la
-          Galería de Medios o subiendo varios archivos, y ordenarlos a tu gusto.
+          Imágenes o videos que aparecen en un collage en la sección{' '}
+          <strong>{sectionName}</strong>, debajo de «{belowName}». Se muestran respetando la
+          proporción de cada archivo (sin recortar). Puedes añadir <strong>varios a la vez</strong>{' '}
+          desde la Galería de Medios o subiendo varios archivos, y ordenarlos a tu gusto.
         </p>
 
         {/* Acciones para añadir (varios a la vez) */}

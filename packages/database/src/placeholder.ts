@@ -427,6 +427,19 @@ export const placeholderSettings: Setting[] = [
     ]),
     updated_at: now,
   },
+  {
+    // Mosaico de Pensamiento (EJEMPLO): independiente del de Trabajo.
+    clave: 'mosaico_pensamiento',
+    valor: JSON.stringify([
+      placeholderImage('mosaico-p1', 1200, 800),
+      placeholderImage('mosaico-p2', 900, 1200),
+      placeholderImage('mosaico-p3', 1200, 900),
+      placeholderImage('mosaico-p4', 1000, 1000),
+      placeholderImage('mosaico-p5', 1100, 1300),
+      placeholderImage('mosaico-p6', 1200, 700),
+    ]),
+    updated_at: now,
+  },
 ];
 
 /** Mapa clave/valor de settings, como lo consumen las páginas para SEO. */

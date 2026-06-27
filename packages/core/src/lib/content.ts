@@ -139,15 +139,24 @@ export function siteText(map: Record<string, string> | undefined, key: string): 
 }
 
 /**
- * Mosaico de imágenes/videos de la sección Trabajo. Se guarda como un array
- * JSON de URLs de medio bajo esta clave en `settings`. Cada URL admite el
- * marcador `#loop` igual que el resto de medios del sitio.
+ * Mosaicos de imágenes/videos por sección. Cada uno se guarda como un array
+ * JSON de URLs de medio bajo su propia clave en `settings` (son INDEPENDIENTES:
+ * Trabajo y Pensamiento no se mezclan). Cada URL admite el marcador `#loop`
+ * igual que el resto de medios del sitio.
  */
-export const MOSAIC_KEY = 'mosaico_trabajo';
+export const MOSAIC_KEYS = {
+  trabajo: 'mosaico_trabajo',
+  pensamiento: 'mosaico_pensamiento',
+} as const;
 
-/** Lee y valida la lista de medios del mosaico desde el mapa de `settings`. */
-export function parseMosaic(map: Record<string, string> | undefined): string[] {
-  const raw = map?.[MOSAIC_KEY];
+export type MosaicSection = keyof typeof MOSAIC_KEYS;
+
+/** Lee y valida la lista de medios del mosaico de una sección desde `settings`. */
+export function parseMosaic(
+  map: Record<string, string> | undefined,
+  section: MosaicSection,
+): string[] {
+  const raw = map?.[MOSAIC_KEYS[section]];
   if (!raw) return [];
   try {
     const arr = JSON.parse(raw);
