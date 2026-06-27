@@ -1,15 +1,23 @@
 'use client';
 
 import * as React from 'react';
-import { ImageOff, Loader2 } from 'lucide-react';
+import { Check, ImageOff, Loader2 } from 'lucide-react';
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { createBrowserSupabase } from '@mario/database/client';
-import { isSupabaseConfigured, type Media } from '@mario/database';
+import { isSupabaseConfigured, placeholderMedia, type Media } from '@mario/database';
 
 import { isVideoFileUrl } from '../lib';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui';
 
 /** Qué tipo de medios puede elegirse en el selector. */
 export type MediaAccept = 'image' | 'video' | 'all';
@@ -23,30 +31,36 @@ function kindOf(item: Media): 'image' | 'video' | 'other' {
 
 /**
  * Selector reutilizable que muestra los archivos ya subidos a «Medios» (tabla
- * `media`) para elegir uno sin volver a subirlo. Se usa en `MediaField` y en el
- * editor de contenido. Devuelve la URL elegida por `onSelect`.
+ * `media`). Por defecto elige UNO (`onSelect`, cierra al hacer clic). Con
+ * `multiple` permite marcar VARIOS y confirmarlos juntos (`onSelectMany`).
  */
 export function MediaLibraryDialog({
   open,
   onOpenChange,
   onSelect,
+  onSelectMany,
   accept = 'all',
+  multiple = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSelect: (url: string) => void;
+  onSelect?: (url: string) => void;
+  onSelectMany?: (urls: string[]) => void;
   accept?: MediaAccept;
+  multiple?: boolean;
 }) {
   const [items, setItems] = React.useState<Media[] | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [selected, setSelected] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     if (!open) return;
     let active = true;
     setItems(null);
     setError(null);
+    setSelected([]);
     if (!isSupabaseConfigured) {
-      setItems([]);
+      setItems(placeholderMedia); // modo demo: muestra medios de ejemplo
       return;
     }
     void (async () => {
@@ -71,8 +85,20 @@ export function MediaLibraryDialog({
     return k === accept;
   });
 
-  const choose = (url: string) => {
-    onSelect(url);
+  const toggle = (url: string) =>
+    setSelected((s) => (s.includes(url) ? s.filter((u) => u !== url) : [...s, url]));
+
+  const onClickItem = (url: string) => {
+    if (multiple) {
+      toggle(url);
+    } else {
+      onSelect?.(url);
+      onOpenChange(false);
+    }
+  };
+
+  const confirmMany = () => {
+    if (selected.length > 0) onSelectMany?.(selected);
     onOpenChange(false);
   };
 
@@ -82,7 +108,9 @@ export function MediaLibraryDialog({
         <DialogHeader>
           <DialogTitle>Elegir de Medios</DialogTitle>
           <DialogDescription>
-            Selecciona un archivo ya subido a la sección «Medios».
+            {multiple
+              ? 'Marca uno o varios archivos y pulsa «Añadir».'
+              : 'Selecciona un archivo ya subido a la sección «Medios».'}
           </DialogDescription>
         </DialogHeader>
 
@@ -103,34 +131,56 @@ export function MediaLibraryDialog({
           // filas en vez de hacer scroll; un bloque con overflow sí scrollea.
           <div className="max-h-[60vh] min-h-0 overflow-y-auto p-1">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-              {visible.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => choose(item.url)}
-                  title={item.nombre}
-                  className="group overflow-hidden rounded-lg border border-zinc-200 bg-white text-left transition-shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-zinc-900"
-                >
-                  {/* Alto fijo: `aspect-square` colapsa dentro del DialogContent (grid). */}
-                  <div className="h-28 w-full bg-zinc-100 sm:h-32">
-                    {kindOf(item) === 'image' ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.url} alt={item.nombre} className="size-full object-cover" />
-                    ) : (
-                      <video
-                        src={item.url}
-                        muted
-                        preload="metadata"
-                        className="size-full object-cover"
-                      />
-                    )}
-                  </div>
-                  <p className="truncate p-2 text-xs text-zinc-600">{item.nombre}</p>
-                </button>
-              ))}
+              {visible.map((item) => {
+                const isSelected = multiple && selected.includes(item.url);
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => onClickItem(item.url)}
+                    title={item.nombre}
+                    aria-pressed={multiple ? isSelected : undefined}
+                    className={`group relative overflow-hidden rounded-lg border bg-white text-left transition-shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-zinc-900 ${
+                      isSelected ? 'border-zinc-900 ring-2 ring-zinc-900' : 'border-zinc-200'
+                    }`}
+                  >
+                    {/* Alto fijo: `aspect-square` colapsa dentro del DialogContent (grid). */}
+                    <div className="h-28 w-full bg-zinc-100 sm:h-32">
+                      {kindOf(item) === 'image' ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={item.url} alt={item.nombre} className="size-full object-cover" />
+                      ) : (
+                        <video
+                          src={item.url}
+                          muted
+                          preload="metadata"
+                          className="size-full object-cover"
+                        />
+                      )}
+                    </div>
+                    {isSelected ? (
+                      <span className="absolute right-1.5 top-1.5 flex size-6 items-center justify-center rounded-full bg-zinc-900 text-white shadow">
+                        <Check className="size-4" />
+                      </span>
+                    ) : null}
+                    <p className="truncate p-2 text-xs text-zinc-600">{item.nombre}</p>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
+
+        {multiple && visible.length > 0 ? (
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Cancelar
+            </Button>
+            <Button type="button" onClick={confirmMany} disabled={selected.length === 0}>
+              Añadir {selected.length > 0 ? `(${selected.length})` : ''}
+            </Button>
+          </DialogFooter>
+        ) : null}
       </DialogContent>
     </Dialog>
   );
