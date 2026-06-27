@@ -44,21 +44,14 @@ export default async function PensamientoPage({ searchParams }: Props) {
         </header>
       </Reveal>
 
-      {/* Mosaico / collage de imágenes */}
-      {mosaic.length > 0 ? (
-        <section className="mt-12">
-          <Reveal>
-            <h2 className="font-display text-3xl font-semibold sm:text-4xl">En imágenes</h2>
-          </Reveal>
-          <div className="mt-8">
-            <WorkMosaic images={mosaic} />
-          </div>
-        </section>
-      ) : null}
+      {/* Artículos */}
+      <Reveal>
+        <h2 className="mt-14 font-display text-3xl font-semibold sm:text-4xl">Artículos</h2>
+      </Reveal>
 
       {/* Filtros por tema */}
       {temas.length > 0 ? (
-        <nav aria-label="Filtrar por tema" className="mt-10 flex flex-wrap gap-2">
+        <nav aria-label="Filtrar por tema" className="mt-6 flex flex-wrap gap-2">
           <FilterChip label="Todos" href="/pensamiento" active={!tema || !temas.includes(tema)} />
           {temas.map((t) => (
             <FilterChip
@@ -82,6 +75,18 @@ export default async function PensamientoPage({ searchParams }: Props) {
           ))}
         </div>
       )}
+
+      {/* Mosaico / collage de imágenes (debajo de los artículos) */}
+      {mosaic.length > 0 ? (
+        <section className="mt-20 sm:mt-28">
+          <Reveal>
+            <h2 className="font-display text-3xl font-semibold sm:text-4xl">En imágenes</h2>
+          </Reveal>
+          <div className="mt-8">
+            <WorkMosaic images={mosaic} />
+          </div>
+        </section>
+      ) : null}
     </main>
   );
 }
