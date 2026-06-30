@@ -23,6 +23,8 @@ import type {
   Profile,
   Project,
   Setting,
+  Subscriber,
+  SubscriberEvent,
   Video,
 } from './types';
 
@@ -403,6 +405,53 @@ export const placeholderMedia: Media[] = Array.from({ length: 4 }, (_, i) => {
     created_at: now,
   } satisfies Media;
 });
+
+export const placeholderSubscribers: Subscriber[] = [
+  {
+    id: 'sub-1',
+    email: 'lectora.ejemplo@correo.com',
+    nombre: 'Lectora de ejemplo',
+    estado: 'activo',
+    token: '00000000-0000-0000-0000-0000000000a1',
+    created_at: '2025-02-10T10:00:00.000Z',
+    updated_at: '2025-02-10T10:00:00.000Z',
+  },
+  {
+    id: 'sub-2',
+    email: 'suscriptor.ejemplo@correo.com',
+    nombre: 'Suscriptor de ejemplo',
+    estado: 'activo',
+    token: '00000000-0000-0000-0000-0000000000a2',
+    created_at: '2025-03-05T16:30:00.000Z',
+    updated_at: '2025-03-05T16:30:00.000Z',
+  },
+  {
+    id: 'sub-3',
+    email: 'baneado.ejemplo@correo.com',
+    nombre: null,
+    estado: 'baneado',
+    token: '00000000-0000-0000-0000-0000000000a3',
+    created_at: '2025-01-20T09:15:00.000Z',
+    updated_at: '2025-01-20T09:15:00.000Z',
+  },
+];
+
+export const placeholderSubscriberEvents: SubscriberEvent[] = [
+  {
+    id: 'ev-1',
+    subscriber_id: 'sub-1',
+    path: '/pensamiento/columna-de-ejemplo-1',
+    titulo: 'Título de columna de ejemplo n.º 1',
+    created_at: '2025-02-11T12:00:00.000Z',
+  },
+  {
+    id: 'ev-2',
+    subscriber_id: 'sub-1',
+    path: '/narino',
+    titulo: 'Nariño',
+    created_at: '2025-02-12T18:20:00.000Z',
+  },
+];
 
 export const placeholderSettings: Setting[] = [
   { clave: 'seo_title', valor: 'Mario Cepeda — Director de medios, abogado y periodista', updated_at: now },

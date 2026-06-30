@@ -18,10 +18,12 @@ import {
   getProfile,
   getProjectsAdmin,
   getSettings,
+  getSubscribers,
   getVideosAdmin,
+  hasResendApiKey,
 } from '@mario/database/queries';
 
-import { parseMosaic } from '../lib';
+import { parseMosaic, parseSectionMedia } from '../lib';
 import { AdminShell } from './admin-shell';
 import { ContentForm } from './content-form';
 import { CrudManager } from './crud-manager';
@@ -30,6 +32,7 @@ import { LoginForm } from './login-form';
 import { MediaManager } from './media-manager';
 import { MessagesInbox } from './messages-inbox';
 import { MosaicManager } from './mosaic-manager';
+import { NewsletterManager } from './newsletter-manager';
 import { ProfileForm } from './profile-form';
 import { SeoForm } from './seo-form';
 
@@ -48,8 +51,28 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 }
 
 export async function DashboardPage() {
-  const stats = await getDashboardStats();
-  return <Dashboard stats={stats} />;
+  const [stats, settings] = await Promise.all([getDashboardStats(), getSettings()]);
+  return <Dashboard stats={stats} sectionMedia={parseSectionMedia(settings)} />;
+}
+
+export async function NewsletterPage() {
+  const [settings, subscribers, hasKey] = await Promise.all([
+    getSettings(),
+    getSubscribers(),
+    hasResendApiKey(),
+  ]);
+  return (
+    <div>
+      <PageTitle
+        title="Boletín"
+        description="Configura el envío de correos con Resend y gestiona tus suscriptores."
+      />
+      <NewsletterManager
+        settings={{ ...settings, __hasKey: hasKey ? '1' : '0' }}
+        subscribers={subscribers}
+      />
+    </div>
+  );
 }
 
 export async function ProfilePage() {

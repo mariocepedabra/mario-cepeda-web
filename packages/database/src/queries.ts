@@ -23,6 +23,8 @@ import {
   placeholderProfile,
   placeholderProjects,
   placeholderSettingsMap,
+  placeholderSubscriberEvents,
+  placeholderSubscribers,
   placeholderVideos,
 } from './placeholder';
 import { createServerSupabase } from './server';
@@ -39,6 +41,8 @@ import type {
   Profile,
   Project,
   Setting,
+  Subscriber,
+  SubscriberEvent,
   Video,
 } from './types';
 
@@ -298,6 +302,50 @@ export async function getMedia(): Promise<Media[]> {
     .order('created_at', { ascending: false });
   if (error) return [];
   return data ?? [];
+}
+
+/** Suscriptores del boletín (lectura admin). */
+export async function getSubscribers(): Promise<Subscriber[]> {
+  if (!isSupabaseConfigured) return placeholderSubscribers;
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from('subscribers')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) return [];
+  return (data as unknown as Subscriber[]) ?? [];
+}
+
+/**
+ * ¿Hay una API key de Resend configurada? (variable de entorno o `app_secrets`).
+ * No devuelve el valor, solo si existe, para mostrarlo en el panel sin exponerlo.
+ */
+export async function hasResendApiKey(): Promise<boolean> {
+  if ((process.env.RESEND_API_KEY ?? '').trim()) return true;
+  if (!isSupabaseConfigured) return false;
+  const supabase = await createServerSupabase();
+  const { data } = await supabase
+    .from('app_secrets')
+    .select('clave')
+    .eq('clave', 'resend_api_key')
+    .maybeSingle();
+  return Boolean(data);
+}
+
+/** Visitas (notas/secciones) de un suscriptor concreto (lectura admin). */
+export async function getSubscriberEvents(subscriberId: string): Promise<SubscriberEvent[]> {
+  if (!isSupabaseConfigured) {
+    return placeholderSubscriberEvents.filter((e) => e.subscriber_id === subscriberId);
+  }
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from('subscriber_events')
+    .select('*')
+    .eq('subscriber_id', subscriberId)
+    .order('created_at', { ascending: false })
+    .limit(200);
+  if (error) return [];
+  return (data as unknown as SubscriberEvent[]) ?? [];
 }
 
 export interface DashboardStats {

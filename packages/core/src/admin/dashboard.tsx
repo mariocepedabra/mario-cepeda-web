@@ -1,9 +1,11 @@
 import Link from 'next/link';
-import { ArrowRight, BookOpen, Briefcase, FileText, Mail, Mountain } from 'lucide-react';
+import { ArrowRight, BookOpen, Briefcase, FileText, Mountain } from 'lucide-react';
 
 import type { DashboardStats } from '@mario/database/queries';
 
+import type { SectionMediaId } from '../lib';
 import { Card, CardContent } from '../ui';
+import { SectionMediaManager } from './section-media-manager';
 
 const QUICK_LINKS = [
   { href: '/admin/notas', label: 'Pensamiento', icon: FileText },
@@ -24,7 +26,13 @@ function Stat({ label, value, hint }: { label: string; value: number; hint?: str
   );
 }
 
-export function Dashboard({ stats }: { stats: DashboardStats }) {
+export function Dashboard({
+  stats,
+  sectionMedia,
+}: {
+  stats: DashboardStats;
+  sectionMedia: Record<SectionMediaId, string>;
+}) {
   return (
     <div className="space-y-6">
       <div>
@@ -66,6 +74,8 @@ export function Dashboard({ stats }: { stats: DashboardStats }) {
           })}
         </div>
       </div>
+
+      <SectionMediaManager initial={sectionMedia} />
     </div>
   );
 }

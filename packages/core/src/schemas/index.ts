@@ -215,6 +215,39 @@ export const siteContentSchema = z.record(z.string());
 
 export const mosaicSchema = z.array(z.string().trim());
 
+// Media de las tarjetas de «Cuatro miradas» (clave/valor) ----------------------
+
+export const sectionMediaSchema = z.record(z.string());
+
+// Boletín ----------------------------------------------------------------------
+
+/** Correo opcional que admite cadena vacía. */
+const optionalEmail = z
+  .string()
+  .trim()
+  .email('Introduce un correo válido')
+  .or(z.literal(''))
+  .optional();
+
+/** Alta pública al boletín. */
+export const subscribeSchema = z.object({
+  nombre: z.string().trim().max(120).optional(),
+  email: z.string().trim().email('Introduce un correo válido'),
+});
+
+/**
+ * Ajustes del boletín del panel. `resend_api_key` es opcional: si se deja
+ * vacío, NO se sobreescribe la clave ya guardada (para no tener que reescribirla).
+ */
+export const newsletterSettingsSchema = z.object({
+  enabled: z.boolean().default(false),
+  auto_send: z.boolean().default(false),
+  from_name: z.string().trim().max(120).optional(),
+  from_email: optionalEmail,
+  reply_to: optionalEmail,
+  resend_api_key: z.string().trim().optional(),
+});
+
 // Tipos inferidos --------------------------------------------------------------
 
 export type ProfileInput = z.infer<typeof profileSchema>;
@@ -227,6 +260,8 @@ export type VideoInput = z.infer<typeof videoSchema>;
 export type ContactInput = z.infer<typeof contactSchema>;
 export type SeoSettingsInput = z.infer<typeof seoSettingsSchema>;
 export type SiteContentInput = z.infer<typeof siteContentSchema>;
+export type SubscribeInput = z.infer<typeof subscribeSchema>;
+export type NewsletterSettingsInput = z.infer<typeof newsletterSettingsSchema>;
 
 /**
  * Mapa de esquemas para las entidades de lista que usan el CRUD genérico

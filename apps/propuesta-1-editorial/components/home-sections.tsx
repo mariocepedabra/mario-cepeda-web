@@ -1,8 +1,14 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 
-import { formatDate, MAIN_SECTIONS, siteText, truncate } from '@mario/core/lib';
+import {
+  formatDate,
+  MAIN_SECTIONS,
+  parseSectionMedia,
+  siteText,
+  truncate,
+  type SectionMediaId,
+} from '@mario/core/lib';
 import { placeholderImage } from '@mario/database';
 import type { Post, Profile, Video } from '@mario/database';
 
@@ -177,6 +183,7 @@ export function FeaturedStories({ posts }: { posts: Post[] }) {
 /*  3. Accesos a las 4 secciones principales                                   */
 /* -------------------------------------------------------------------------- */
 export function SectionAccess({ content }: { content?: Content }) {
+  const media = parseSectionMedia(content);
   return (
     <section className="border-t border-line py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -186,19 +193,20 @@ export function SectionAccess({ content }: { content?: Content }) {
         />
 
         <div className="grid gap-8 sm:grid-cols-2">
-          {MAIN_SECTIONS.map((s, i) => (
+          {MAIN_SECTIONS.map((s, i) => {
+            const url = media[s.id as SectionMediaId] || placeholderImage(`seccion-${s.id}`, 1200, 750);
+            return (
             <Reveal key={s.id} delay={i * 0.08}>
               <Link
                 href={s.href}
                 className="group block overflow-hidden rounded-card border border-line bg-paper shadow-soft transition-shadow hover:shadow-lift"
               >
                 <div className="relative aspect-[16/10] overflow-hidden bg-paper-2">
-                  <Image
-                    src={placeholderImage(`seccion-${s.id}`, 1200, 750)}
-                    alt={`${s.label} (imagen de ejemplo)`}
-                    fill
+                  <Cover
+                    url={url}
+                    alt={s.label}
                     sizes="(max-width: 640px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
                 <div className="flex items-start justify-between gap-4 p-6 sm:p-8">
@@ -214,7 +222,8 @@ export function SectionAccess({ content }: { content?: Content }) {
                 </div>
               </Link>
             </Reveal>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

@@ -139,6 +139,49 @@ export function siteText(map: Record<string, string> | undefined, key: string): 
 }
 
 /**
+ * Media (imagen o video) de cada una de las 4 tarjetas del bloque «Explora ·
+ * Cuatro miradas» de la portada. Se guarda una URL por sección en `settings`
+ * (admite el marcador `#loop` para reproducir en bucle tipo GIF). Si una clave
+ * va vacía, la web usa una imagen de ejemplo determinista.
+ */
+export const SECTION_MEDIA_KEYS = {
+  pensamiento: 'seccion_media_pensamiento',
+  trabajo: 'seccion_media_trabajo',
+  libros: 'seccion_media_libros',
+  narino: 'seccion_media_narino',
+} as const;
+
+export type SectionMediaId = keyof typeof SECTION_MEDIA_KEYS;
+
+/** Lee la media guardada para cada tarjeta de «Cuatro miradas». */
+export function parseSectionMedia(
+  map: Record<string, string> | undefined,
+): Record<SectionMediaId, string> {
+  const ids = Object.keys(SECTION_MEDIA_KEYS) as SectionMediaId[];
+  return Object.fromEntries(
+    ids.map((id) => [id, (map?.[SECTION_MEDIA_KEYS[id]] ?? '').trim()]),
+  ) as Record<SectionMediaId, string>;
+}
+
+/**
+ * Configuración del boletín que vive en `settings` (NO secreta: la API key de
+ * Resend se guarda aparte, en `app_secrets`). `enabled` activa los envíos y
+ * `auto_send` envía un aviso automático a los suscriptores al publicar una nota.
+ */
+export const NEWSLETTER_KEYS = {
+  enabled: 'newsletter.enabled',
+  autoSend: 'newsletter.auto_send',
+  fromName: 'newsletter.from_name',
+  fromEmail: 'newsletter.from_email',
+  replyTo: 'newsletter.reply_to',
+  /** Lista interna (JSON) de slugs ya notificados, para no reenviar. */
+  notified: 'newsletter.notified_slugs',
+} as const;
+
+/** Clave del secreto de Resend dentro de la tabla `app_secrets`. */
+export const RESEND_API_KEY_SECRET = 'resend_api_key';
+
+/**
  * Mosaicos de imágenes/videos por sección. Cada uno se guarda como un array
  * JSON de URLs de medio bajo su propia clave en `settings` (son INDEPENDIENTES:
  * Trabajo y Pensamiento no se mezclan). Cada URL admite el marcador `#loop`

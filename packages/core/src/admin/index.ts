@@ -16,5 +16,6 @@ export {
   MediaPage,
   ContentPage,
   SeoPage,
+  NewsletterPage,
   LoginPage,
 } from './pages';

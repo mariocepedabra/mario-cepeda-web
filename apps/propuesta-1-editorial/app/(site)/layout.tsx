@@ -3,6 +3,7 @@ import { getProfile, getSettings } from '@mario/database/queries';
 
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
+import { NewsletterTracker } from '@/components/newsletter-tracker';
 
 /**
  * Layout de la web pública: añade el header y el footer del sitio.
@@ -34,6 +35,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         newsletterTitle={siteText(content, 'newsletter.title')}
         newsletterDescription={siteText(content, 'newsletter.description')}
       />
+      <NewsletterTracker />
     </>
   );
 }

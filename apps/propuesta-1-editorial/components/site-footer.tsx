@@ -12,6 +12,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
+import { subscribeNewsletter } from '@mario/core/actions';
 import { LEGAL_LINKS, MAIN_SECTIONS, NEWSLETTER } from '@mario/core/lib';
 import type { SocialLinks } from '@mario/database';
 
@@ -30,6 +31,30 @@ const SOCIAL: { key: keyof SocialLinks; label: string; Icon: LucideIcon }[] = [
 /* -------------------------------------------------------------------------- */
 function NewsletterBand({ title, description }: { title?: string; description?: string }) {
   const [done, setDone] = React.useState(false);
+  const [demo, setDemo] = React.useState(false);
+  const [pending, setPending] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const nombre = String(data.get('nombre') ?? '').trim();
+    const email = String(data.get('email') ?? '').trim();
+
+    setPending(true);
+    const res = await subscribeNewsletter({ nombre, email });
+    setPending(false);
+
+    if (res.ok) {
+      setDemo(Boolean(res.demo));
+      setDone(true);
+      form.reset();
+    } else {
+      setError(res.error);
+    }
+  };
 
   return (
     <section
@@ -54,15 +79,14 @@ function NewsletterBand({ title, description }: { title?: string; description?: 
             role="status"
             className="rounded-card border border-line bg-paper p-6 text-lg text-ink-soft shadow-soft"
           >
-            ¡Gracias por suscribirte! (Modo demostración: el boletín se conectará
-            a un proveedor real más adelante.)
+            ¡Gracias por suscribirte! Pronto recibirás las novedades en tu correo.
+            {demo
+              ? ' (Modo demostración: conecta Supabase para guardar las suscripciones de verdad.)'
+              : ''}
           </p>
         ) : (
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setDone(true);
-            }}
+            onSubmit={onSubmit}
             className="space-y-3"
             aria-label="Suscripción al boletín"
           >
@@ -84,11 +108,17 @@ function NewsletterBand({ title, description }: { title?: string; description?: 
                 className="w-full rounded-full border border-line bg-paper px-5 py-3 outline-none transition-colors focus:border-accent"
               />
             </div>
+            {error ? (
+              <p role="alert" className="text-sm text-red-600">
+                {error}
+              </p>
+            ) : null}
             <button
               type="submit"
-              className="w-full rounded-full bg-accent px-6 py-3 font-semibold text-paper transition-colors hover:bg-accent-deep sm:w-auto"
+              disabled={pending}
+              className="w-full rounded-full bg-accent px-6 py-3 font-semibold text-paper transition-colors hover:bg-accent-deep disabled:opacity-60 sm:w-auto"
             >
-              {NEWSLETTER.cta}
+              {pending ? 'Enviando…' : NEWSLETTER.cta}
             </button>
           </form>
         )}

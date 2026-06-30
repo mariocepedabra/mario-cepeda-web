@@ -61,7 +61,8 @@ Verificación: `pnpm build` · `pnpm lint` · `pnpm typecheck`.
 
 1. Crea un proyecto en [supabase.com](https://supabase.com).
 2. En **SQL Editor**, ejecuta en orden los archivos de `packages/database/migrations`:
-   `0001_init.sql` → `0002_rls.sql` → `0003_storage.sql` → `0004_content_model.sql` → `0005_admin.sql`.
+   `0001_init.sql` → `0002_rls.sql` → `0003_storage.sql` → `0004_content_model.sql` →
+   `0005_admin.sql` → `0006_nav_media.sql` → `0007_nav_text.sql` → `0008_newsletter.sql`.
 3. (Opcional) Carga datos de ejemplo: pega `packages/database/seed/seed.sql` en el SQL Editor, **o**
    ejecuta `pnpm --filter @mario/database seed` (requiere `SUPABASE_SERVICE_ROLE_KEY` en el entorno).
 4. Crea el usuario admin de Mario en **Authentication → Users → Add user** (email + contraseña).
@@ -81,8 +82,9 @@ Copia `.env.example` a `.env.local` dentro de `apps/propuesta-1-editorial/` o co
 | `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave pública anónima |
 | `SUPABASE_SERVICE_ROLE_KEY` | Clave service_role — **solo servidor** (seed). Nunca en el cliente ni en git |
-| `NEXT_PUBLIC_SITE_URL` | URL pública del sitio (SEO, sitemap, Open Graph) |
+| `NEXT_PUBLIC_SITE_URL` | URL pública del sitio (SEO, sitemap, Open Graph y enlaces de los correos) |
 | `ADMIN_EMAILS` | Correos autorizados al panel, separados por comas (admin único = Mario) |
+| `RESEND_API_KEY` | **Opcional.** API key de Resend para el boletín. También se puede guardar desde el panel (Admin → Boletín). |
 
 ## El panel de administración
 
@@ -93,6 +95,12 @@ Copia `.env.example` a `.env.local` dentro de `apps/propuesta-1-editorial/` o co
   editar, borrar, ordenar y publicar/despublicar, con editor de texto enriquecido y subida de
   imágenes (Supabase Storage).
 - **Otros:** Perfil/biografía, Bandeja de mensajes (formulario de contacto), Medios y SEO/Open Graph.
+- **Dashboard:** además del resumen, permite cambiar la imagen o video (con bucle tipo GIF) de cada
+  una de las 4 tarjetas del bloque «Cuatro miradas» de la portada.
+- **Boletín:** configura el envío con **Resend** (API key, remitente, aviso automático al publicar) y
+  gestiona los suscriptores en una tabla (ver perfil con sus visitas, banear o eliminar). El
+  remitente debe pertenecer a un **dominio verificado en Resend**. El aviso automático y el correo de
+  bienvenida requieren que el boletín esté *activo* y que haya remitente + API key configurados.
 - Los cambios guardados se reflejan en la web pública al instante (revalidación de caché).
 
 **Seguridad:** RLS activado (lectura pública del contenido publicado; escritura solo para el admin

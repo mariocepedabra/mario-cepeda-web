@@ -226,6 +226,36 @@ export type Setting = {
   updated_at: string;
 }
 
+/** Secreto editable desde el panel (p. ej. la API key de Resend). RLS solo-admin. */
+export type AppSecret = {
+  clave: string;
+  valor: string | null;
+  updated_at: string;
+}
+
+/** Estado de un suscriptor del boletín. */
+export type SubscriberStatus = 'activo' | 'baneado' | 'baja';
+
+/** Suscriptor del boletín. */
+export type Subscriber = {
+  id: string;
+  email: string;
+  nombre: string | null;
+  estado: SubscriberStatus;
+  token: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Visita (nota/sección) registrada para un suscriptor. */
+export type SubscriberEvent = {
+  id: string;
+  subscriber_id: string;
+  path: string;
+  titulo: string | null;
+  created_at: string;
+}
+
 // ---------------------------------------------------------------------------
 //  Tipo Database para supabase-js
 // ---------------------------------------------------------------------------
@@ -314,6 +344,24 @@ export interface Database {
         Row: Setting;
         Insert: WithDefaults<Setting, 'updated_at'>;
         Update: Partial<WithDefaults<Setting, 'updated_at'>>;
+        Relationships: Rel;
+      };
+      app_secrets: {
+        Row: AppSecret;
+        Insert: WithDefaults<AppSecret, 'updated_at'>;
+        Update: Partial<WithDefaults<AppSecret, 'updated_at'>>;
+        Relationships: Rel;
+      };
+      subscribers: {
+        Row: Subscriber;
+        Insert: WithDefaults<Subscriber, AutoCols | 'estado' | 'token' | 'nombre'>;
+        Update: Partial<WithDefaults<Subscriber, AutoCols>>;
+        Relationships: Rel;
+      };
+      subscriber_events: {
+        Row: SubscriberEvent;
+        Insert: WithDefaults<SubscriberEvent, 'id' | 'created_at' | 'titulo'>;
+        Update: Partial<WithDefaults<SubscriberEvent, 'id' | 'created_at'>>;
         Relationships: Rel;
       };
     };
