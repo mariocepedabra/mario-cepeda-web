@@ -70,44 +70,145 @@ export const placeholderProfile: Profile = {
   updated_at: now,
 };
 
+/**
+ * Trayectoria REAL de Mario (sección Trabajo → Trayectoria), a partir de su hoja
+ * de vida. Sin datos personales sensibles. La carga editable en el panel vive en
+ * `seed/trayectoria-mario.sql`.
+ */
 export const placeholderExperiences: Experience[] = [
   {
     id: 'exp-1',
-    titulo: 'Director General',
-    organizacion: 'Página 10 (EJEMPLO)',
-    periodo: '2018 — Presente',
-    descripcion: '[EJEMPLO] ' + LOREM,
+    titulo: 'Fundador y director',
+    organizacion: 'Página 10',
+    periodo: '2012 — Presente',
+    descripcion:
+      'Dirijo y gerencio el periódico regional de Nariño, generando alternativas económicas para la ' +
+      'región y visibilizando a sus sectores productivos, emprendedores y culturales.',
     orden: 1,
     created_at: now,
     updated_at: now,
   },
   {
     id: 'exp-2',
-    titulo: 'Fundador y Director',
-    organizacion: 'Colombia Positiva (EJEMPLO)',
-    periodo: '2020 — Presente',
-    descripcion: '[EJEMPLO] ' + LOREM,
+    titulo: 'Fundador y director',
+    organizacion: 'Colombia Positiva',
+    periodo: '2026 — Presente',
+    descripcion:
+      'Dirección del periódico nacional de noticias positivas: «No todo puede ser perfecto, pero sí ' +
+      'Positivo».',
     orden: 2,
     created_at: now,
     updated_at: now,
   },
   {
     id: 'exp-3',
-    titulo: 'Abogado litigante',
-    organizacion: 'Ejercicio independiente (EJEMPLO)',
-    periodo: '2012 — 2018',
-    descripcion: '[EJEMPLO] ' + LOREM,
+    titulo: 'Líder territorial para Nariño y Putumayo',
+    organizacion: 'Departamento Administrativo de la Función Pública',
+    periodo: '2021 — 2022',
+    descripcion:
+      'Asesoría y acompañamiento a las entidades territoriales para mejorar su desempeño ' +
+      'institucional a través del MIPG. En este proceso, la Alcaldía de Pasto obtuvo el Premio ' +
+      'Nacional de Alta Gerencia 2021.',
     orden: 3,
     created_at: now,
     updated_at: now,
   },
   {
     id: 'exp-4',
-    titulo: 'Columnista invitado',
-    organizacion: 'Diversos medios regionales (EJEMPLO)',
-    periodo: '2010 — Presente',
-    descripcion: '[EJEMPLO] ' + LOREM,
+    titulo: 'Docente de posgrado y pregrado',
+    organizacion: 'Universidad Cooperativa de Colombia · Pasto',
+    periodo: '2019 — Presente',
+    descripcion:
+      'Profesor de la maestría en Derechos Humanos y Gobernanza (políticas públicas y gobernanza ' +
+      'territorial) y de las cátedras de Dogmática Jurídica y Dinámica Sociocultural Colombiana.',
     orden: 4,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'exp-5',
+    titulo: 'Capacitador',
+    organizacion: 'CISP — Comitato Internazionale per lo Sviluppo dei Popoli',
+    periodo: '2019',
+    descripcion:
+      'Formación a funcionarios en rendición de cuentas, finanzas públicas territoriales, SECOP II, ' +
+      'MIPG y gestión documental, con una metodología horizontal de intercambio de ideas.',
+    orden: 5,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'exp-6',
+    titulo: 'Formulación de proyectos con enfoque de género',
+    organizacion: 'Gobernación de Nariño · SEGIS',
+    periodo: '2018',
+    descripcion:
+      'Identificación, formulación y seguimiento de proyectos de la Secretaría de Equidad de Género ' +
+      'e Inclusión Social: infancia, juventud, mujer, población LGBTI, discapacidad y adulto mayor.',
+    orden: 6,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'exp-7',
+    titulo: 'Director técnico',
+    organizacion: 'Contraloría Departamental de Nariño',
+    periodo: '2016 — 2017',
+    descripcion:
+      'Coordinación del control fiscal a los recursos públicos del departamento, innovando hacia un ' +
+      'control más participativo y tecnológico, con resultados cercanos a los 10 mil millones en ' +
+      'hallazgos fiscales.',
+    orden: 7,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'exp-8',
+    titulo: 'Asesor de Regalías',
+    organizacion: 'Gobernación de Nariño',
+    periodo: '2014 — 2015',
+    descripcion:
+      'Acompañamiento jurídico a los proyectos del Sistema General de Regalías. El equipo recibió el ' +
+      'reconocimiento del Departamento Nacional de Planeación como el mejor del país en la ' +
+      'implementación del nuevo sistema (2015).',
+    orden: 8,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'exp-9',
+    titulo: 'Consultor',
+    organizacion: 'Alcaldía de Pasto',
+    periodo: '2012',
+    descripcion:
+      'Reorientación de la política pública de control integral de enfermedades crónicas no ' +
+      'transmisibles, en trabajo interdisciplinario con entidades públicas y la sociedad civil.',
+    orden: 9,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'exp-10',
+    titulo: 'Consultor',
+    organizacion: 'Alcaldía de Pupiales',
+    periodo: '2012',
+    descripcion:
+      'Acompañamiento en la construcción del plan de desarrollo y en ejercicios de buen gobierno, con ' +
+      'procesos de participación e inclusión de la ciudadanía.',
+    orden: 10,
+    created_at: now,
+    updated_at: now,
+  },
+  {
+    id: 'exp-11',
+    titulo: 'Asesor del despacho del alcalde',
+    organizacion: 'Alcaldía de Tumaco',
+    periodo: '2008 — 2011',
+    descripcion:
+      'Articulación entre las secretarías de educación, gobierno, salud y planeación para fortalecer ' +
+      'la institucionalidad, y relacionamiento con el sector turístico para impulsar a los ' +
+      'empresarios del municipio.',
+    orden: 11,
     created_at: now,
     updated_at: now,
   },
