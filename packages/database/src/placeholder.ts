@@ -476,6 +476,18 @@ export const placeholderSettings: Setting[] = [
     ]),
     updated_at: now,
   },
+  {
+    // Mosaico del Perfil profesional (EJEMPLO): imágenes/videos bajo la frase de cierre.
+    clave: 'mosaico_perfil',
+    valor: JSON.stringify([
+      placeholderImage('mosaico-pf1', 1200, 800),
+      placeholderImage('mosaico-pf2', 900, 1200),
+      placeholderImage('mosaico-pf3', 1000, 1000),
+      placeholderImage('mosaico-pf4', 1200, 900),
+      placeholderImage('mosaico-pf5', 1100, 1300),
+    ]),
+    updated_at: now,
+  },
 ];
 
 /** Mapa clave/valor de settings, como lo consumen las páginas para SEO. */

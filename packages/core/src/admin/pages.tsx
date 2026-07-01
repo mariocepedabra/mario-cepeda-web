@@ -167,12 +167,20 @@ export async function ContentPage() {
 export async function PerfilProfesionalPage() {
   const settings = await getSettings();
   return (
-    <div>
-      <PageTitle
-        title="Perfil Profesional"
-        description="Cabecera y media de la página «Perfil profesional». Las listas (formación, experiencia, reconocimientos…) están curadas en la web."
+    <div className="space-y-10">
+      <div>
+        <PageTitle
+          title="Perfil Profesional"
+          description="Cabecera y media de la página «Perfil profesional». Las listas (formación, experiencia, reconocimientos…) están curadas en la web."
+        />
+        <PerfilProfesionalManager initial={settings} />
+      </div>
+      <MosaicManager
+        section="perfil"
+        initial={parseMosaic(settings, 'perfil')}
+        sectionName="Perfil profesional"
+        belowName="No todo puede ser perfecto, pero sí Positivo"
       />
-      <PerfilProfesionalManager initial={settings} />
     </div>
   );
 }

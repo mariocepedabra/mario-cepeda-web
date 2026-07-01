@@ -6,6 +6,7 @@ import { ArrowLeft, Award, BookMarked, Briefcase, GraduationCap, Sparkles } from
 
 import { Cover } from './cover';
 import { Reveal } from './interactive';
+import { WorkMosaic } from './work-mosaic';
 
 /* -------------------------------------------------------------------------- */
 /*  Datos curados del perfil (a partir del CV; sin datos personales sensibles) */
@@ -199,6 +200,7 @@ export interface PerfilData {
   cierre: string;
   heroMedia: string | null;
   secundariaMedia: string;
+  mosaic: string[];
 }
 
 /* -------------------------------------------------------------------------- */
@@ -479,6 +481,21 @@ export function PerfilProfesional({ data }: { data: PerfilData }) {
                 {data.titulo}
               </footer>
             </blockquote>
+          </Reveal>
+        </section>
+      ) : null}
+
+      {/* ---------------- Mosaico (imágenes/videos, editable) ---------------- */}
+      {data.mosaic.length > 0 ? (
+        <section className="mx-auto mt-20 max-w-6xl px-5 sm:mt-24 sm:px-8">
+          <Reveal className="mb-8">
+            <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.25em] text-accent">
+              <Sparkles className="size-4" />
+              En imágenes
+            </p>
+          </Reveal>
+          <Reveal>
+            <WorkMosaic images={data.mosaic} />
           </Reveal>
         </section>
       ) : null}

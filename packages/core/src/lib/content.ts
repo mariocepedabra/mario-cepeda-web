@@ -190,6 +190,7 @@ export const RESEND_API_KEY_SECRET = 'resend_api_key';
 export const MOSAIC_KEYS = {
   trabajo: 'mosaico_trabajo',
   pensamiento: 'mosaico_pensamiento',
+  perfil: 'mosaico_perfil',
 } as const;
 
 export type MosaicSection = keyof typeof MOSAIC_KEYS;

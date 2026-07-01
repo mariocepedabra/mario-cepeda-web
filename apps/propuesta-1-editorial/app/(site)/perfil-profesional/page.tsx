@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-import { parsePerfilMedia, perfilText } from '@mario/core/lib';
+import { parseMosaic, parsePerfilMedia, perfilText } from '@mario/core/lib';
 import { placeholderImage } from '@mario/database';
 import { getProfile, getSettings } from '@mario/database/queries';
 
@@ -27,6 +27,7 @@ export default async function PerfilProfesionalPage() {
     cierre: perfilText(settings, 'perfil.cierre'),
     heroMedia: media.hero || profile.foto_url || placeholderImage('mario-retrato', 900, 1100),
     secundariaMedia: media.secundaria,
+    mosaic: parseMosaic(settings, 'perfil'),
   };
 
   return <PerfilProfesional data={data} />;
