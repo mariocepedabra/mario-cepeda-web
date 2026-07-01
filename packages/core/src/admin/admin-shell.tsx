@@ -7,6 +7,7 @@ import {
   BookOpen,
   Briefcase,
   FileText,
+  IdCard,
   Image as ImageIcon,
   LayoutDashboard,
   LogOut,
@@ -39,6 +40,7 @@ interface NavItem {
 const NAV: NavItem[] = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/perfil', label: 'Perfil', icon: User },
+  { href: '/admin/perfil-profesional', label: 'Perfil Profesional', icon: IdCard },
   { href: '/admin/notas', label: 'Pensamiento', icon: FileText },
   { href: '/admin/proyectos', label: 'Proyectos', icon: Briefcase },
   { href: '/admin/trayectoria', label: 'Trayectoria', icon: Workflow },

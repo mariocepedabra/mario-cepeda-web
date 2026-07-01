@@ -11,7 +11,7 @@ import { createServerSupabase } from '@mario/database/server';
 import { getSubscriberEvents } from '@mario/database/queries';
 
 import { isAllowedAdmin } from '../auth';
-import { CONTENT_KEYS, MOSAIC_KEYS, NEWSLETTER_KEYS, RESEND_API_KEY_SECRET, SECTION_MEDIA_KEYS } from '../lib';
+import { CONTENT_KEYS, MOSAIC_KEYS, NEWSLETTER_KEYS, PERFIL_ALL_KEYS, RESEND_API_KEY_SECRET, SECTION_MEDIA_KEYS } from '../lib';
 import {
   contactSchema,
   listSchemas,
@@ -292,6 +292,32 @@ export async function saveSectionMedia(raw: unknown): Promise<ActionResult> {
 
   // Solo claves conocidas (evita escribir claves arbitrarias en `settings`).
   const allowed = new Set<string>(Object.values(SECTION_MEDIA_KEYS));
+  const rows = Object.entries(parsed.data)
+    .filter(([clave]) => allowed.has(clave))
+    .map(([clave, valor]) => ({ clave, valor: valor ?? '' }));
+  if (rows.length === 0) return { ok: true };
+
+  const supabase = await untypedServer();
+  const { error } = await supabase.from('settings').upsert(rows, { onConflict: 'clave' });
+  if (error) return { ok: false, error: error.message };
+  revalidateAll();
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+//  Admin: Perfil profesional (textos + media, en `settings`)
+// ---------------------------------------------------------------------------
+
+export async function savePerfilProfesional(raw: unknown): Promise<ActionResult> {
+  if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth;
+
+  const parsed = siteContentSchema.safeParse(raw);
+  if (!parsed.success) return { ok: false, error: 'Datos inválidos.' };
+
+  // Solo claves conocidas del perfil (evita escribir claves arbitrarias).
+  const allowed = new Set(PERFIL_ALL_KEYS);
   const rows = Object.entries(parsed.data)
     .filter(([clave]) => allowed.has(clave))
     .map(([clave, valor]) => ({ clave, valor: valor ?? '' }));

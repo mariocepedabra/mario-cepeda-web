@@ -15,6 +15,7 @@ export {
   MessagesPage,
   MediaPage,
   ContentPage,
+  PerfilProfesionalPage,
   SeoPage,
   NewsletterPage,
   LoginPage,

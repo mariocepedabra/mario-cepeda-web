@@ -33,6 +33,7 @@ import { MediaManager } from './media-manager';
 import { MessagesInbox } from './messages-inbox';
 import { MosaicManager } from './mosaic-manager';
 import { NewsletterManager } from './newsletter-manager';
+import { PerfilProfesionalManager } from './perfil-profesional-manager';
 import { ProfileForm } from './profile-form';
 import { SeoForm } from './seo-form';
 
@@ -159,6 +160,19 @@ export async function ContentPage() {
         description="Edita los textos editoriales de la web pública. Si dejas un campo vacío, se usa el texto por defecto."
       />
       <ContentForm initial={settings} />
+    </div>
+  );
+}
+
+export async function PerfilProfesionalPage() {
+  const settings = await getSettings();
+  return (
+    <div>
+      <PageTitle
+        title="Perfil Profesional"
+        description="Cabecera y media de la página «Perfil profesional». Las listas (formación, experiencia, reconocimientos…) están curadas en la web."
+      />
+      <PerfilProfesionalManager initial={settings} />
     </div>
   );
 }

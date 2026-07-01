@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { parseMosaic } from '@mario/core/lib';
 import { getPosts, getSettings } from '@mario/database/queries';
 
-import { PostCard } from '@/components/cards';
+import { ArticlesGrid } from '@/components/articles-grid';
 import { Reveal } from '@/components/interactive';
 import { WorkMosaic } from '@/components/work-mosaic';
 
@@ -67,13 +67,7 @@ export default async function PensamientoPage({ searchParams }: Props) {
       {activos.length === 0 ? (
         <p className="py-20 text-lg italic text-ink-soft">Aún no hay publicaciones en este tema.</p>
       ) : (
-        <div className="mt-12 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-          {activos.map((post, i) => (
-            <Reveal key={post.id} delay={(i % 3) * 0.08}>
-              <PostCard post={post} />
-            </Reveal>
-          ))}
-        </div>
+        <ArticlesGrid posts={activos} />
       )}
 
       {/* Mosaico / collage de imágenes (debajo de los artículos) */}

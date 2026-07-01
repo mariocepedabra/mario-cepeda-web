@@ -52,7 +52,7 @@ export const CONTENT_FIELDS: ContentField[] = [
     label: 'Botón principal',
     group: 'Inicio · Hero',
     type: 'text',
-    default: 'Explorar Pensamiento',
+    default: 'Perfil profesional',
   },
   {
     key: 'home.hero.cta_secondary',
@@ -210,3 +210,111 @@ export function parseMosaic(
     return [];
   }
 }
+
+/**
+ * ===========================================================================
+ *  Perfil profesional (página `/perfil-profesional` + panel «Perfil Profesional»)
+ * ===========================================================================
+ *  Los textos editoriales de cabecera se guardan en `settings` (clave/valor) y
+ *  se leen con `perfilText()`, que cae al valor por defecto. Las listas
+ *  estructuradas (formación, experiencia, reconocimientos…) viven en el propio
+ *  componente público. La media (imagen/video) se guarda en `settings` con las
+ *  claves de `PERFIL_MEDIA_KEYS` (admite el marcador `#loop`).
+ */
+export const PERFIL_FIELDS: ContentField[] = [
+  {
+    key: 'perfil.eyebrow',
+    label: 'Antetítulo',
+    group: 'Perfil profesional',
+    type: 'text',
+    default: 'Perfil profesional',
+  },
+  {
+    key: 'perfil.titulo',
+    label: 'Nombre / titular',
+    group: 'Perfil profesional',
+    type: 'text',
+    default: 'Mario Cepeda Bravo',
+  },
+  {
+    key: 'perfil.lema',
+    label: 'Lema (línea bajo el nombre)',
+    group: 'Perfil profesional',
+    type: 'textarea',
+    default:
+      'Abogado · Magíster en Estudios Políticos y en Planificación Urbana y Regional · Director de Página 10 y Colombia Positiva',
+  },
+  {
+    key: 'perfil.lugar',
+    label: 'Ubicación / origen',
+    group: 'Perfil profesional',
+    type: 'text',
+    default: 'Pasto, Nariño · Nacido en Pupiales',
+  },
+  {
+    key: 'perfil.intro',
+    label: 'Presentación (párrafo principal)',
+    group: 'Perfil profesional',
+    type: 'textarea',
+    default:
+      'Abogado de la Universidad Nacional de Colombia, especialista en Derecho Constitucional y en ' +
+      'Gestión Regional del Desarrollo, y magíster en Estudios Políticos y en Planificación Urbana y ' +
+      'Regional. Ha ocupado cargos directivos y de asesoría en entidades regionales y nacionales, con ' +
+      'especial foco en la costa pacífica nariñense: desarrollo territorial, articulación entre lo ' +
+      'local, lo regional y lo nacional, y fortalecimiento institucional.',
+  },
+  {
+    key: 'perfil.intro2',
+    label: 'Presentación (segundo párrafo)',
+    group: 'Perfil profesional',
+    type: 'textarea',
+    default:
+      'Como columnista y panelista de Página 10 y La Silla Vacía ha desarrollado habilidades de ' +
+      'comunicación y liderazgo en época de crisis, y desde la docencia de posgrado profundiza el ' +
+      'análisis de políticas públicas en el territorio.',
+  },
+  {
+    key: 'perfil.cierre',
+    label: 'Frase de cierre (destacada)',
+    group: 'Perfil profesional',
+    type: 'textarea',
+    default: 'No todo puede ser perfecto, pero sí Positivo.',
+  },
+];
+
+export const PERFIL_DEFAULTS: Record<string, string> = Object.fromEntries(
+  PERFIL_FIELDS.map((f) => [f.key, f.default]),
+);
+
+export const PERFIL_KEYS: string[] = PERFIL_FIELDS.map((f) => f.key);
+
+/** Devuelve el texto guardado del perfil para `key`, o su valor por defecto. */
+export function perfilText(map: Record<string, string> | undefined, key: string): string {
+  const value = map?.[key];
+  return value && value.trim() ? value : PERFIL_DEFAULTS[key] ?? '';
+}
+
+/**
+ * Media (imagen o video, con opción de bucle) que acompaña al perfil. `hero`
+ * es el retrato principal de la cabecera; `secundaria` es una pieza opcional
+ * intercalada entre las secciones. Si van vacías, la web usa un respaldo.
+ */
+export const PERFIL_MEDIA_KEYS = {
+  hero: 'perfil_media_hero',
+  secundaria: 'perfil_media_secundaria',
+} as const;
+
+export type PerfilMediaId = keyof typeof PERFIL_MEDIA_KEYS;
+
+/** Lee la media guardada del perfil (cadena vacía si no hay nada). */
+export function parsePerfilMedia(
+  map: Record<string, string> | undefined,
+): Record<PerfilMediaId, string> {
+  const ids = Object.keys(PERFIL_MEDIA_KEYS) as PerfilMediaId[];
+  return Object.fromEntries(
+    ids.map((id) => [id, (map?.[PERFIL_MEDIA_KEYS[id]] ?? '').trim()]),
+  ) as Record<PerfilMediaId, string>;
+}
+
+/** Todas las claves de `settings` que administra la sección Perfil Profesional. */
+export const PERFIL_ALL_KEYS: string[] = [...PERFIL_KEYS, ...Object.values(PERFIL_MEDIA_KEYS)];

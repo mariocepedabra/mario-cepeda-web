@@ -78,7 +78,7 @@ export function Hero({ profile, content }: { profile: Profile; content?: Content
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-4">
             <Link
-              href="/pensamiento"
+              href="/perfil-profesional"
               className="inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-semibold text-paper transition-colors hover:bg-accent"
             >
               {siteText(content, 'home.hero.cta_primary')}
