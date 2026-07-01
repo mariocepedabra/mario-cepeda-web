@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'picsum.photos' },
       { protocol: 'https', hostname: 'fastly.picsum.photos' },
       { protocol: 'https', hostname: '**.supabase.co' },
+      // Portadas de los artículos importados (Pensamiento).
+      { protocol: 'https', hostname: 'pagina10.com' },
+      { protocol: 'https', hostname: 'www.lasillavacia.com' },
     ],
   },
 };

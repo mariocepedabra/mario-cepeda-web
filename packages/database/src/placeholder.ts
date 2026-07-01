@@ -10,6 +10,7 @@
  * ============================================================================
  */
 
+import { articulosMario } from './articulos';
 import type {
   Award,
   Book,
@@ -112,28 +113,14 @@ export const placeholderExperiences: Experience[] = [
   },
 ];
 
-/** Temas de ejemplo para la sección Pensamiento. */
-export const POST_CATEGORIES = ['Medios', 'Región', 'Tecnología', 'Cultura', 'Sociedad'] as const;
-
-export const placeholderPosts: Post[] = Array.from({ length: 6 }, (_, i) => {
-  const n = i + 1;
-  return {
-    id: `post-${n}`,
-    titulo: `Título de columna de ejemplo n.º ${n}`,
-    slug: `columna-de-ejemplo-${n}`,
-    bajada: '[EJEMPLO] Una bajada breve que adelanta la idea central de la columna.',
-    categoria: POST_CATEGORIES[i % POST_CATEGORIES.length],
-    resumen: '[EJEMPLO] ' + LOREM.slice(0, 140) + '…',
-    contenido:
-      `<p><strong>[CONTENIDO DE EJEMPLO]</strong> ${LOREM}</p>` +
-      `<p>${LOREM}</p><blockquote>${LOREM.slice(0, 90)}</blockquote><p>${LOREM}</p>`,
-    portada_url: placeholderImage(`columna-${n}`, 1200, 800),
-    publicado: true,
-    fecha: `2025-0${((i % 9) + 1)}-15`,
-    created_at: now,
-    updated_at: now,
-  } satisfies Post;
-});
+/**
+ * Notas / columnas REALES de Mario para la sección Pensamiento.
+ * Importadas de pagina10.com y lasillavacia.com (columnas de las que es autor +
+ * notas sobre él), sin duplicados. Estas alimentan el FALLBACK público cuando la
+ * tabla `posts` está vacía o Supabase no está configurado; la carga definitiva y
+ * editable en el panel vive en `seed/articulos-mario.sql`. Ver `articulos.ts`.
+ */
+export const placeholderPosts: Post[] = articulosMario;
 
 export const placeholderProjects: Project[] = [
   {
