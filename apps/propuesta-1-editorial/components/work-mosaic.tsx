@@ -12,6 +12,21 @@ import { parseMedia, toVideoSource } from '@mario/core/lib';
  */
 export function WorkMosaic({ images }: { images: string[] }) {
   if (images.length === 0) return null;
+
+  // Pocos elementos (1–2): se muestran centrados en una fila, no pegados a la
+  // izquierda del collage de 3 columnas.
+  if (images.length <= 2) {
+    return (
+      <div className="flex flex-wrap justify-center gap-4">
+        {images.map((url, i) => (
+          <div key={`${url}-${i}`} className="w-full max-w-full sm:w-[30rem]">
+            <MosaicItem url={url} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
       {images.map((url, i) => (

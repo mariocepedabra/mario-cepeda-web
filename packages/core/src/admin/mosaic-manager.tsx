@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronDown, ChevronUp, Images, Plus, Trash2, Upload } from 'lucide-react';
 
 import { saveMosaic } from '../actions';
-import { parseMedia } from '../lib';
+import { parseMedia, withLoop } from '../lib';
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, toast } from '../ui';
 import { MediaLibraryDialog } from './media-library';
 import { probeVideoPlayable, uploadToStorage } from './media-upload';
@@ -51,6 +51,12 @@ export function MosaicManager({
   };
 
   const remove = (index: number) => setItems((list) => list.filter((_, i) => i !== index));
+
+  /** Activa/desactiva el bucle (GIF) de un video/embed añadiendo el marcador `#loop`. */
+  const setLoop = (index: number, on: boolean) =>
+    setItems((list) =>
+      list.map((u, i) => (i === index ? withLoop(parseMedia(u).src, on) : u)),
+    );
 
   const move = (index: number, dir: -1 | 1) =>
     setItems((list) => {
@@ -176,7 +182,15 @@ export function MosaicManager({
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={parsed.src} alt="" className="max-h-full max-w-full object-contain" />
                     ) : parsed.type === 'video' ? (
-                      <video src={parsed.src} muted preload="metadata" className="max-h-full max-w-full" />
+                      <video
+                        src={parsed.src}
+                        muted
+                        playsInline
+                        preload="metadata"
+                        className="max-h-full max-w-full"
+                        autoPlay={parsed.loop}
+                        loop={parsed.loop}
+                      />
                     ) : (
                       <span className="px-2 text-center text-xs text-zinc-400">Enlace incrustado</span>
                     )}
@@ -213,6 +227,16 @@ export function MosaicManager({
                       </Button>
                     </div>
                   </div>
+                  {parsed.type === 'video' || parsed.type === 'embed' ? (
+                    <label className="flex items-center gap-1.5 border-t border-zinc-100 px-1.5 py-1 text-[11px] text-zinc-600">
+                      <input
+                        type="checkbox"
+                        checked={parsed.loop}
+                        onChange={(e) => setLoop(i, e.target.checked)}
+                      />
+                      GIF (bucle automático)
+                    </label>
+                  ) : null}
                 </li>
               );
             })}
