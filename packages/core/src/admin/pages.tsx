@@ -122,8 +122,18 @@ export async function ProjectsPage() {
 }
 
 export async function BooksPage() {
-  const rows = await getBooksAdmin();
-  return <CrudManager table="books" rows={rows} />;
+  const [rows, settings] = await Promise.all([getBooksAdmin(), getSettings()]);
+  return (
+    <div className="space-y-10">
+      <CrudManager table="books" rows={rows} />
+      <MosaicManager
+        section="libros"
+        initial={parseMosaic(settings, 'libros')}
+        sectionName="Libros — videos"
+        belowName="las reseñas (columna derecha)"
+      />
+    </div>
+  );
 }
 
 export async function NarinoProfilesPage() {

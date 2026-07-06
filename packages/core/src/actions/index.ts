@@ -11,7 +11,7 @@ import { createServerSupabase } from '@mario/database/server';
 import { getSubscriberEvents } from '@mario/database/queries';
 
 import { isAllowedAdmin } from '../auth';
-import { CONTENT_KEYS, MOSAIC_KEYS, NEWSLETTER_KEYS, PERFIL_ALL_KEYS, RESEND_API_KEY_SECRET, SECTION_MEDIA_KEYS } from '../lib';
+import { CONTACT_DEFAULT_TO, CONTACT_KEYS, CONTENT_KEYS, MOSAIC_KEYS, NEWSLETTER_KEYS, PERFIL_ALL_KEYS, RESEND_API_KEY_SECRET, SECTION_MEDIA_KEYS } from '../lib';
 import {
   contactSchema,
   listSchemas,
@@ -62,19 +62,81 @@ export async function submitContactMessage(raw: unknown): Promise<ActionResult> 
     return { ok: false, error: parsed.error.errors[0]?.message ?? 'Datos inválidos.' };
   }
 
+  const { nombre, email, telefono, asunto, mensaje } = parsed.data;
+
   // En modo demo (sin Supabase) confirmamos sin persistir.
   if (!isSupabaseConfigured) {
     return { ok: true, demo: true };
   }
 
+  // Guardamos el mensaje en «Mensajes» del panel (incluyendo teléfono/asunto).
+  const partes = [
+    asunto ? `Asunto: ${asunto}` : '',
+    telefono ? `Teléfono: ${telefono}` : '',
+    mensaje,
+  ].filter(Boolean);
+  const mensajeCompleto = partes.join('\n\n');
+
   const supabase = await untypedServer();
   const { error } = await supabase.from('contact_messages').insert({
-    nombre: parsed.data.nombre,
-    email: parsed.data.email,
-    mensaje: parsed.data.mensaje,
+    nombre,
+    email,
+    mensaje: mensajeCompleto,
   });
   if (error) return { ok: false, error: 'No se pudo enviar el mensaje. Inténtalo más tarde.' };
+
+  // Aviso por correo a Mario vía Resend (best-effort: si falla, el mensaje ya quedó guardado).
+  try {
+    const settings = await readSettingsMap();
+    if (settings[CONTACT_KEYS.enabled] === '1') {
+      const apiKey = await readResendApiKey();
+      const fromEmail = (settings[NEWSLETTER_KEYS.fromEmail] ?? '').trim();
+      const toEmail = (settings[CONTACT_KEYS.toEmail] ?? '').trim() || CONTACT_DEFAULT_TO;
+      if (apiKey && fromEmail) {
+        const fromName = (settings[NEWSLETTER_KEYS.fromName] ?? '').trim();
+        await sendResendEmails(apiKey, [
+          {
+            from: fromName ? `${fromName} <${fromEmail}>` : fromEmail,
+            to: [toEmail],
+            subject: asunto
+              ? `Contacto web: ${asunto}`
+              : `Nuevo mensaje de contacto de ${nombre}`,
+            html: contactEmailHtml({ nombre, email, telefono, asunto, mensaje }),
+            reply_to: email,
+          },
+        ]);
+      }
+    }
+  } catch {
+    /* el mensaje ya quedó registrado; el correo es secundario */
+  }
+
   return { ok: true };
+}
+
+/** Cuerpo HTML del correo que le llega a Mario con un mensaje de contacto. */
+function contactEmailHtml(d: {
+  nombre: string;
+  email: string;
+  telefono?: string;
+  asunto?: string;
+  mensaje: string;
+}): string {
+  const row = (label: string, value: string) =>
+    `<p style="margin:0 0 6px;font-size:15px;color:#4a463f"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</p>`;
+  const cuerpo = escapeHtml(d.mensaje).replace(/\n/g, '<br/>');
+  return `<!doctype html><html><body style="margin:0;background:#f5f1e8;padding:24px;font-family:Georgia,'Times New Roman',serif;color:#1c1a17">
+  <div style="max-width:560px;margin:0 auto;background:#fffdf8;border:1px solid #e7e0d2;border-radius:16px;overflow:hidden">
+    <div style="padding:28px 32px">
+      <p style="font-family:Arial,sans-serif;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#9a7b53;margin:0 0 12px">Formulario de contacto</p>
+      ${row('Nombre', d.nombre)}
+      ${row('Correo', d.email)}
+      ${d.telefono ? row('Teléfono', d.telefono) : ''}
+      ${d.asunto ? row('Asunto', d.asunto) : ''}
+      <div style="margin-top:18px;padding-top:18px;border-top:1px solid #efe9dc;font-size:16px;line-height:1.6;color:#1c1a17">${cuerpo}</div>
+    </div>
+  </div>
+</body></html>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -630,6 +692,8 @@ export async function saveNewsletterSettings(raw: unknown): Promise<ActionResult
     { clave: NEWSLETTER_KEYS.fromName, valor: parsed.data.from_name ?? '' },
     { clave: NEWSLETTER_KEYS.fromEmail, valor: parsed.data.from_email ?? '' },
     { clave: NEWSLETTER_KEYS.replyTo, valor: parsed.data.reply_to ?? '' },
+    { clave: CONTACT_KEYS.enabled, valor: parsed.data.contact_enabled ? '1' : '0' },
+    { clave: CONTACT_KEYS.toEmail, valor: parsed.data.contact_to_email ?? '' },
   ];
   const { error } = await db.from('settings').upsert(rows, { onConflict: 'clave' });
   if (error) return { ok: false, error: error.message };

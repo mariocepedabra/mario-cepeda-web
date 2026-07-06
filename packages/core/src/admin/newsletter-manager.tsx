@@ -13,7 +13,7 @@ import {
   sendTestNewsletter,
   setSubscriberEstado,
 } from '../actions';
-import { NEWSLETTER_KEYS } from '../lib';
+import { CONTACT_DEFAULT_TO, CONTACT_KEYS, NEWSLETTER_KEYS } from '../lib';
 import { formatDate } from '../lib/utils';
 import {
   Badge,
@@ -61,6 +61,12 @@ function ConfigForm({ initial }: { initial: Record<string, string> }) {
   const [fromEmail, setFromEmail] = React.useState(initial[NEWSLETTER_KEYS.fromEmail] ?? '');
   const [replyTo, setReplyTo] = React.useState(initial[NEWSLETTER_KEYS.replyTo] ?? '');
   const [apiKey, setApiKey] = React.useState('');
+  const [contactEnabled, setContactEnabled] = React.useState(
+    initial[CONTACT_KEYS.enabled] === '1',
+  );
+  const [contactToEmail, setContactToEmail] = React.useState(
+    initial[CONTACT_KEYS.toEmail] ?? '',
+  );
 
   const hasKey = initial.__hasKey === '1';
 
@@ -73,6 +79,8 @@ function ConfigForm({ initial }: { initial: Record<string, string> }) {
       from_email: fromEmail,
       reply_to: replyTo,
       resend_api_key: apiKey,
+      contact_enabled: contactEnabled,
+      contact_to_email: contactToEmail,
     });
     setPending(false);
     if (res.ok) {
@@ -179,6 +187,42 @@ function ConfigForm({ initial }: { initial: Record<string, string> }) {
             Se guarda cifrada del lado servidor (tabla protegida, sin lectura pública). Déjala vacía
             para no cambiar la que ya tienes.
           </p>
+        </div>
+
+        {/* --- Formulario de contacto («Hablemos») --- */}
+        <div className="space-y-4 rounded-lg border border-zinc-200 bg-zinc-50/60 p-4">
+          <div>
+            <p className="font-medium text-zinc-800">Formulario de contacto («Hablemos»)</p>
+            <p className="text-sm text-zinc-500">
+              Reutiliza la misma API key y remitente de Resend de arriba. Cuando alguien escribe
+              desde el formulario, recibes su mensaje por correo (y queda en «Mensajes»).
+            </p>
+          </div>
+
+          <label className="flex items-center justify-between gap-4">
+            <span>
+              <span className="block font-medium text-zinc-800">Aviso por correo activo</span>
+              <span className="block text-sm text-zinc-500">
+                Envía cada mensaje del formulario al correo de destino.
+              </span>
+            </span>
+            <Switch checked={contactEnabled} onCheckedChange={setContactEnabled} />
+          </label>
+
+          <div>
+            <Label htmlFor="ct_to_email">Correo de destino</Label>
+            <Input
+              id="ct_to_email"
+              type="email"
+              className="mt-1.5"
+              value={contactToEmail}
+              onChange={(e) => setContactToEmail(e.target.value)}
+              placeholder={CONTACT_DEFAULT_TO}
+            />
+            <p className="mt-1 text-xs text-zinc-400">
+              Si lo dejas vacío, se usará {CONTACT_DEFAULT_TO}.
+            </p>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-2">

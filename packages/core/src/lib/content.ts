@@ -182,6 +182,21 @@ export const NEWSLETTER_KEYS = {
 export const RESEND_API_KEY_SECRET = 'resend_api_key';
 
 /**
+ * Formulario de contacto («Hablemos»). Comparte la API key y el remitente
+ * verificado del boletín (Resend). `enabled` activa el envío por correo;
+ * `toEmail` es el destinatario (por defecto, el correo personal de Mario). Si
+ * el envío está desactivado o sin configurar, el mensaje se guarda igualmente
+ * en «Mensajes» del panel.
+ */
+export const CONTACT_KEYS = {
+  enabled: 'contact.enabled',
+  toEmail: 'contact.to_email',
+} as const;
+
+/** Destinatario por defecto del formulario de contacto. */
+export const CONTACT_DEFAULT_TO = 'mariocepedabra@gmail.com';
+
+/**
  * Mosaicos de imágenes/videos por sección. Cada uno se guarda como un array
  * JSON de URLs de medio bajo su propia clave en `settings` (son INDEPENDIENTES:
  * Trabajo y Pensamiento no se mezclan). Cada URL admite el marcador `#loop`
@@ -191,6 +206,8 @@ export const MOSAIC_KEYS = {
   trabajo: 'mosaico_trabajo',
   pensamiento: 'mosaico_pensamiento',
   perfil: 'mosaico_perfil',
+  /** Videos/medios que acompañan a las reseñas de Libros (columna derecha). */
+  libros: 'mosaico_libros',
 } as const;
 
 export type MosaicSection = keyof typeof MOSAIC_KEYS;
@@ -242,8 +259,7 @@ export const PERFIL_FIELDS: ContentField[] = [
     label: 'Lema (línea bajo el nombre)',
     group: 'Perfil profesional',
     type: 'textarea',
-    default:
-      'Abogado · Magíster en Estudios Políticos y en Planificación Urbana y Regional · Director de Página 10 y Colombia Positiva',
+    default: 'Emprendedor, Docente Universitario y Consultor',
   },
   {
     key: 'perfil.lugar',

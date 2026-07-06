@@ -10,6 +10,7 @@ import { Cover } from '@/components/cover';
 import { PostCard } from '@/components/cards';
 import { Reveal } from '@/components/interactive';
 import { ReadingProgress } from '@/components/reading-progress';
+import { ShareButton } from '@/components/share-button';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -69,9 +70,17 @@ export default async function PensamientoDetailPage({ params }: Props) {
                   {post.bajada}
                 </p>
               ) : null}
-              <p className="mt-6 border-t border-line pt-4 text-sm text-ink-muted">
-                Por <span className="font-semibold text-ink">{SITE_DEFAULTS.name}</span>
-              </p>
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-4">
+                <p className="text-sm text-ink-muted">
+                  Por{' '}
+                  <span className="font-semibold text-ink">{post.autor?.trim() || SITE_DEFAULTS.name}</span>
+                </p>
+                <ShareButton
+                  title={post.titulo}
+                  text={post.bajada ?? post.resumen ?? undefined}
+                  path={`/pensamiento/${post.slug}`}
+                />
+              </div>
             </header>
           </div>
 

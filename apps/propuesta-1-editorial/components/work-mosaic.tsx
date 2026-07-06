@@ -36,6 +36,22 @@ export function WorkMosaic({ images }: { images: string[] }) {
   );
 }
 
+/**
+ * Columna vertical de medios (imágenes/videos/embeds). Pensada para acompañar
+ * a un contenido en una columna lateral: cada pieza se apila una debajo de otra
+ * a su tamaño natural, sin mezclarse con el contenido de al lado.
+ */
+export function MediaColumn({ items }: { items: string[] }) {
+  if (items.length === 0) return null;
+  return (
+    <div className="flex flex-col gap-6">
+      {items.map((url, i) => (
+        <MosaicItem key={`${url}-${i}`} url={url} />
+      ))}
+    </div>
+  );
+}
+
 function MosaicItem({ url }: { url: string }) {
   const { src, type, loop } = parseMedia(url);
   if (!src) return null;

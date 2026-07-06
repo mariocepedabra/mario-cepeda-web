@@ -152,7 +152,7 @@ interface Reconocimiento {
   anio?: string;
 }
 const RECONOCIMIENTOS: Reconocimiento[] = [
-  { titulo: 'Premio Nacional de Alta Gerencia', entidad: 'Función Pública · Alcaldía de Pasto', anio: '2021' },
+  { titulo: 'Reconocimiento Julián Bucheli', entidad: 'Asamblea Departamental de Nariño' },
   { titulo: '3.er lugar — Premio «Colombia Participa»', entidad: 'Ministerio del Interior', anio: '2020' },
   { titulo: 'Mejor grupo en la implementación del Sistema General de Regalías', entidad: 'Departamento Nacional de Planeación', anio: '2015' },
   { titulo: 'Reconocimiento «Regalías bien invertidas»', entidad: 'Departamento Nacional de Planeación' },
@@ -312,9 +312,51 @@ export function PerfilProfesional({ data }: { data: PerfilData }) {
         </motion.div>
       </motion.section>
 
+      {/* ---------------- Formación ---------------- */}
+      <section className="mx-auto mt-20 max-w-4xl px-5 sm:mt-28 sm:px-8">
+        <SectionTitle icon={GraduationCap} eyebrow="Academia" title="Formación académica" />
+        <div className="divide-y divide-line border-y border-line">
+          {FORMACION.map((f, i) => (
+            <Reveal key={`${f.titulo}-${f.anio}`} delay={i * 0.05}>
+              <div className="grid grid-cols-[64px_1fr] gap-5 py-6 sm:grid-cols-[100px_1fr] sm:gap-8">
+                <span className="font-display text-2xl font-semibold text-accent sm:text-3xl">
+                  {f.anio}
+                </span>
+                <div>
+                  <h3 className="font-display text-xl font-semibold leading-snug sm:text-2xl">
+                    {f.titulo}
+                  </h3>
+                  <p className="mt-1 text-ink-soft">{f.institucion}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ---------------- Reconocimientos ---------------- */}
+      <section className="mx-auto mt-24 max-w-6xl px-5 sm:mt-32 sm:px-8">
+        <SectionTitle icon={Award} eyebrow="Reconocimientos" title="Premios y distinciones" />
+        <div className="grid gap-6 sm:grid-cols-2">
+          {RECONOCIMIENTOS.map((r, i) => (
+            <Reveal key={r.titulo} delay={(i % 2) * 0.08}>
+              <div className="flex h-full flex-col rounded-card border border-line bg-paper p-6 shadow-soft transition-shadow hover:shadow-lift sm:p-8">
+                {r.anio ? (
+                  <span className="font-display text-3xl font-semibold text-accent">{r.anio}</span>
+                ) : (
+                  <Award className="size-7 text-accent" />
+                )}
+                <h3 className="mt-3 font-display text-xl font-semibold leading-snug">{r.titulo}</h3>
+                <p className="mt-1.5 text-sm text-ink-soft">{r.entidad}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       {/* ---------------- Presentación ---------------- */}
       {(data.intro || data.intro2) ? (
-        <section className="mx-auto mt-20 max-w-3xl px-5 sm:mt-28 sm:px-8">
+        <section className="mx-auto mt-24 max-w-3xl px-5 sm:mt-32 sm:px-8">
           <Reveal>
             {data.intro ? (
               <p className="font-display text-2xl leading-relaxed text-ink sm:text-3xl">
@@ -378,48 +420,6 @@ export function PerfilProfesional({ data }: { data: PerfilData }) {
             </li>
           ))}
         </ol>
-      </section>
-
-      {/* ---------------- Formación ---------------- */}
-      <section className="mx-auto mt-24 max-w-4xl px-5 sm:mt-32 sm:px-8">
-        <SectionTitle icon={GraduationCap} eyebrow="Academia" title="Formación académica" />
-        <div className="divide-y divide-line border-y border-line">
-          {FORMACION.map((f, i) => (
-            <Reveal key={`${f.titulo}-${f.anio}`} delay={i * 0.05}>
-              <div className="grid grid-cols-[64px_1fr] gap-5 py-6 sm:grid-cols-[100px_1fr] sm:gap-8">
-                <span className="font-display text-2xl font-semibold text-accent sm:text-3xl">
-                  {f.anio}
-                </span>
-                <div>
-                  <h3 className="font-display text-xl font-semibold leading-snug sm:text-2xl">
-                    {f.titulo}
-                  </h3>
-                  <p className="mt-1 text-ink-soft">{f.institucion}</p>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ---------------- Reconocimientos ---------------- */}
-      <section className="mx-auto mt-24 max-w-6xl px-5 sm:mt-32 sm:px-8">
-        <SectionTitle icon={Award} eyebrow="Reconocimientos" title="Premios y distinciones" />
-        <div className="grid gap-6 sm:grid-cols-2">
-          {RECONOCIMIENTOS.map((r, i) => (
-            <Reveal key={r.titulo} delay={(i % 2) * 0.08}>
-              <div className="flex h-full flex-col rounded-card border border-line bg-paper p-6 shadow-soft transition-shadow hover:shadow-lift sm:p-8">
-                {r.anio ? (
-                  <span className="font-display text-3xl font-semibold text-accent">{r.anio}</span>
-                ) : (
-                  <Award className="size-7 text-accent" />
-                )}
-                <h3 className="mt-3 font-display text-xl font-semibold leading-snug">{r.titulo}</h3>
-                <p className="mt-1.5 text-sm text-ink-soft">{r.entidad}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
       </section>
 
       {/* ---------------- Media secundaria (opcional) ---------------- */}

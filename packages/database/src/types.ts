@@ -95,6 +95,8 @@ export type Post = {
   slug: string;
   /** Bajada / subtítulo editorial (dek). */
   bajada: string | null;
+  /** Autor/firma de la nota. Los artículos sobre Mario llevan «Lo que dicen de Mario». */
+  autor: string | null;
   /** Tema/categoría (Medios, Región, Tecnología, Cultura, Sociedad…). */
   categoria: string | null;
   resumen: string | null;
@@ -282,7 +284,7 @@ export interface Database {
       };
       posts: {
         Row: Post;
-        Insert: WithDefaults<Post, AutoCols | 'bajada' | 'categoria'>;
+        Insert: WithDefaults<Post, AutoCols | 'bajada' | 'categoria' | 'autor'>;
         Update: Partial<WithDefaults<Post, AutoCols>>;
         Relationships: Rel;
       };

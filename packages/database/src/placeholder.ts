@@ -589,6 +589,16 @@ export const placeholderSettings: Setting[] = [
     ]),
     updated_at: now,
   },
+  {
+    // Videos de Libros (EJEMPLO): columna derecha, junto a las reseñas.
+    clave: 'mosaico_libros',
+    valor: JSON.stringify([
+      placeholderImage('libros-vid1', 1000, 1250),
+      placeholderImage('libros-vid2', 1000, 700),
+      placeholderImage('libros-vid3', 1000, 1000),
+    ]),
+    updated_at: now,
+  },
 ];
 
 /** Mapa clave/valor de settings, como lo consumen las páginas para SEO. */

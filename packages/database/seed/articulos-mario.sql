@@ -708,3 +708,23 @@ on conflict (slug) do update set
   portada_url = excluded.portada_url,
   publicado = excluded.publicado,
   fecha = excluded.fecha;
+
+-- ----------------------------------------------------------------------------
+--  Autor / firma (requiere la columna `autor` de 0009_post_autor.sql).
+--  Por defecto la columna es «Mario Cepeda Bravo» (sus propias columnas).
+--  Excepciones segun Pagina 10:
+--   · Notas que hablan ACERCA de Mario -> «Lo que dicen de Mario».
+--   · Columnas publicadas bajo la cuenta editorial de Pagina 10 -> «Página 10».
+-- ----------------------------------------------------------------------------
+update public.posts set autor = 'Lo que dicen de Mario' where slug in (
+  'empalme-con-las-regiones-la-propuesta-para-revisar-promesas-obras-y-deudas-del-gobierno-petro',
+  'mario-cepeda-bravo-el-personaje-principal',
+  'pupiales-debe-recuperar-sus-valores-historicos-mario-cepeda',
+  'mario-cepeda-bravo-voz-firme-del-periodismo-regional'
+);
+update public.posts set autor = 'Página 10' where slug in (
+  'la-violencia-nunca-se-fue-de-narino',
+  'sin-agua-no-hay-votos',
+  'la-ciencia-no-es-un-asunto-de-politicos',
+  'los-idiotas-utiles-del-neoliberalismo-la-descentralizacion-20'
+);

@@ -108,6 +108,7 @@ const slugField = z
 export const postSchema = z.object({
   titulo: requiredText('El título'),
   slug: slugField,
+  autor: z.string().trim().optional(),
   categoria: z.string().trim().optional(),
   bajada: z.string().trim().optional(),
   resumen: z.string().trim().optional(),
@@ -196,6 +197,8 @@ export const awardSchema = z.object({
 export const contactSchema = z.object({
   nombre: z.string().trim().min(2, 'Tu nombre es obligatorio'),
   email: z.string().trim().email('Introduce un correo válido'),
+  telefono: z.string().trim().max(40).optional(),
+  asunto: z.string().trim().max(160).optional(),
   mensaje: z.string().trim().min(10, 'El mensaje debe tener al menos 10 caracteres'),
 });
 
@@ -246,6 +249,9 @@ export const newsletterSettingsSchema = z.object({
   from_email: optionalEmail,
   reply_to: optionalEmail,
   resend_api_key: z.string().trim().optional(),
+  /** Formulario de contacto («Hablemos»), comparte remitente/API key. */
+  contact_enabled: z.boolean().default(false),
+  contact_to_email: optionalEmail,
 });
 
 // Tipos inferidos --------------------------------------------------------------

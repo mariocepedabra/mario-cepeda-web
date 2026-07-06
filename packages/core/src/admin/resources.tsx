@@ -46,6 +46,7 @@ export const postsConfig: CrudConfig<Post> = {
   defaultValues: {
     titulo: '',
     slug: '',
+    autor: 'Mario Cepeda Bravo',
     categoria: '',
     bajada: '',
     resumen: '',
@@ -57,6 +58,13 @@ export const postsConfig: CrudConfig<Post> = {
   fields: [
     { name: 'titulo', label: 'Título', type: 'text' },
     { name: 'slug', label: 'Slug', type: 'text', generateFrom: 'titulo', help: 'URL de la nota.' },
+    {
+      name: 'autor',
+      label: 'Autor / firma',
+      type: 'text',
+      placeholder: 'Mario Cepeda Bravo',
+      help: 'Si la nota habla ACERCA de Mario, usa «Lo que dicen de Mario».',
+    },
     { name: 'categoria', label: 'Tema', type: 'text', placeholder: 'Medios, Región, Tecnología…' },
     { name: 'fecha', label: 'Fecha', type: 'date' },
     { name: 'publicado', label: 'Publicada', type: 'switch' },
