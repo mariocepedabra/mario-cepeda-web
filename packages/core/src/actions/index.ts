@@ -86,15 +86,17 @@ export async function submitContactMessage(raw: unknown): Promise<ActionResult> 
   if (error) return { ok: false, error: 'No se pudo enviar el mensaje. Inténtalo más tarde.' };
 
   // Aviso por correo a Mario vía Resend (best-effort: si falla, el mensaje ya quedó guardado).
+  // Se envía SIEMPRE que Resend esté configurado, salvo que se desactive
+  // explícitamente (`contact.enabled = '0'`).
   try {
     const settings = await readSettingsMap();
-    if (settings[CONTACT_KEYS.enabled] === '1') {
+    if (settings[CONTACT_KEYS.enabled] !== '0') {
       const apiKey = await readResendApiKey();
       const fromEmail = (settings[NEWSLETTER_KEYS.fromEmail] ?? '').trim();
       const toEmail = (settings[CONTACT_KEYS.toEmail] ?? '').trim() || CONTACT_DEFAULT_TO;
       if (apiKey && fromEmail) {
         const fromName = (settings[NEWSLETTER_KEYS.fromName] ?? '').trim();
-        await sendResendEmails(apiKey, [
+        const sent = await sendResendEmails(apiKey, [
           {
             from: fromName ? `${fromName} <${fromEmail}>` : fromEmail,
             to: [toEmail],
@@ -105,9 +107,18 @@ export async function submitContactMessage(raw: unknown): Promise<ActionResult> 
             reply_to: email,
           },
         ]);
+        if (sent.error) {
+          // No rompemos el envío del formulario, pero dejamos rastro en los logs.
+          console.error('[contacto] Resend no pudo enviar el aviso:', sent.error);
+        }
+      } else {
+        console.error(
+          '[contacto] Aviso NO enviado: falta API key de Resend o el correo remitente (Boletín).',
+        );
       }
     }
-  } catch {
+  } catch (err) {
+    console.error('[contacto] Error enviando el aviso por correo:', err);
     /* el mensaje ya quedó registrado; el correo es secundario */
   }
 

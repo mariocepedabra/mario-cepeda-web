@@ -20,15 +20,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return { title: 'Publicación no encontrada' };
-  const description = post.bajada ?? (post.resumen ? truncate(post.resumen, 160) : undefined);
+  const description = post.bajada ?? (post.resumen ? truncate(post.resumen, 200) : undefined);
+
+  // Imagen limpia (sin el marcador #loop) y solo si es una URL absoluta, para
+  // que el bot de WhatsApp/redes pueda armar la tarjeta con imagen.
+  const rawImage = post.portada_url?.split('#')[0]?.trim();
+  const image = rawImage && /^https?:\/\//.test(rawImage) ? rawImage : undefined;
+  const url = `/pensamiento/${post.slug}`;
+  const images = image
+    ? [{ url: image, alt: post.titulo, width: 1200, height: 630 }]
+    : undefined;
+
   return {
     title: post.titulo,
     description: description ?? undefined,
+    alternates: { canonical: url },
     openGraph: {
       title: post.titulo,
       description: description ?? undefined,
       type: 'article',
-      images: post.portada_url ? [{ url: post.portada_url }] : undefined,
+      url,
+      siteName: SITE_DEFAULTS.name,
+      locale: 'es_CO',
+      images,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.titulo,
+      description: description ?? undefined,
+      images: image ? [image] : undefined,
     },
   };
 }

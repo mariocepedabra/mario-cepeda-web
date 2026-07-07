@@ -717,14 +717,30 @@ on conflict (slug) do update set
 --   · Columnas publicadas bajo la cuenta editorial de Pagina 10 -> «Página 10».
 -- ----------------------------------------------------------------------------
 update public.posts set autor = 'Lo que dicen de Mario' where slug in (
-  'empalme-con-las-regiones-la-propuesta-para-revisar-promesas-obras-y-deudas-del-gobierno-petro',
   'mario-cepeda-bravo-el-personaje-principal',
   'pupiales-debe-recuperar-sus-valores-historicos-mario-cepeda',
   'mario-cepeda-bravo-voz-firme-del-periodismo-regional'
 );
 update public.posts set autor = 'Página 10' where slug in (
+  'empalme-con-las-regiones-la-propuesta-para-revisar-promesas-obras-y-deudas-del-gobierno-petro',
   'la-violencia-nunca-se-fue-de-narino',
   'sin-agua-no-hay-votos',
   'la-ciencia-no-es-un-asunto-de-politicos',
   'los-idiotas-utiles-del-neoliberalismo-la-descentralizacion-20'
 );
+-- El resto de columnas son de Mario; garantizamos su firma por si quedaron con
+-- el valor por defecto o una firma anterior.
+update public.posts set autor = 'Mario Cepeda Bravo'
+ where autor is null or autor = '' or (
+   autor not in ('Lo que dicen de Mario', 'Página 10')
+   and slug not in (
+     'mario-cepeda-bravo-el-personaje-principal',
+     'pupiales-debe-recuperar-sus-valores-historicos-mario-cepeda',
+     'mario-cepeda-bravo-voz-firme-del-periodismo-regional',
+     'empalme-con-las-regiones-la-propuesta-para-revisar-promesas-obras-y-deudas-del-gobierno-petro',
+     'la-violencia-nunca-se-fue-de-narino',
+     'sin-agua-no-hay-votos',
+     'la-ciencia-no-es-un-asunto-de-politicos',
+     'los-idiotas-utiles-del-neoliberalismo-la-descentralizacion-20'
+   )
+ );

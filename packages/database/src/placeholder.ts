@@ -591,11 +591,13 @@ export const placeholderSettings: Setting[] = [
   },
   {
     // Videos de Libros (EJEMPLO): columna derecha, junto a las reseñas.
+    // Se usan medios reales y reproducibles (MP4 directo + embed de YouTube) para
+    // demostrar que la columna reproduce videos, no imágenes.
     clave: 'mosaico_libros',
     valor: JSON.stringify([
-      placeholderImage('libros-vid1', 1000, 1250),
-      placeholderImage('libros-vid2', 1000, 700),
-      placeholderImage('libros-vid3', 1000, 1000),
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+      'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4#loop',
     ]),
     updated_at: now,
   },

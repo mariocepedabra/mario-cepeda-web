@@ -21,7 +21,7 @@ export const articulosMario: Post[] = [
     "id": "empalme-con-las-regiones-la-propuesta-para-revisar-promesas-obras-y-deudas-del-gobierno-petro",
     "titulo": "Empalme con las regiones: la propuesta para revisar promesas, obras y deudas del Gobierno Petro",
     "slug": "empalme-con-las-regiones-la-propuesta-para-revisar-promesas-obras-y-deudas-del-gobierno-petro",
-    "autor": "Lo que dicen de Mario",
+    "autor": "Página 10",
     "bajada": "La propuesta plantea que el nuevo gobierno de Abelardo De la Espriella revise en los departamentos el cumplimiento real de los compromisos adquiridos por la administración Petro, con participación ciudadana y territorial.",
     "categoria": "Política",
     "resumen": "La propuesta plantea que el nuevo gobierno de Abelardo De la Espriella revise en los departamentos el cumplimiento real de los compromisos adquiridos por la administración Petro, con participación ciudadana y…",

@@ -107,32 +107,34 @@ export function SiteHeader({
           {/* Isla dinámica */}
           <div className="relative">
             <div
-              className={`flex h-14 items-center gap-2 rounded-full border border-white/10 bg-ink/95 pl-2 pr-2 text-paper shadow-lift backdrop-blur-md transition-all duration-300 sm:h-16 sm:gap-3 ${
+              className={`relative z-20 flex h-14 items-center gap-2 rounded-full border border-white/10 bg-ink/95 pl-2 pr-2 text-paper shadow-lift backdrop-blur-md transition-all duration-300 sm:h-16 sm:gap-3 ${
                 scrolled ? 'shadow-2xl' : ''
               }`}
             >
-              {/* Marca */}
-              <Link
-                href="/"
-                className="flex items-center gap-2 rounded-full px-3 py-2 font-display text-lg font-semibold tracking-tight transition-colors hover:bg-white/5 sm:text-xl"
-                aria-label={`${brand} — inicio`}
-              >
-                <Image
-                  src="/logo-lion.png"
-                  alt=""
-                  aria-hidden
-                  width={32}
-                  height={32}
-                  priority
-                  className="size-6 sm:size-7"
-                />
-                <span className="whitespace-nowrap">{brand}</span>
-              </Link>
+              {/* Marca (izq., ancho flexible para centrar el menú) */}
+              <div className="flex flex-1 items-center">
+                <Link
+                  href="/"
+                  className="flex items-center gap-2 rounded-full px-3 py-2 font-display text-lg font-semibold tracking-tight transition-colors hover:bg-white/5 sm:text-xl"
+                  aria-label={`${brand} — inicio`}
+                >
+                  <Image
+                    src="/logo-lion.png"
+                    alt=""
+                    aria-hidden
+                    width={32}
+                    height={32}
+                    priority
+                    className="size-6 sm:size-7"
+                  />
+                  <span className="whitespace-nowrap">{brand}</span>
+                </Link>
+              </div>
 
               {/* Secciones (centro) */}
               <nav
                 aria-label="Secciones principales"
-                className="mx-auto hidden lg:block"
+                className="hidden shrink-0 lg:block"
               >
                 <ul className="flex items-center gap-1">
                   {MAIN_SECTIONS.map((s) => {
@@ -162,8 +164,8 @@ export function SiteHeader({
                 </ul>
               </nav>
 
-              {/* Acciones (der.) */}
-              <div className="ml-auto flex items-center gap-1.5 lg:ml-0">
+              {/* Acciones (der., ancho flexible para centrar el menú) */}
+              <div className="flex flex-1 items-center justify-end gap-1.5">
                 <Link
                   href="/contacto"
                   className="hidden rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-accent-deep sm:inline-block"
@@ -297,7 +299,7 @@ function NavFlyout({
       exit={{ opacity: 0, y: reduceMotion ? 0 : -8 }}
       transition={{ duration: reduceMotion ? 0 : 0.2 }}
       style={{ height: `${height}px` }}
-      className="absolute inset-x-0 top-full mt-2 hidden overflow-hidden rounded-3xl border border-line bg-paper shadow-lift lg:block"
+      className="absolute inset-x-0 top-full z-10 -mt-8 hidden overflow-hidden rounded-b-3xl border-x border-b border-line bg-paper pt-8 shadow-lift lg:block"
     >
       {/* Media de fondo a sangre completa + velo para legibilidad */}
       {hasMedia ? (

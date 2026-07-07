@@ -49,11 +49,16 @@ export function ShareButton({
   const canNativeShare =
     typeof navigator !== 'undefined' && typeof navigator.share === 'function';
 
+  const summary = text?.trim();
+  // Mensaje que acompaña al enlace: título + resumen (además, WhatsApp arma la
+  // tarjeta con imagen/título/resumen a partir de las etiquetas Open Graph).
+  const shareMessage = summary ? `${title}\n\n${summary}` : title;
+
   async function handleClick() {
     if (!url) return;
     if (canNativeShare) {
       try {
-        await navigator.share({ title, text: text || title, url });
+        await navigator.share({ title, text: shareMessage, url });
         return;
       } catch {
         // El usuario canceló o falló: caemos al menú.
@@ -72,8 +77,8 @@ export function ShareButton({
     }
   }
 
-  const shareText = `${title} — ${url}`;
-  const whatsapp = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+  const whatsappText = `${summary ? `*${title}*\n\n${summary}` : title}\n\n${url}`;
+  const whatsapp = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
   const twitter = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
   const facebook = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
 

@@ -62,7 +62,7 @@ function ConfigForm({ initial }: { initial: Record<string, string> }) {
   const [replyTo, setReplyTo] = React.useState(initial[NEWSLETTER_KEYS.replyTo] ?? '');
   const [apiKey, setApiKey] = React.useState('');
   const [contactEnabled, setContactEnabled] = React.useState(
-    initial[CONTACT_KEYS.enabled] === '1',
+    initial[CONTACT_KEYS.enabled] !== '0',
   );
   const [contactToEmail, setContactToEmail] = React.useState(
     initial[CONTACT_KEYS.toEmail] ?? '',
