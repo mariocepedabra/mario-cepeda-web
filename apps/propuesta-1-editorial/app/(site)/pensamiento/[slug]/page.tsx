@@ -10,7 +10,7 @@ import { Cover } from '@/components/cover';
 import { PostCard } from '@/components/cards';
 import { Reveal } from '@/components/interactive';
 import { ReadingProgress } from '@/components/reading-progress';
-import { ShareButton } from '@/components/share-button';
+import { ShareButton, WhatsAppShareButton } from '@/components/share-button';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -95,11 +95,19 @@ export default async function PensamientoDetailPage({ params }: Props) {
                   Por{' '}
                   <span className="font-semibold text-ink">{post.autor?.trim() || SITE_DEFAULTS.name}</span>
                 </p>
-                <ShareButton
-                  title={post.titulo}
-                  text={post.bajada ?? post.resumen ?? undefined}
-                  path={`/pensamiento/${post.slug}`}
-                />
+                <div className="flex flex-wrap items-center gap-2">
+                  <WhatsAppShareButton
+                    title={post.titulo}
+                    text={post.bajada ?? post.resumen ?? undefined}
+                    path={`/pensamiento/${post.slug}`}
+                    image={post.portada_url?.split('#')[0]?.trim() || undefined}
+                  />
+                  <ShareButton
+                    title={post.titulo}
+                    text={post.bajada ?? post.resumen ?? undefined}
+                    path={`/pensamiento/${post.slug}`}
+                  />
+                </div>
               </div>
             </header>
           </div>

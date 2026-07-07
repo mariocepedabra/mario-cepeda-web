@@ -85,43 +85,98 @@ export async function submitContactMessage(raw: unknown): Promise<ActionResult> 
   });
   if (error) return { ok: false, error: 'No se pudo enviar el mensaje. Inténtalo más tarde.' };
 
-  // Aviso por correo a Mario vía Resend (best-effort: si falla, el mensaje ya quedó guardado).
-  // Se envía SIEMPRE que Resend esté configurado, salvo que se desactive
-  // explícitamente (`contact.enabled = '0'`).
+  // Aviso por correo a Mario vía Resend (best-effort: si falla, el mensaje ya
+  // quedó guardado). El resultado se registra en `settings` para diagnosticarlo
+  // desde el panel (Boletín → Formulario de contacto).
   try {
-    const settings = await readSettingsMap();
-    if (settings[CONTACT_KEYS.enabled] !== '0') {
-      const apiKey = await readResendApiKey();
-      const fromEmail = (settings[NEWSLETTER_KEYS.fromEmail] ?? '').trim();
-      const toEmail = (settings[CONTACT_KEYS.toEmail] ?? '').trim() || CONTACT_DEFAULT_TO;
-      if (apiKey && fromEmail) {
-        const fromName = (settings[NEWSLETTER_KEYS.fromName] ?? '').trim();
-        const sent = await sendResendEmails(apiKey, [
-          {
-            from: fromName ? `${fromName} <${fromEmail}>` : fromEmail,
-            to: [toEmail],
-            subject: asunto
-              ? `Contacto web: ${asunto}`
-              : `Nuevo mensaje de contacto de ${nombre}`,
-            html: contactEmailHtml({ nombre, email, telefono, asunto, mensaje }),
-            reply_to: email,
-          },
-        ]);
-        if (sent.error) {
-          // No rompemos el envío del formulario, pero dejamos rastro en los logs.
-          console.error('[contacto] Resend no pudo enviar el aviso:', sent.error);
-        }
-      } else {
-        console.error(
-          '[contacto] Aviso NO enviado: falta API key de Resend o el correo remitente (Boletín).',
-        );
-      }
-    }
+    const sent = await sendContactNotification({ nombre, email, telefono, asunto, mensaje });
+    if (!sent.ok) console.error('[contacto] Aviso NO enviado:', sent.error);
   } catch (err) {
     console.error('[contacto] Error enviando el aviso por correo:', err);
     /* el mensaje ya quedó registrado; el correo es secundario */
   }
 
+  return { ok: true };
+}
+
+/**
+ * Envía el aviso de contacto por Resend y registra el resultado (con hora) en
+ * `settings[contact.last_status]` para que el panel muestre qué pasó. Devuelve
+ * el error real si algo falla. Se envía siempre que Resend esté configurado,
+ * salvo desactivación explícita (`contact.enabled = '0'`).
+ */
+async function sendContactNotification(d: {
+  nombre: string;
+  email: string;
+  telefono?: string;
+  asunto?: string;
+  mensaje: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const settings = await readSettingsMap();
+  if (settings[CONTACT_KEYS.enabled] === '0') {
+    return { ok: false, error: 'El aviso por correo está desactivado en el panel.' };
+  }
+
+  const apiKey = await readResendApiKey();
+  const fromEmail = (settings[NEWSLETTER_KEYS.fromEmail] ?? '').trim();
+  const toEmail = (settings[CONTACT_KEYS.toEmail] ?? '').trim() || CONTACT_DEFAULT_TO;
+
+  let result: { ok: true } | { ok: false; error: string };
+  if (!apiKey) {
+    result = { ok: false, error: 'Falta la API key de Resend (panel → Boletín).' };
+  } else if (!fromEmail) {
+    result = { ok: false, error: 'Falta el correo remitente (panel → Boletín).' };
+  } else {
+    const fromName = (settings[NEWSLETTER_KEYS.fromName] ?? '').trim();
+    result = await sendResendEmail(apiKey, {
+      from: fromName ? `${fromName} <${fromEmail}>` : fromEmail,
+      to: [toEmail],
+      subject: d.asunto
+        ? `Contacto web: ${d.asunto}`
+        : `Nuevo mensaje de contacto de ${d.nombre}`,
+      html: contactEmailHtml(d),
+      reply_to: d.email,
+    });
+  }
+
+  // Registra el resultado para verlo en el panel (requiere service_role porque
+  // el visitante público no puede escribir en `settings`).
+  const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  const status = result.ok
+    ? `${stamp} · ✅ Enviado a ${toEmail}`
+    : `${stamp} · ❌ ${result.error}`;
+  try {
+    if (SUPABASE_SERVICE_ROLE_KEY) {
+      const admin = createAdminSupabase() as unknown as SupabaseClient;
+      await admin
+        .from('settings')
+        .upsert({ clave: CONTACT_KEYS.lastStatus, valor: status }, { onConflict: 'clave' });
+    }
+  } catch {
+    /* el registro es informativo */
+  }
+
+  return result;
+}
+
+/**
+ * Prueba del aviso de contacto desde el panel: recorre EXACTAMENTE el mismo
+ * camino que el formulario público y devuelve el error real de Resend si falla.
+ */
+export async function sendTestContactEmail(): Promise<ActionResult> {
+  if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth;
+
+  const res = await sendContactNotification({
+    nombre: 'Prueba del panel',
+    email: 'prueba@mariocepeda.co',
+    asunto: 'Prueba del formulario de contacto',
+    mensaje:
+      'Este es un mensaje de PRUEBA enviado desde el panel para verificar que los avisos del formulario «Hablemos» llegan a tu correo.',
+  });
+  if (!res.ok) return res;
+  revalidatePath('/admin/boletin');
   return { ok: true };
 }
 
@@ -547,6 +602,39 @@ async function sendResendEmails(
     sent += chunk.length;
   }
   return { sent };
+}
+
+/**
+ * Envía UN correo por el endpoint simple de Resend (`/emails`). A diferencia
+ * del endpoint por lotes, devuelve el mensaje de error detallado de Resend
+ * (dominio sin verificar, modo prueba, remitente inválido…), clave para
+ * diagnosticar el formulario de contacto.
+ */
+async function sendResendEmail(
+  apiKey: string,
+  email: ResendEmail,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(email),
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      let detail = text.slice(0, 300);
+      try {
+        const json = JSON.parse(text) as { message?: string };
+        if (json.message) detail = json.message;
+      } catch {
+        /* respuesta no-JSON: usamos el texto plano */
+      }
+      return { ok: false, error: `Resend respondió ${res.status}: ${detail}` };
+    }
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: `No se pudo contactar a Resend: ${String(err).slice(0, 200)}` };
+  }
 }
 
 function unsubUrlFor(token: string): string {

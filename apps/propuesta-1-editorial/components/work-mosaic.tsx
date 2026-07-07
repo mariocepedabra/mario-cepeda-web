@@ -74,7 +74,19 @@ function MosaicItem({ url }: { url: string }) {
     );
   }
 
-  // Embed (YouTube/Vimeo/TikTok/Instagram): proporción 16:9.
+  // Instagram bloquea el iframe genérico («rechazó la conexión»): se usa su
+  // embed OFICIAL (blockquote + embed.js), que sí reproduce fotos/reels/videos.
+  const ig = src.match(/instagram\.com\/(?:[^/?#]+\/)*?(p|reel|reels|tv)\/([\w-]+)/i);
+  if (ig) {
+    const tipo = ig[1].toLowerCase() === 'reels' ? 'reel' : ig[1].toLowerCase();
+    return (
+      <div className={frame}>
+        <InstagramEmbed url={`https://www.instagram.com/${tipo}/${ig[2]}/`} />
+      </div>
+    );
+  }
+
+  // Embed (YouTube/Vimeo/TikTok): proporción 16:9.
   const { src: embedSrc } = toVideoSource(src, loop);
   return (
     <div className={`${frame} aspect-video`}>
@@ -87,6 +99,50 @@ function MosaicItem({ url }: { url: string }) {
         className="size-full border-0"
       />
     </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Embed oficial de Instagram: inyecta embed.js (una sola vez) y deja que el   */
+/*  script convierta el blockquote en el reproductor real del post/reel.        */
+/* -------------------------------------------------------------------------- */
+declare global {
+  interface Window {
+    instgrm?: { Embeds?: { process?: () => void } };
+  }
+}
+
+function InstagramEmbed({ url }: { url: string }) {
+  React.useEffect(() => {
+    const process = () => window.instgrm?.Embeds?.process?.();
+    if (window.instgrm?.Embeds) {
+      process();
+      return;
+    }
+    let script = document.querySelector<HTMLScriptElement>(
+      'script[src="https://www.instagram.com/embed.js"]',
+    );
+    if (!script) {
+      script = document.createElement('script');
+      script.src = 'https://www.instagram.com/embed.js';
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    script.addEventListener('load', process);
+    return () => script?.removeEventListener('load', process);
+  }, [url]);
+
+  return (
+    <blockquote
+      className="instagram-media"
+      data-instgrm-permalink={url}
+      data-instgrm-version="14"
+      style={{ width: '100%', minWidth: 0, margin: 0, border: 0, background: 'transparent' }}
+    >
+      <a href={url} target="_blank" rel="noopener noreferrer">
+        Ver en Instagram
+      </a>
+    </blockquote>
   );
 }
 

@@ -191,6 +191,8 @@ export const RESEND_API_KEY_SECRET = 'resend_api_key';
 export const CONTACT_KEYS = {
   enabled: 'contact.enabled',
   toEmail: 'contact.to_email',
+  /** Resultado del último intento de envío (diagnóstico visible en el panel). */
+  lastStatus: 'contact.last_status',
 } as const;
 
 /** Destinatario por defecto del formulario de contacto. */

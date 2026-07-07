@@ -56,6 +56,13 @@ export function SiteHeader({
     setActive(null);
   }, [pathname]);
 
+  // [SOLO DEV] abre el panel vía ?flyout=<seccion> para poder verificarlo.
+  React.useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') return;
+    const id = new URLSearchParams(window.location.search).get('flyout');
+    if (id && MAIN_SECTIONS.some((s) => s.id === id)) setActive(id as MainSectionId);
+  }, []);
+
   // Cierra con Escape y bloquea el scroll del fondo mientras el menú móvil está abierto.
   React.useEffect(() => {
     if (!open) return;
@@ -196,10 +203,10 @@ export function SiteHeader({
                   titulo={navText?.[activeSection.id]?.titulo?.trim() || activeSection.label}
                   texto={navText?.[activeSection.id]?.texto?.trim() || activeSection.blurb}
                   foco={navText?.[activeSection.id]?.foco?.trim() || undefined}
-                  alto={navText?.[activeSection.id]?.alto}
                   reduceMotion={!!reduceMotion}
                   onMouseEnter={cancelClose}
                   onMouseLeave={scheduleClose}
+                  onClose={() => setActive(null)}
                 />
               ) : null}
             </AnimatePresence>
@@ -259,47 +266,58 @@ export function SiteHeader({
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Panel desplegable bajo la isla. La media (imagen o video) se pinta a        */
-/*  sangre completa como fondo y el título/descripción van encima, sobre un     */
-/*  velo en gradiente para que el texto siempre se lea. Se monta solo en        */
-/*  escritorio. AnimatePresence «congela» sus props durante la salida, por eso  */
-/*  recibe sección, media y textos como props (no del estado).                  */
+/*  Panel desplegable a PANTALLA COMPLETA. La media (imagen o video) llena todo */
+/*  el viewport, por DETRÁS de la isla y por delante de la página, con el       */
+/*  título/descripción encima sobre un velo en gradiente. Se cierra al sacar el */
+/*  cursor, al hacer clic, al hacer scroll o con Escape. Solo en escritorio.    */
+/*  AnimatePresence «congela» sus props durante la salida, por eso recibe       */
+/*  sección, media y textos como props (no del estado).                         */
 /* -------------------------------------------------------------------------- */
-const DEFAULT_NAV_HEIGHT = 360;
-
 function NavFlyout({
   section,
   media,
   titulo,
   texto,
   foco,
-  alto,
   reduceMotion,
   onMouseEnter,
   onMouseLeave,
+  onClose,
 }: {
   section: Section;
   media: string;
   titulo: string;
   texto: string;
   foco?: string;
-  alto?: number;
   reduceMotion: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  onClose: () => void;
 }) {
   const hasMedia = !!media;
-  const height = alto && alto > 0 ? alto : DEFAULT_NAV_HEIGHT;
+
+  // Como cubre todo el viewport, el cursor nunca «sale» del panel: también se
+  // cierra al hacer scroll (además del clic y de Escape).
+  React.useEffect(() => {
+    const onWheel = () => onClose();
+    window.addEventListener('wheel', onWheel, { passive: true });
+    window.addEventListener('touchmove', onWheel, { passive: true });
+    return () => {
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchmove', onWheel);
+    };
+  }, [onClose]);
+
   return (
     <motion.div
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      initial={{ opacity: 0, y: reduceMotion ? 0 : -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: reduceMotion ? 0 : -8 }}
-      transition={{ duration: reduceMotion ? 0 : 0.2 }}
-      style={{ height: `${height}px` }}
-      className="absolute inset-x-0 top-full z-10 -mt-8 hidden overflow-hidden rounded-b-3xl border-x border-b border-line bg-paper pt-8 shadow-lift lg:block"
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: reduceMotion ? 0 : 0.25 }}
+      className="fixed inset-0 z-10 hidden overflow-hidden bg-paper lg:block"
     >
       {/* Media de fondo a sangre completa + velo para legibilidad */}
       {hasMedia ? (
@@ -309,8 +327,8 @@ function NavFlyout({
         </>
       ) : null}
 
-      {/* Contenido al frente */}
-      <div className="relative flex h-full flex-col justify-center px-10">
+      {/* Contenido al frente (deja libre la franja de la isla) */}
+      <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-10 pt-20">
         <div className="max-w-lg">
           <p
             className={`font-display text-4xl font-semibold ${

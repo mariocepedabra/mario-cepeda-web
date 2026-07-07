@@ -10,6 +10,7 @@ import {
   deleteSubscriber,
   loadSubscriberEvents,
   saveNewsletterSettings,
+  sendTestContactEmail,
   sendTestNewsletter,
   setSubscriberEstado,
 } from '../actions';
@@ -55,6 +56,7 @@ function ConfigForm({ initial }: { initial: Record<string, string> }) {
   const router = useRouter();
   const [pending, setPending] = React.useState(false);
   const [testing, setTesting] = React.useState(false);
+  const [testingContact, setTestingContact] = React.useState(false);
   const [enabled, setEnabled] = React.useState(initial[NEWSLETTER_KEYS.enabled] === '1');
   const [autoSend, setAutoSend] = React.useState(initial[NEWSLETTER_KEYS.autoSend] === '1');
   const [fromName, setFromName] = React.useState(initial[NEWSLETTER_KEYS.fromName] ?? '');
@@ -98,6 +100,19 @@ function ConfigForm({ initial }: { initial: Record<string, string> }) {
     setTesting(false);
     if (res.ok) toast.success('Correo de prueba enviado a tu dirección.');
     else toast.error(res.error);
+  };
+
+  const onTestContact = async () => {
+    setTestingContact(true);
+    const res = await sendTestContactEmail();
+    setTestingContact(false);
+    if (res.ok) {
+      toast.success(`Aviso de prueba enviado a ${contactToEmail || CONTACT_DEFAULT_TO}.`);
+      router.refresh();
+    } else {
+      toast.error(res.error);
+      router.refresh();
+    }
   };
 
   return (
@@ -222,6 +237,19 @@ function ConfigForm({ initial }: { initial: Record<string, string> }) {
             <p className="mt-1 text-xs text-zinc-400">
               Si lo dejas vacío, se usará {CONTACT_DEFAULT_TO}.
             </p>
+          </div>
+
+          {initial[CONTACT_KEYS.lastStatus] ? (
+            <p className="rounded-md border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-600">
+              <span className="font-semibold">Último envío:</span>{' '}
+              {initial[CONTACT_KEYS.lastStatus]}
+            </p>
+          ) : null}
+
+          <div className="flex justify-end">
+            <Button type="button" variant="outline" onClick={onTestContact} disabled={testingContact}>
+              <Send /> {testingContact ? 'Enviando…' : 'Probar aviso de contacto'}
+            </Button>
           </div>
         </div>
 
