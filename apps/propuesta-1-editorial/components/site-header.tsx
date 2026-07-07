@@ -203,6 +203,7 @@ export function SiteHeader({
                   titulo={navText?.[activeSection.id]?.titulo?.trim() || activeSection.label}
                   texto={navText?.[activeSection.id]?.texto?.trim() || activeSection.blurb}
                   foco={navText?.[activeSection.id]?.foco?.trim() || undefined}
+                  alto={navText?.[activeSection.id]?.alto}
                   reduceMotion={!!reduceMotion}
                   onMouseEnter={cancelClose}
                   onMouseLeave={scheduleClose}
@@ -266,19 +267,25 @@ export function SiteHeader({
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Panel desplegable a PANTALLA COMPLETA. La media (imagen o video) llena todo */
-/*  el viewport, por DETRÁS de la isla y por delante de la página, con el       */
-/*  título/descripción encima sobre un velo en gradiente. Se cierra al sacar el */
-/*  cursor, al hacer clic, al hacer scroll o con Escape. Solo en escritorio.    */
-/*  AnimatePresence «congela» sus props durante la salida, por eso recibe       */
-/*  sección, media y textos como props (no del estado).                         */
+/*  Panel desplegable a TODO EL ANCHO del viewport, por DETRÁS de la isla y por */
+/*  delante de la página. Su ALTO lo define el control «Alto del panel» del     */
+/*  panel de Mario (Perfil → cada sección, hasta 800 px); si no hay valor       */
+/*  guardado se usa el alto por defecto. La media (imagen o video) llena el     */
+/*  panel a sangre completa con el título/descripción encima sobre un velo en   */
+/*  gradiente. Se cierra al sacar el cursor, al hacer clic, al hacer scroll o   */
+/*  con Escape. Solo en escritorio. AnimatePresence «congela» sus props durante */
+/*  la salida, por eso recibe sección, media y textos como props (no del        */
+/*  estado).                                                                    */
 /* -------------------------------------------------------------------------- */
+const DEFAULT_NAV_HEIGHT = 420;
+
 function NavFlyout({
   section,
   media,
   titulo,
   texto,
   foco,
+  alto,
   reduceMotion,
   onMouseEnter,
   onMouseLeave,
@@ -289,15 +296,16 @@ function NavFlyout({
   titulo: string;
   texto: string;
   foco?: string;
+  alto?: number;
   reduceMotion: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onClose: () => void;
 }) {
   const hasMedia = !!media;
+  const height = alto && alto > 0 ? alto : DEFAULT_NAV_HEIGHT;
 
-  // Como cubre todo el viewport, el cursor nunca «sale» del panel: también se
-  // cierra al hacer scroll (además del clic y de Escape).
+  // También se cierra al hacer scroll (además del clic, mouseleave y Escape).
   React.useEffect(() => {
     const onWheel = () => onClose();
     window.addEventListener('wheel', onWheel, { passive: true });
@@ -317,7 +325,8 @@ function NavFlyout({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: reduceMotion ? 0 : 0.25 }}
-      className="fixed inset-0 z-10 hidden overflow-hidden bg-paper lg:block"
+      style={{ height: `${height}px` }}
+      className="fixed inset-x-0 top-0 z-10 hidden overflow-hidden rounded-b-3xl bg-paper shadow-lift lg:block"
     >
       {/* Media de fondo a sangre completa + velo para legibilidad */}
       {hasMedia ? (
