@@ -334,6 +334,20 @@ export function PerfilProfesional({ data }: { data: PerfilData }) {
         </div>
       </section>
 
+      {/* ---------------- Formación complementaria ---------------- */}
+      <section className="mx-auto mt-24 max-w-4xl px-5 sm:mt-32 sm:px-8">
+        <SectionTitle icon={Sparkles} eyebrow="Complementaria" title="Otros cursos y formación" />
+        <ul className="flex flex-wrap gap-3">
+          {CURSOS.map((c, i) => (
+            <Reveal key={c} delay={i * 0.04}>
+              <li className="rounded-full border border-line bg-paper px-4 py-2 text-sm text-ink-soft shadow-soft">
+                {c}
+              </li>
+            </Reveal>
+          ))}
+        </ul>
+      </section>
+
       {/* ---------------- Reconocimientos ---------------- */}
       <section className="mx-auto mt-24 max-w-6xl px-5 sm:mt-32 sm:px-8">
         <SectionTitle icon={Award} eyebrow="Reconocimientos" title="Premios y distinciones" />
@@ -453,20 +467,6 @@ export function PerfilProfesional({ data }: { data: PerfilData }) {
             </Reveal>
           ))}
         </div>
-      </section>
-
-      {/* ---------------- Formación complementaria ---------------- */}
-      <section className="mx-auto mt-24 max-w-4xl px-5 sm:mt-32 sm:px-8">
-        <SectionTitle icon={Sparkles} eyebrow="Complementaria" title="Otros cursos y formación" />
-        <ul className="flex flex-wrap gap-3">
-          {CURSOS.map((c, i) => (
-            <Reveal key={c} delay={i * 0.04}>
-              <li className="rounded-full border border-line bg-paper px-4 py-2 text-sm text-ink-soft shadow-soft">
-                {c}
-              </li>
-            </Reveal>
-          ))}
-        </ul>
       </section>
 
       {/* ---------------- Cierre ---------------- */}
