@@ -130,7 +130,7 @@ export async function BooksPage() {
         section="libros"
         initial={parseMosaic(settings, 'libros')}
         sectionName="Libros — videos"
-        belowName="las reseñas (columna derecha)"
+        belowName="las reseñas de libros (se intercalan en el mismo mosaico, en este orden)"
       />
     </div>
   );
