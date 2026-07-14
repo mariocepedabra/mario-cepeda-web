@@ -1,29 +1,57 @@
 import type { Metadata } from 'next';
-import { Film, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 import { parseMosaic } from '@mario/core/lib';
 import { getBooks, getSettings } from '@mario/database/queries';
-import type { Book, BookList } from '@mario/database';
+import type { Book } from '@mario/database';
 
 import { Cover } from '@/components/cover';
 import { Reveal } from '@/components/interactive';
-import { MediaColumn } from '@/components/work-mosaic';
+import { MosaicItem } from '@/components/work-mosaic';
 
 export const metadata: Metadata = {
   title: 'Libros',
   description: 'Libros que Mario Cepeda recomienda y reseña.',
 };
 
-const LIST_TITLES: Record<BookList, string> = {
-  marcaron: 'Lecturas que me marcaron',
-  temporada: 'Recomendados de la temporada',
-};
+/**
+ * Una pieza del collage: o bien una reseña de libro, o bien un medio
+ * (video/imagen/embed) que acompaña a la sección. Ambos conviven en un único
+ * mosaico masonry.
+ */
+type Tile =
+  | { kind: 'book'; key: string; book: Book }
+  | { kind: 'media'; key: string; url: string };
+
+/**
+ * Entrelaza libros y medios de forma proporcional: reparte los videos entre los
+ * libros (en vez de agrupar todos los libros y luego todos los videos) para que
+ * el collage tenga variedad visual, sin importar cuántos haya de cada tipo.
+ */
+function weaveTiles(books: Book[], media: string[]): Tile[] {
+  const bookTiles: Tile[] = books.map((book) => ({ kind: 'book', key: `book-${book.id}`, book }));
+  const mediaTiles: Tile[] = media.map((url, i) => ({ kind: 'media', key: `media-${i}`, url }));
+  if (bookTiles.length === 0) return mediaTiles;
+  if (mediaTiles.length === 0) return bookTiles;
+
+  const out: Tile[] = [];
+  let bi = 0;
+  let mi = 0;
+  const total = bookTiles.length + mediaTiles.length;
+  for (let i = 0; i < total; i++) {
+    const takeMedia =
+      mi < mediaTiles.length &&
+      (bi >= bookTiles.length ||
+        (mi + 0.5) / mediaTiles.length <= (bi + 0.5) / bookTiles.length);
+    out.push(takeMedia ? mediaTiles[mi++] : bookTiles[bi++]);
+  }
+  return out;
+}
 
 export default async function LibrosPage() {
   const [books, settings] = await Promise.all([getBooks(), getSettings()]);
-  const listas: BookList[] = ['marcaron', 'temporada'];
-  const videos = parseMosaic(settings, 'libros');
-  const hasVideos = videos.length > 0;
+  const media = parseMosaic(settings, 'libros');
+  const tiles = weaveTiles(books, media);
 
   return (
     <main className="mx-auto max-w-7xl px-5 pb-24 pt-32 sm:px-8 sm:pt-40">
@@ -34,75 +62,45 @@ export default async function LibrosPage() {
             Lecturas que marcan
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-ink-soft">
-            Los libros que formaron a Mario y sus recomendaciones de temporada.
+            Las lecturas que formaron a Mario y los videos que las acompañan, reunidos en un solo
+            mosaico.
           </p>
         </header>
       </Reveal>
 
-      {/* Dos columnas: a la izquierda las reseñas, a la derecha los videos. */}
-      <div
-        className={
-          hasVideos
-            ? 'mt-16 grid gap-12 sm:mt-20 lg:grid-cols-[1.5fr_0.9fr] lg:gap-14'
-            : 'mt-16 sm:mt-20'
-        }
-      >
-        {/* Reseñas (izquierda) */}
-        <div className="space-y-16 sm:space-y-20">
-          {listas.map((lista) => {
-            const items = books.filter((b) => b.lista === lista);
-            if (items.length === 0) return null;
-            return (
-              <section key={lista}>
-                <Reveal>
-                  <h2 className="mb-8 font-display text-3xl font-semibold sm:text-4xl">
-                    {LIST_TITLES[lista]}
-                  </h2>
-                </Reveal>
-                <div
-                  className={
-                    hasVideos
-                      ? 'grid gap-x-8 gap-y-12 sm:grid-cols-2'
-                      : 'grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3'
-                  }
-                >
-                  {items.map((book, i) => (
-                    <Reveal key={book.id} delay={(i % 3) * 0.08}>
-                      <BookCard book={book} />
-                    </Reveal>
-                  ))}
-                </div>
-              </section>
-            );
-          })}
-        </div>
-
-        {/* Videos (derecha) */}
-        {hasVideos ? (
-          <aside className="lg:sticky lg:top-28 lg:self-start">
-            <Reveal>
-              <h2 className="mb-8 flex items-center gap-2 font-display text-3xl font-semibold sm:text-4xl">
-                <Film className="size-7 text-accent" />
-                En video
-              </h2>
-            </Reveal>
-            <Reveal delay={0.08}>
-              <MediaColumn items={videos} />
-            </Reveal>
-          </aside>
-        ) : null}
-      </div>
+      {/* Un único collage masonry: reseñas de libros y videos entrelazados. Cada
+          pieza fluye a su tamaño natural (ancho de columna, alto automático) sin
+          recortarse, priorizando la composición visual. */}
+      {tiles.length > 0 ? (
+        <Reveal className="mt-16 sm:mt-20">
+          <div className="columns-1 gap-5 sm:columns-2 lg:columns-3 [&>*]:mb-5">
+            {tiles.map((tile) =>
+              tile.kind === 'book' ? (
+                <BookTile key={tile.key} book={tile.book} />
+              ) : (
+                <MosaicItem key={tile.key} url={tile.url} />
+              ),
+            )}
+          </div>
+        </Reveal>
+      ) : null}
     </main>
   );
 }
 
-function BookCard({ book }: { book: Book }) {
+/** Tarjeta vertical de un libro dentro del collage: portada grande + reseña. */
+function BookTile({ book }: { book: Book }) {
   return (
-    <article className="flex gap-5">
-      <div className="relative aspect-[2/3] w-28 shrink-0 overflow-hidden rounded-card bg-paper-2 shadow-soft sm:w-32">
-        <Cover url={book.portada_url} alt={`Portada de «${book.titulo}»`} sizes="128px" />
+    <article className="group break-inside-avoid overflow-hidden rounded-card bg-paper-2 shadow-soft transition-shadow duration-300 hover:shadow-lift">
+      <div className="relative aspect-[2/3] w-full overflow-hidden bg-paper">
+        <Cover
+          url={book.portada_url}
+          alt={`Portada de «${book.titulo}»`}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="transition-transform duration-500 group-hover:scale-[1.03]"
+        />
       </div>
-      <div className="min-w-0">
+      <div className="p-5">
         <h3 className="font-display text-xl font-semibold leading-snug">{book.titulo}</h3>
         <p className="mt-0.5 text-sm text-ink-muted">{book.autor}</p>
         {book.valoracion ? <Rating value={book.valoracion} /> : null}

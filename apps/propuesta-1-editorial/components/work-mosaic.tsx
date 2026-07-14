@@ -52,7 +52,7 @@ export function MediaColumn({ items }: { items: string[] }) {
   );
 }
 
-function MosaicItem({ url }: { url: string }) {
+export function MosaicItem({ url }: { url: string }) {
   const { src, type, loop } = parseMedia(url);
   if (!src) return null;
 
