@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { Star } from 'lucide-react';
 
 import type { Book } from '@mario/database';
 
@@ -86,25 +85,10 @@ function BookTile({ book }: { book: Book }) {
       <div className="p-5">
         <h3 className="font-display text-xl font-semibold leading-snug">{book.titulo}</h3>
         <p className="mt-0.5 text-sm text-ink-muted">{book.autor}</p>
-        {book.valoracion ? <Rating value={book.valoracion} /> : null}
         {book.resena ? (
           <p className="mt-3 text-sm leading-relaxed text-ink-soft">{book.resena}</p>
         ) : null}
       </div>
     </article>
-  );
-}
-
-function Rating({ value }: { value: number }) {
-  return (
-    <div className="mt-2 flex gap-0.5" aria-label={`Valoración: ${value} de 5`}>
-      {Array.from({ length: 5 }, (_, i) => (
-        <Star
-          key={i}
-          className={`size-4 ${i < value ? 'fill-accent text-accent' : 'text-line'}`}
-          aria-hidden
-        />
-      ))}
-    </div>
   );
 }

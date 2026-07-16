@@ -135,7 +135,6 @@ export const bookSchema = z.object({
   titulo: requiredText('El título'),
   autor: z.string().trim().optional(),
   portada_url: optionalUrl,
-  valoracion: optionalInt,
   resena: z.string().trim().optional(),
   lista: z.enum(['marcaron', 'temporada']).default('temporada'),
   orden: orderInt,

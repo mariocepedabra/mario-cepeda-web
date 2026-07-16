@@ -153,7 +153,7 @@ export const booksConfig: CrudConfig<Book> = {
   singular: 'libro',
   description: 'Libros recomendados y reseñados.',
   schema: bookSchema,
-  defaultValues: { titulo: '', autor: '', portada_url: '', valoracion: '', resena: '', lista: 'temporada', orden: 0 },
+  defaultValues: { titulo: '', autor: '', portada_url: '', resena: '', lista: 'temporada', orden: 0 },
   fields: [
     { name: 'titulo', label: 'Título', type: 'text' },
     { name: 'autor', label: 'Autor', type: 'text' },
@@ -166,7 +166,6 @@ export const booksConfig: CrudConfig<Book> = {
         { value: 'temporada', label: 'Recomendados de la temporada' },
       ],
     },
-    { name: 'valoracion', label: 'Valoración (1–5)', type: 'number', placeholder: '5' },
     { name: 'orden', label: 'Orden', type: 'number' },
     { name: 'portada_url', label: 'Portada (imagen o video, con opción GIF)', type: 'media', full: true },
     { name: 'resena', label: 'Reseña', type: 'textarea', full: true },
@@ -175,7 +174,6 @@ export const booksConfig: CrudConfig<Book> = {
     { key: 'titulo', label: 'Título', render: (r) => truncate(r.titulo, 40) },
     { key: 'autor', label: 'Autor' },
     { key: 'lista', label: 'Lista', render: (r) => <Badge variant="secondary">{r.lista}</Badge> },
-    { key: 'valoracion', label: '★', className: 'w-12' },
   ],
 };
 

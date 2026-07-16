@@ -131,8 +131,6 @@ export type Book = {
   titulo: string;
   autor: string;
   portada_url: string | null;
-  /** Valoración 1–5 (null si no aplica). */
-  valoracion: number | null;
   /** Reseña breve de Mario (texto/markdown ligero). */
   resena: string | null;
   lista: BookList;
