@@ -166,17 +166,23 @@ function XTweet({ url }: { url: string }) {
 
   // El widget acepta enlaces de x.com y de twitter.com; normalizamos el host.
   const tweetUrl = url.replace(/^http:\/\//, 'https://').replace(/\/\/x\.com/i, '//twitter.com');
+  const profileUrl = url.replace(/^http:\/\//, 'https://');
 
+  // Tarjeta con fallback SIEMPRE visible: si X renderiza el tweet, se ve
+  // completo dentro; si lo sirve vacío (X degrada los embeds), queda el enlace.
   return (
-    <div ref={ref} className="overflow-hidden rounded-card">
-      <blockquote
-        className="twitter-tweet"
-        data-dnt="true"
-        data-theme="light"
-        data-conversation="none"
-      >
-        <a href={tweetUrl}>Ver publicación en X</a>
-      </blockquote>
+    <div className="rounded-card border border-line bg-paper-2/60 p-4 shadow-soft">
+      <div ref={ref} className="[&_.twitter-tweet]:!my-0">
+        <blockquote
+          className="twitter-tweet"
+          data-dnt="true"
+          data-theme="light"
+          data-conversation="none"
+        >
+          <a href={tweetUrl}>Publicación en X</a>
+        </blockquote>
+      </div>
+      <SocialLink href={profileUrl} label="Ver publicación en X" />
     </div>
   );
 }
