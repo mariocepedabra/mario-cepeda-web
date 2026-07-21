@@ -8,22 +8,21 @@ import { socialNetworkOf } from '@mario/core/lib';
 import { Reveal } from './interactive';
 
 /**
- * Feed automático de redes sociales que aparece bajo los artículos de
- * Pensamiento (ocupa una fila a todo el ancho). Recibe una lista de URLs de
- * perfil; detecta la red de cada una (X, Facebook o Instagram) y pinta su feed
- * en directo con el widget/embed oficial de cada plataforma:
- *  - X (Twitter): timeline oficial (`platform.twitter.com/widgets.js`).
+ * Feed de redes sociales que aparece bajo los artículos de Pensamiento (ocupa
+ * una fila a todo el ancho). Recibe una lista de URLs; detecta la red de cada
+ * una y la muestra con el mejor método FIABLE de cada plataforma:
+ *
+ *  - X (Twitter): X ya NO permite incrustar el feed automático de un PERFIL
+ *    para visitantes no logueados (lo sirve vacío desde 2023). Por eso:
+ *      · URL de perfil (x.com/usuario) → tarjeta «Síguelo en X» (sin script,
+ *        siempre funciona).
+ *      · URL de un TWEET concreto (x.com/usuario/status/123) → se incrusta ese
+ *        tweet con su contenido real (widget oficial de X).
  *  - Facebook: Page Plugin oficial (iframe, sin SDK) — funciona con Páginas.
  *  - Instagram: embed oficial de una publicación/reel, o tarjeta al perfil.
- *
- * Cada widget carga su propio script del lado del cliente, igual que ya hace el
- * sitio con los embeds de Instagram y los iframes de YouTube.
  */
 export function SocialFeed({ urls }: { urls: string[] }) {
-  const feeds = React.useMemo(
-    () => urls.map((u) => u.trim()).filter(Boolean),
-    [urls],
-  );
+  const feeds = React.useMemo(() => urls.map((u) => u.trim()).filter(Boolean), [urls]);
   if (feeds.length === 0) return null;
 
   const single = feeds.length === 1;
@@ -50,22 +49,28 @@ export function SocialFeed({ urls }: { urls: string[] }) {
 
 function SocialFeedItem({ url, compact }: { url: string; compact: boolean }) {
   const network = socialNetworkOf(url);
-  const height = compact ? 520 : 640;
 
-  if (network === 'x') return <XTimeline url={url} height={height} />;
-  if (network === 'facebook') return <FacebookPage url={url} height={height} />;
+  if (network === 'x') {
+    return isTweetUrl(url) ? <XTweet url={url} /> : <XProfileCard url={url} />;
+  }
+  if (network === 'facebook') return <FacebookPage url={url} height={compact ? 520 : 640} />;
   if (network === 'instagram') return <InstagramFeed url={url} />;
   return <FallbackCard url={url} />;
 }
 
 /* -------------------------------------------------------------------------- */
-/*  X (Twitter) — timeline oficial                                             */
+/*  X (Twitter)                                                                 */
 /* -------------------------------------------------------------------------- */
 
 declare global {
   interface Window {
     twttr?: { widgets?: { load?: (el?: HTMLElement) => void } };
   }
+}
+
+/** ¿La URL apunta a un tweet concreto (…/status/123) y no a un perfil? */
+function isTweetUrl(url: string): boolean {
+  return /(?:twitter|x)\.com\/(?:[^/?#]+\/status|i\/web\/status)\/\d+/i.test(url);
 }
 
 /** Extrae el usuario (@handle) de una URL de perfil de X/Twitter. */
@@ -80,46 +85,98 @@ function xHandle(url: string): string | null {
   }
 }
 
-function XTimeline({ url, height }: { url: string; height: number }) {
-  const ref = React.useRef<HTMLDivElement>(null);
-  const handle = xHandle(url);
+/** Ícono de la marca X (Twitter). */
+function XMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
 
-  React.useEffect(() => {
-    if (!handle) return;
-    const load = () => window.twttr?.widgets?.load?.(ref.current ?? undefined);
-    if (window.twttr?.widgets) {
-      load();
+/**
+ * Tarjeta de perfil de X. X no deja incrustar el feed automático de un perfil,
+ * así que mostramos una tarjeta fiable (sin scripts de terceros) con enlace
+ * directo a las publicaciones de Mario en X.
+ */
+function XProfileCard({ url }: { url: string }) {
+  const handle = xHandle(url);
+  const profileUrl = handle ? `https://x.com/${handle}` : url;
+  return (
+    <div className="flex flex-col items-center gap-4 rounded-card border border-line bg-ink px-8 py-10 text-center text-paper shadow-soft">
+      <XMark className="size-9" />
+      <div>
+        <p className="font-display text-xl font-semibold">{handle ? `@${handle}` : 'Perfil'}</p>
+        <p className="mt-1 text-sm text-paper/70">Sigue la conversación de Mario en X.</p>
+      </div>
+      <a
+        href={profileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1.5 rounded-full bg-paper px-5 py-2.5 text-sm font-semibold text-ink transition-opacity hover:opacity-90"
+      >
+        Ver publicaciones en X <ArrowUpRight className="size-4" />
+      </a>
+    </div>
+  );
+}
+
+/**
+ * Cargador idempotente del widget de X (`platform.twitter.com/widgets.js`).
+ * Se comparte entre todos los tweets de la página para inyectar el script una
+ * sola vez y resolver en cuanto esté disponible `twttr.widgets`.
+ */
+let twitterWidgetsPromise: Promise<void> | null = null;
+function loadTwitterWidgets(): Promise<void> {
+  if (typeof window === 'undefined') return Promise.resolve();
+  if (window.twttr?.widgets) return Promise.resolve();
+  if (twitterWidgetsPromise) return twitterWidgetsPromise;
+  twitterWidgetsPromise = new Promise<void>((resolve) => {
+    const src = 'https://platform.twitter.com/widgets.js';
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${src}"]`);
+    const done = () => resolve();
+    if (existing) {
+      if (window.twttr?.widgets) done();
+      else existing.addEventListener('load', done);
       return;
     }
-    let script = document.querySelector<HTMLScriptElement>(
-      'script[src="https://platform.twitter.com/widgets.js"]',
-    );
-    if (!script) {
-      script = document.createElement('script');
-      script.src = 'https://platform.twitter.com/widgets.js';
-      script.async = true;
-      document.body.appendChild(script);
-    }
-    script.addEventListener('load', load);
-    return () => script?.removeEventListener('load', load);
-  }, [handle]);
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.charset = 'utf-8';
+    script.addEventListener('load', done);
+    document.body.appendChild(script);
+  });
+  return twitterWidgetsPromise;
+}
 
-  if (!handle) return <FallbackCard url={url} />;
+/** Incrusta un tweet concreto (los tweets sueltos sí se renderizan en X). */
+function XTweet({ url }: { url: string }) {
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    void loadTwitterWidgets().then(() => {
+      if (!cancelled) window.twttr?.widgets?.load?.(ref.current ?? undefined);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
+
+  // El widget acepta enlaces de x.com y de twitter.com; normalizamos el host.
+  const tweetUrl = url.replace(/^http:\/\//, 'https://').replace(/\/\/x\.com/i, '//twitter.com');
 
   return (
     <div ref={ref} className="overflow-hidden rounded-card">
-      {/* widgets.js reemplaza este enlace por el timeline en vivo. */}
-      <a
-        className="twitter-timeline"
-        data-height={height}
-        data-theme="light"
-        data-chrome="noheader nofooter transparent"
+      <blockquote
+        className="twitter-tweet"
         data-dnt="true"
-        href={`https://twitter.com/${handle}?ref_src=twsrc%5Etfw`}
+        data-theme="light"
+        data-conversation="none"
       >
-        Publicaciones de @{handle}
-      </a>
-      <SocialLink href={`https://x.com/${handle}`} label={`Ver @${handle} en X`} />
+        <a href={tweetUrl}>Ver publicación en X</a>
+      </blockquote>
     </div>
   );
 }
@@ -232,8 +289,7 @@ function igHandle(url: string): string | null {
 /**
  * Instagram no permite incrustar el feed de un PERFIL de forma gratuita (solo
  * publicaciones sueltas), así que mostramos una tarjeta con enlace directo al
- * perfil. Para incrustar un feed en vivo hay que pegar el enlace de una
- * publicación/reel concreto.
+ * perfil. Para incrustar contenido, pega el enlace de una publicación/reel.
  */
 function InstagramProfileCard({ url }: { url: string }) {
   const handle = igHandle(url);

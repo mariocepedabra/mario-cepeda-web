@@ -73,22 +73,32 @@ export function SocialLinksManager({
       </CardHeader>
       <CardContent className="space-y-5">
         <p className="text-sm text-zinc-500">
-          Pega el enlace del <strong>perfil</strong> de la red social que quieras mostrar bajo los
-          artículos de <strong>{sectionName}</strong>: sus publicaciones aparecerán solas y se
-          actualizarán automáticamente. Puedes poner una o <strong>varias a la vez</strong> (X,
-          Facebook o Instagram) y ordenarlas. Si dejas la lista vacía, se muestra por defecto el
+          Pega el enlace de la red social que quieras mostrar bajo los artículos de{' '}
+          <strong>{sectionName}</strong>. Puedes poner uno o <strong>varios a la vez</strong> (X,
+          Facebook o Instagram) y ordenarlos. Si dejas la lista vacía, se muestra por defecto el
           perfil de <strong>X</strong> de Mario.
         </p>
         <ul className="space-y-1 rounded-lg bg-zinc-50 p-3 text-xs text-zinc-500">
           <li>
-            <strong>X (Twitter):</strong> perfil, p. ej. <code>https://x.com/mariocepedabra</code>.
+            <strong>X (Twitter):</strong> el <strong>perfil</strong> (p. ej.{' '}
+            <code>https://x.com/mariocepedabra</code>) muestra una tarjeta «Síguelo en X». Para
+            mostrar el contenido de una publicación, pega el enlace de ese{' '}
+            <strong>tweet concreto</strong> (p. ej.{' '}
+            <code>https://x.com/mariocepedabra/status/123…</code>): se incrusta con su foto y texto.
+            <br />
+            <span className="text-zinc-400">
+              (X ya no permite incrustar el feed automático de un perfil; por eso el perfil se
+              muestra como tarjeta y las publicaciones se añaden por su enlace.)
+            </span>
           </li>
           <li>
             <strong>Facebook:</strong> enlace de la <strong>Página</strong> (no de un perfil
-            personal), p. ej. <code>https://www.facebook.com/tu.pagina</code>.
+            personal), p. ej. <code>https://www.facebook.com/tu.pagina</code>. Muestra su feed
+            automático.
           </li>
           <li>
-            <strong>Instagram:</strong> enlace del perfil o de una publicación/reel concreto.
+            <strong>Instagram:</strong> el perfil muestra una tarjeta; una publicación/reel concreto
+            se incrusta con su contenido.
           </li>
         </ul>
 
