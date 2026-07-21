@@ -217,6 +217,10 @@ export const siteContentSchema = z.record(z.string());
 
 export const mosaicSchema = z.array(z.string().trim());
 
+// Redes sociales con feed automático (Pensamiento) -----------------------------
+
+export const socialFeedSchema = z.array(z.string().trim());
+
 // Media de las tarjetas de «Cuatro miradas» (clave/valor) ----------------------
 
 export const sectionMediaSchema = z.record(z.string());

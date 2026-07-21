@@ -23,7 +23,7 @@ import {
   hasResendApiKey,
 } from '@mario/database/queries';
 
-import { parseMosaic, parseSectionMedia } from '../lib';
+import { parseMosaic, parseSectionMedia, parseSocialLinks } from '../lib';
 import { AdminShell } from './admin-shell';
 import { ContentForm } from './content-form';
 import { CrudManager } from './crud-manager';
@@ -36,6 +36,7 @@ import { NewsletterManager } from './newsletter-manager';
 import { PerfilProfesionalManager } from './perfil-profesional-manager';
 import { ProfileForm } from './profile-form';
 import { SeoForm } from './seo-form';
+import { SocialLinksManager } from './social-links-manager';
 
 function PageTitle({ title, description }: { title: string; description?: string }) {
   return (
@@ -96,6 +97,11 @@ export async function PostsPage() {
   return (
     <div className="space-y-10">
       <CrudManager table="posts" rows={rows} />
+      <SocialLinksManager
+        section="pensamiento"
+        initial={parseSocialLinks(settings, 'pensamiento')}
+        sectionName="Pensamiento"
+      />
       <MosaicManager
         section="pensamiento"
         initial={parseMosaic(settings, 'pensamiento')}

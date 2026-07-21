@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { parseMosaic } from '@mario/core/lib';
+import { parseMosaic, parseSocialLinks, SOCIAL_DEFAULTS, SOCIAL_KEYS } from '@mario/core/lib';
 import { getPosts, getSettings } from '@mario/database/queries';
 
 import { ArticlesGrid } from '@/components/articles-grid';
 import { Reveal } from '@/components/interactive';
+import { SocialFeed } from '@/components/social-feed';
 import { WorkMosaic } from '@/components/work-mosaic';
 
 export const metadata: Metadata = {
@@ -21,6 +22,14 @@ export default async function PensamientoPage({ searchParams }: Props) {
   const { tema } = await searchParams;
   const [posts, settings] = await Promise.all([getPosts(), getSettings()]);
   const mosaic = parseMosaic(settings, 'pensamiento');
+
+  // Redes sociales bajo los artículos: si nunca se ha configurado la clave, se
+  // usa por defecto el perfil de X de Mario; si se guardó una lista vacía desde
+  // el panel, se respeta (no se muestra nada).
+  const socialLinks =
+    settings[SOCIAL_KEYS.pensamiento] === undefined
+      ? SOCIAL_DEFAULTS.pensamiento
+      : parseSocialLinks(settings, 'pensamiento');
 
   const temas = Array.from(
     new Set(posts.map((p) => p.categoria).filter((c): c is string => Boolean(c))),
@@ -69,6 +78,9 @@ export default async function PensamientoPage({ searchParams }: Props) {
       ) : (
         <ArticlesGrid posts={activos} />
       )}
+
+      {/* Redes sociales (feed automático, debajo de los artículos) */}
+      <SocialFeed urls={socialLinks} />
 
       {/* Mosaico / collage de imágenes (debajo de los artículos) */}
       {mosaic.length > 0 ? (

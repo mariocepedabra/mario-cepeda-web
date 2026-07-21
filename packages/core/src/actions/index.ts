@@ -11,7 +11,7 @@ import { createServerSupabase } from '@mario/database/server';
 import { getSubscriberEvents } from '@mario/database/queries';
 
 import { isAllowedAdmin } from '../auth';
-import { CONTACT_DEFAULT_TO, CONTACT_KEYS, CONTENT_KEYS, MOSAIC_KEYS, NEWSLETTER_KEYS, PERFIL_ALL_KEYS, RESEND_API_KEY_SECRET, SECTION_MEDIA_KEYS } from '../lib';
+import { CONTACT_DEFAULT_TO, CONTACT_KEYS, CONTENT_KEYS, MOSAIC_KEYS, NEWSLETTER_KEYS, PERFIL_ALL_KEYS, RESEND_API_KEY_SECRET, SECTION_MEDIA_KEYS, SOCIAL_KEYS } from '../lib';
 import {
   contactSchema,
   listSchemas,
@@ -21,6 +21,7 @@ import {
   sectionMediaSchema,
   seoSettingsSchema,
   siteContentSchema,
+  socialFeedSchema,
   subscribeSchema,
   type ListTable,
 } from '../schemas';
@@ -368,6 +369,32 @@ export async function saveMosaic(section: string, raw: unknown): Promise<ActionR
   if (!clave) return { ok: false, error: 'Sección de mosaico inválida.' };
 
   const parsed = mosaicSchema.safeParse(raw);
+  if (!parsed.success) return { ok: false, error: 'Datos inválidos.' };
+  const urls = parsed.data.filter((u) => u.length > 0);
+
+  const supabase = await untypedServer();
+  const { error } = await supabase
+    .from('settings')
+    .upsert({ clave, valor: JSON.stringify(urls) }, { onConflict: 'clave' });
+  if (error) return { ok: false, error: error.message };
+  revalidateAll();
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+//  Admin: redes sociales con feed automático (sección Pensamiento)
+// ---------------------------------------------------------------------------
+
+export async function saveSocialLinks(section: string, raw: unknown): Promise<ActionResult> {
+  if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth;
+
+  // Solo claves conocidas (evita escribir claves arbitrarias en `settings`).
+  const clave = SOCIAL_KEYS[section as keyof typeof SOCIAL_KEYS];
+  if (!clave) return { ok: false, error: 'Sección de redes inválida.' };
+
+  const parsed = socialFeedSchema.safeParse(raw);
   if (!parsed.success) return { ok: false, error: 'Datos inválidos.' };
   const urls = parsed.data.filter((u) => u.length > 0);
 

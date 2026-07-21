@@ -233,6 +233,78 @@ export function parseMosaic(
 
 /**
  * ===========================================================================
+ *  Redes sociales con feed automático (sección Pensamiento)
+ * ===========================================================================
+ *  Bajo los artículos de Pensamiento se muestra el feed automático de una o
+ *  varias redes de Mario (X, Facebook o Instagram). Se guarda un array JSON de
+ *  URLs de PERFIL bajo su clave en `settings`; la web detecta la red de cada URL
+ *  y pinta el widget/embed correspondiente. Si la clave nunca se ha configurado,
+ *  la web usa por defecto el perfil de X de Mario (`SOCIAL_DEFAULTS`). Si se
+ *  guarda una lista vacía desde el panel, no se muestra nada (queda oculto).
+ */
+export const SOCIAL_KEYS = {
+  pensamiento: 'redes_pensamiento',
+} as const;
+
+export type SocialSection = keyof typeof SOCIAL_KEYS;
+
+/** Feed que se muestra cuando la sección no tiene redes configuradas todavía. */
+export const SOCIAL_DEFAULTS: Record<SocialSection, string[]> = {
+  pensamiento: ['https://x.com/mariocepedabra'],
+};
+
+export type SocialNetwork = 'x' | 'facebook' | 'instagram' | 'otro';
+
+/** Detecta a qué red social pertenece una URL de perfil/publicación. */
+export function socialNetworkOf(url: string): SocialNetwork {
+  const value = (url || '').trim().toLowerCase();
+  let host = value;
+  try {
+    host = new URL(value.includes('://') ? value : `https://${value}`).hostname.replace(
+      /^www\./,
+      '',
+    );
+  } catch {
+    /* URL no parseable: caemos a la coincidencia por texto */
+  }
+  if (host === 'x.com' || host.endsWith('.x.com') || host === 'twitter.com' || host.endsWith('.twitter.com'))
+    return 'x';
+  if (host.includes('facebook.com') || host.includes('fb.com') || host.includes('fb.me'))
+    return 'facebook';
+  if (host.includes('instagram.com')) return 'instagram';
+  return 'otro';
+}
+
+/** Etiqueta legible de cada red (para el panel). */
+export function socialNetworkLabel(network: SocialNetwork): string {
+  return network === 'x'
+    ? 'X (Twitter)'
+    : network === 'facebook'
+      ? 'Facebook'
+      : network === 'instagram'
+        ? 'Instagram'
+        : 'Enlace';
+}
+
+/** Lee y valida la lista de URLs de redes de una sección desde `settings`. */
+export function parseSocialLinks(
+  map: Record<string, string> | undefined,
+  section: SocialSection,
+): string[] {
+  const raw = map?.[SOCIAL_KEYS[section]];
+  if (!raw) return [];
+  try {
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr)
+      ? arr.filter((x): x is string => typeof x === 'string' && x.trim().length > 0)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * ===========================================================================
  *  Perfil profesional (página `/perfil-profesional` + panel «Perfil Profesional»)
  * ===========================================================================
  *  Los textos editoriales de cabecera se guardan en `settings` (clave/valor) y
