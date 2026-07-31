@@ -243,19 +243,27 @@ export function parseMosaic(
  *  posición (varios banners en la misma franja se apilan en ese orden).
  */
 export const BANNER_KEYS = {
+  pensamiento: 'banners_pensamiento',
+  trabajo: 'banners_trabajo',
   libros: 'banners_libros',
+  narino: 'banners_narino',
 } as const;
 
 export type BannerSection = keyof typeof BANNER_KEYS;
 
-/** Posiciones donde puede colocarse un banner en la página de Libros. */
+/** Posiciones donde puede colocarse un banner dentro de una sección. */
 export type BannerPosition = 'header' | 'above' | 'below' | 'footer';
 
-/** Posiciones con su etiqueta legible (para el selector del panel), de arriba a abajo. */
+/**
+ * Posiciones con su etiqueta legible (para el selector del panel), de arriba a
+ * abajo. Son genéricas porque las comparten las cuatro secciones (Pensamiento,
+ * Trabajo, Libros y Nariño): «el contenido» es el bloque principal de cada una
+ * (los artículos, los proyectos, el mosaico de libros o las fichas).
+ */
 export const BANNER_POSITIONS: { id: BannerPosition; label: string }[] = [
   { id: 'header', label: 'Cabecera — arriba del todo (antes del título)' },
-  { id: 'above', label: 'Arriba de los videos (tras el título)' },
-  { id: 'below', label: 'Abajo de los videos' },
+  { id: 'above', label: 'Arriba del contenido (tras el título)' },
+  { id: 'below', label: 'Abajo del contenido' },
   { id: 'footer', label: 'Pie — al final de la sección' },
 ];
 

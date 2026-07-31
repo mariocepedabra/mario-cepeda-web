@@ -109,6 +109,11 @@ export async function PostsPage() {
         sectionName="Pensamiento"
         belowName="Ensayos, columnas e ideas"
       />
+      <BannersManager
+        section="pensamiento"
+        initial={parseBanners(settings, 'pensamiento')}
+        sectionName="Pensamiento"
+      />
     </div>
   );
 }
@@ -123,6 +128,11 @@ export async function ProjectsPage() {
         initial={parseMosaic(settings, 'trabajo')}
         sectionName="Trabajo"
         belowName="Trayectoria"
+      />
+      <BannersManager
+        section="trabajo"
+        initial={parseBanners(settings, 'trabajo')}
+        sectionName="Trabajo"
       />
     </div>
   );
@@ -149,8 +159,17 @@ export async function BooksPage() {
 }
 
 export async function NarinoProfilesPage() {
-  const rows = await getNarinoProfilesAdmin();
-  return <CrudManager table="narino_profiles" rows={rows} />;
+  const [rows, settings] = await Promise.all([getNarinoProfilesAdmin(), getSettings()]);
+  return (
+    <div className="space-y-10">
+      <CrudManager table="narino_profiles" rows={rows} />
+      <BannersManager
+        section="narino"
+        initial={parseBanners(settings, 'narino')}
+        sectionName="Nariño"
+      />
+    </div>
+  );
 }
 
 export async function VideosPage() {

@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import { ArrowUpRight } from 'lucide-react';
 
-import { parseMosaic } from '@mario/core/lib';
+import { parseBanners, parseMosaic, type BannerPosition } from '@mario/core/lib';
 import { getExperiences, getProfile, getProjects, getSettings } from '@mario/database/queries';
 
 import { Cover } from '@/components/cover';
 import { ContactForm, Reveal } from '@/components/interactive';
+import { SectionBanners } from '@/components/section-banners';
 import { WorkMosaic } from '@/components/work-mosaic';
 
 export const metadata: Metadata = {
@@ -22,9 +23,15 @@ export default async function TrabajoPage() {
   ]);
   const bio = profile.bio.replace(/^\[.*?\]\s*/, '');
   const mosaic = parseMosaic(settings, 'trabajo');
+  const banners = parseBanners(settings, 'trabajo');
+  const bannersAt = (pos: BannerPosition) =>
+    banners.filter((b) => b.pos === pos).map((b) => b.url);
 
   return (
     <main className="pb-24 pt-28 sm:pt-32">
+      {/* Banner de cabecera (a sangre completa), antes del contenido. */}
+      <SectionBanners urls={bannersAt('header')} className="mb-12 sm:mb-16" />
+
       {/* Hero personal */}
       <section className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="grid items-center gap-10 lg:grid-cols-[0.55fr_0.45fr] lg:gap-16">
@@ -45,6 +52,9 @@ export default async function TrabajoPage() {
           </div>
         </div>
       </section>
+
+      {/* Banner sobre el contenido (a sangre completa). */}
+      <SectionBanners urls={bannersAt('above')} className="mt-20 sm:mt-28" />
 
       {/* Proyectos en zig-zag */}
       {projects.length > 0 ? (
@@ -146,6 +156,9 @@ export default async function TrabajoPage() {
         </section>
       ) : null}
 
+      {/* Banner bajo el contenido (a sangre completa), antes del CTA. */}
+      <SectionBanners urls={bannersAt('below')} className="mt-20 sm:mt-28" />
+
       {/* CTA de contacto */}
       <section className="mx-auto mt-20 max-w-5xl px-5 sm:mt-28 sm:px-8">
         <Reveal>
@@ -155,6 +168,9 @@ export default async function TrabajoPage() {
           <ContactForm redes={profile.redes} />
         </Reveal>
       </section>
+
+      {/* Banner de pie (a sangre completa), al final de la sección. */}
+      <SectionBanners urls={bannersAt('footer')} className="mt-20 sm:mt-28" />
     </main>
   );
 }
