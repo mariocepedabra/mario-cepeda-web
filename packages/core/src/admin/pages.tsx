@@ -23,8 +23,9 @@ import {
   hasResendApiKey,
 } from '@mario/database/queries';
 
-import { parseMosaic, parseSectionMedia, parseSocialLinks } from '../lib';
+import { parseBanners, parseMosaic, parseSectionMedia, parseSocialLinks } from '../lib';
 import { AdminShell } from './admin-shell';
+import { BannersManager } from './banners-manager';
 import { ContentForm } from './content-form';
 import { CrudManager } from './crud-manager';
 import { Dashboard } from './dashboard';
@@ -137,6 +138,11 @@ export async function BooksPage() {
         initial={parseMosaic(settings, 'libros')}
         sectionName="Libros — videos"
         belowName="las reseñas de libros (se intercalan en el mismo mosaico, en este orden)"
+      />
+      <BannersManager
+        section="libros"
+        initial={parseBanners(settings, 'libros')}
+        sectionName="Libros"
       />
     </div>
   );

@@ -11,8 +11,9 @@ import { createServerSupabase } from '@mario/database/server';
 import { getSubscriberEvents } from '@mario/database/queries';
 
 import { isAllowedAdmin } from '../auth';
-import { CONTACT_DEFAULT_TO, CONTACT_KEYS, CONTENT_KEYS, MOSAIC_KEYS, NEWSLETTER_KEYS, PERFIL_ALL_KEYS, RESEND_API_KEY_SECRET, SECTION_MEDIA_KEYS, SOCIAL_KEYS } from '../lib';
+import { BANNER_KEYS, CONTACT_DEFAULT_TO, CONTACT_KEYS, CONTENT_KEYS, MOSAIC_KEYS, NEWSLETTER_KEYS, PERFIL_ALL_KEYS, RESEND_API_KEY_SECRET, SECTION_MEDIA_KEYS, SOCIAL_KEYS } from '../lib';
 import {
+  bannersSchema,
   contactSchema,
   listSchemas,
   mosaicSchema,
@@ -376,6 +377,33 @@ export async function saveMosaic(section: string, raw: unknown): Promise<ActionR
   const { error } = await supabase
     .from('settings')
     .upsert({ clave, valor: JSON.stringify(urls) }, { onConflict: 'clave' });
+  if (error) return { ok: false, error: error.message };
+  revalidateAll();
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+//  Admin: banners a sangre completa (sección Libros)
+// ---------------------------------------------------------------------------
+
+export async function saveBanners(section: string, raw: unknown): Promise<ActionResult> {
+  if (!isSupabaseConfigured) return { ok: false, error: NOT_CONFIGURED };
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth;
+
+  // Solo claves conocidas (evita escribir claves arbitrarias en `settings`).
+  const clave = BANNER_KEYS[section as keyof typeof BANNER_KEYS];
+  if (!clave) return { ok: false, error: 'Sección de banners inválida.' };
+
+  const parsed = bannersSchema.safeParse(raw);
+  if (!parsed.success) return { ok: false, error: 'Datos inválidos.' };
+  // Descarta banners sin URL (filas vacías del panel).
+  const banners = parsed.data.filter((b) => b.url.length > 0);
+
+  const supabase = await untypedServer();
+  const { error } = await supabase
+    .from('settings')
+    .upsert({ clave, valor: JSON.stringify(banners) }, { onConflict: 'clave' });
   if (error) return { ok: false, error: error.message };
   revalidateAll();
   return { ok: true };

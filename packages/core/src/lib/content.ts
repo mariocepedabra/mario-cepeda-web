@@ -233,6 +233,68 @@ export function parseMosaic(
 
 /**
  * ===========================================================================
+ *  Banners a sangre completa (sección Libros)
+ * ===========================================================================
+ *  Franjas de imagen/video que ocupan TODO el ancho de la ventana (de borde a
+ *  borde), colocadas en una de cuatro posiciones fijas de la página de Libros.
+ *  Se guardan como un array JSON de objetos `{ url, pos }` bajo su clave en
+ *  `settings`. Cada URL admite el marcador `#loop` (bucle tipo GIF) igual que el
+ *  resto de medios del sitio. El ORDEN del array se respeta dentro de cada
+ *  posición (varios banners en la misma franja se apilan en ese orden).
+ */
+export const BANNER_KEYS = {
+  libros: 'banners_libros',
+} as const;
+
+export type BannerSection = keyof typeof BANNER_KEYS;
+
+/** Posiciones donde puede colocarse un banner en la página de Libros. */
+export type BannerPosition = 'header' | 'above' | 'below' | 'footer';
+
+/** Posiciones con su etiqueta legible (para el selector del panel), de arriba a abajo. */
+export const BANNER_POSITIONS: { id: BannerPosition; label: string }[] = [
+  { id: 'header', label: 'Cabecera — arriba del todo (antes del título)' },
+  { id: 'above', label: 'Arriba de los videos (tras el título)' },
+  { id: 'below', label: 'Abajo de los videos' },
+  { id: 'footer', label: 'Pie — al final de la sección' },
+];
+
+const BANNER_POSITION_SET = new Set<string>(BANNER_POSITIONS.map((p) => p.id));
+
+/** Un banner: una URL de medio y la posición donde se muestra. */
+export interface Banner {
+  url: string;
+  pos: BannerPosition;
+}
+
+/** Lee y valida la lista de banners de una sección desde `settings`. */
+export function parseBanners(
+  map: Record<string, string> | undefined,
+  section: BannerSection,
+): Banner[] {
+  const raw = map?.[BANNER_KEYS[section]];
+  if (!raw) return [];
+  try {
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return [];
+    return arr
+      .filter(
+        (x): x is Banner =>
+          !!x &&
+          typeof x === 'object' &&
+          typeof x.url === 'string' &&
+          x.url.trim().length > 0 &&
+          typeof x.pos === 'string' &&
+          BANNER_POSITION_SET.has(x.pos),
+      )
+      .map((b) => ({ url: b.url.trim(), pos: b.pos }));
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * ===========================================================================
  *  Redes sociales con feed automático (sección Pensamiento)
  * ===========================================================================
  *  Bajo los artículos de Pensamiento se muestra el feed automático de una o

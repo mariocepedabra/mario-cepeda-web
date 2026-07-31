@@ -221,6 +221,16 @@ export const mosaicSchema = z.array(z.string().trim());
 
 export const socialFeedSchema = z.array(z.string().trim());
 
+// Banners a sangre completa (Libros) -------------------------------------------
+
+/** Un banner: URL de medio + posición en la página. */
+export const bannerSchema = z.object({
+  url: z.string().trim(),
+  pos: z.enum(['header', 'above', 'below', 'footer']),
+});
+
+export const bannersSchema = z.array(bannerSchema);
+
 // Media de las tarjetas de «Cuatro miradas» (clave/valor) ----------------------
 
 export const sectionMediaSchema = z.record(z.string());
