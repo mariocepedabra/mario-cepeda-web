@@ -35,6 +35,26 @@ const ESTOICISMO_SLIDES: Slide[] = [
   { src: '/presentaciones/filosofia-estoica/slide-13.webp', alt: 'Cierre: una mente más fuerte para atravesar el dolor. ¿Qué haremos con aquello que no podemos controlar?' },
   { src: '/presentaciones/filosofia-estoica/slide-14.webp', alt: 'Sígueme — Mario Cepeda Bravo.' },
   { src: '/presentaciones/filosofia-estoica/slide-15.webp', alt: 'Muchas gracias.' },
+  {
+    alt: 'Mario Cepeda presentando «La filosofía estoica» ante el público.',
+    frame: {
+      kind: 'image',
+      media: '/presentaciones/filosofia-estoica/foto-charla.webp',
+      eyebrow: 'En vivo',
+      title: 'La charla',
+      caption: 'Mario Cepeda comparte «La filosofía estoica» con el público.',
+    },
+  },
+  {
+    alt: 'Video: un momento de la presentación de «La filosofía estoica».',
+    frame: {
+      kind: 'video',
+      media: '/presentaciones/filosofia-estoica/video-charla.mp4',
+      eyebrow: 'En vivo',
+      title: 'En video',
+      caption: 'Un momento de la presentación.',
+    },
+  },
 ];
 
 export const metadata: Metadata = {

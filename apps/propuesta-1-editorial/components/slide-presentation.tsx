@@ -22,8 +22,21 @@ import {
 /* -------------------------------------------------------------------------- */
 
 export interface Slide {
-  src: string;
+  /** Texto alternativo / descripción para lectores de pantalla. */
   alt: string;
+  /** Diapositiva de imagen (WebP exportada del .pptx). */
+  src?: string;
+  /** Diapositiva de medio enmarcado (foto o video) con la estética del deck. */
+  frame?: FramedContent;
+}
+
+export interface FramedContent {
+  kind: 'image' | 'video';
+  /** Ruta de la imagen o el video. */
+  media: string;
+  eyebrow?: string;
+  title: string;
+  caption?: string;
 }
 
 const AUTOPLAY_MS = 7000;
@@ -69,10 +82,11 @@ export function SlidePresentation({
 
   /* --- Reproducción automática ------------------------------------------- */
   React.useEffect(() => {
-    if (!playing || count < 2) return;
+    // No auto-avanzar sobre una diapositiva de video (para dejarla ver).
+    if (!playing || count < 2 || slides[index]?.frame?.kind === 'video') return;
     const id = window.setTimeout(() => go(1), AUTOPLAY_MS);
     return () => window.clearTimeout(id);
-  }, [playing, index, go, count]);
+  }, [playing, index, go, count, slides]);
 
   /* --- Teclado ------------------------------------------------------------ */
   React.useEffect(() => {
@@ -148,7 +162,10 @@ export function SlidePresentation({
       };
 
   const current = slides[index];
-  const neighbors = [slides[wrap(index + 1)]?.src, slides[wrap(index - 1)]?.src];
+  // Precarga de vecinas: imágenes (incluida una foto enmarcada), no videos.
+  const preloadSrc = (s?: Slide) =>
+    s?.src ?? (s?.frame?.kind === 'image' ? s.frame.media : undefined);
+  const neighbors = [preloadSrc(slides[wrap(index + 1)]), preloadSrc(slides[wrap(index - 1)])];
 
   const stageClass = isFs
     ? 'group relative aspect-video w-full max-w-[calc(100vh*16/9)] max-h-full overflow-hidden rounded-[20px] border border-line bg-paper-2 shadow-[0_24px_70px_-30px_rgba(30,27,22,0.6)]'
@@ -226,15 +243,21 @@ export function SlidePresentation({
                 else if (info.offset.x > SWIPE_DISTANCE || power > SWIPE_POWER) go(-1);
               }}
             >
-              {/* Imágenes ya optimizadas (WebP 1600×900): <img> directo. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={current.src}
-                alt={current.alt}
-                draggable={false}
-                loading={index === 0 ? 'eager' : 'lazy'}
-                className="pointer-events-none h-full w-full object-contain"
-              />
+              {current.frame ? (
+                <FramedSlide frame={current.frame} alt={current.alt} />
+              ) : (
+                <>
+                  {/* Imágenes ya optimizadas (WebP 1600×900): <img> directo. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={current.src}
+                    alt={current.alt}
+                    draggable={false}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    className="pointer-events-none h-full w-full object-contain"
+                  />
+                </>
+              )}
             </motion.div>
           </AnimatePresence>
 
@@ -296,7 +319,7 @@ export function SlidePresentation({
             const active = i === index;
             return (
               <button
-                key={s.src}
+                key={i}
                 type="button"
                 aria-label={`Ir a la diapositiva ${i + 1}`}
                 aria-current={active ? 'true' : undefined}
@@ -377,5 +400,112 @@ function ChipButton({
     >
       {children}
     </button>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Diapositiva de medio enmarcado (foto/video) con la estética del deck       */
+/*                                                                             */
+/*  Replica el lenguaje visual de la presentación (papel cálido, marco         */
+/*  redondeado terracota, antetítulo con rombo y pie «Filosofía estoica»). Se  */
+/*  dimensiona con unidades de container-query (cqh/cqw) para escalar igual    */
+/*  que las diapositivas-imagen a cualquier tamaño del escenario.              */
+/* -------------------------------------------------------------------------- */
+
+function FramedSlide({ frame, alt }: { frame: FramedContent; alt: string }) {
+  const isVideo = frame.kind === 'video';
+  return (
+    <div
+      className="absolute inset-0 overflow-hidden bg-paper"
+      style={{ containerType: 'size' }}
+    >
+      <div className="absolute inset-0 flex items-center gap-[5cqw] px-[7cqw] py-[7cqh]">
+        {/* Columna de texto */}
+        <div className="min-w-0 flex-1">
+          {frame.eyebrow ? (
+            <p
+              className="font-sans font-semibold uppercase text-accent"
+              style={{ fontSize: '2.6cqh', letterSpacing: '0.22em' }}
+            >
+              <span aria-hidden>◆ </span>
+              {frame.eyebrow}
+            </p>
+          ) : null}
+          <h3
+            className="font-display font-semibold text-ink"
+            style={{ fontSize: '9cqh', lineHeight: 1.03, marginTop: '2.4cqh' }}
+          >
+            {frame.title}
+          </h3>
+          {frame.caption ? (
+            <p
+              className="font-sans text-ink-soft"
+              style={{ fontSize: '3cqh', lineHeight: 1.5, marginTop: '3cqh', maxWidth: '94%' }}
+            >
+              {frame.caption}
+            </p>
+          ) : null}
+        </div>
+
+        {/* Marco del medio (vertical; dimensionado por altura para que quepa) */}
+        <div
+          className={`relative shrink-0 overflow-hidden border-accent ${
+            isVideo ? 'aspect-[9/16]' : 'aspect-[3/4]'
+          }`}
+          style={{
+            height: isVideo ? '82cqh' : '78cqh',
+            borderWidth: '0.5cqh',
+            borderRadius: '2.6cqh',
+            boxShadow: '0 1.6cqh 4cqh -1.6cqh rgba(30, 27, 22, 0.55)',
+          }}
+        >
+          {isVideo ? (
+            <FramedVideo src={frame.media} alt={alt} />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={frame.media}
+              alt={alt}
+              draggable={false}
+              className="pointer-events-none h-full w-full object-cover"
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Pie de página, como en el deck */}
+      <p
+        className="pointer-events-none absolute font-display italic text-ink-muted"
+        style={{ left: '7cqw', bottom: '4.5cqh', fontSize: '2.4cqh' }}
+      >
+        Filosofía estoica · Mario Cepeda Bravo
+      </p>
+    </div>
+  );
+}
+
+/** Video del clip: bucle silenciado automático al entrar; controles para oírlo. */
+function FramedVideo({ src, alt }: { src: string; alt: string }) {
+  const ref = React.useRef<HTMLVideoElement>(null);
+
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.muted = true;
+    void el.play().catch(() => {});
+  }, []);
+
+  return (
+    <video
+      ref={ref}
+      src={src}
+      aria-label={alt}
+      className="h-full w-full object-cover"
+      playsInline
+      loop
+      muted
+      controls
+      preload="metadata"
+    />
   );
 }
