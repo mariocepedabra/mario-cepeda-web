@@ -17,7 +17,8 @@ export interface ParsedMedia {
 }
 
 const VIDEO_FILE = /\.(mp4|webm|ogg|ogv|mov|m4v)$/i;
-const EMBED_HOSTS = /youtube\.com|youtu\.be|vimeo\.com|tiktok\.com|instagram\.com/i;
+const EMBED_HOSTS =
+  /youtube\.com|youtu\.be|vimeo\.com|tiktok\.com|instagram\.com|facebook\.com|fb\.watch|fb\.com|fb\.me/i;
 const LOOP_MARKER = /#(loop|gif)\b/i;
 
 /** ¿La URL apunta a un archivo de video directo (no un embed)? */
@@ -45,8 +46,8 @@ export function withLoop(url: string, loop: boolean): string {
 
 /**
  * Normaliza un enlace de video a su forma «embed» (YouTube/Vimeo/TikTok/
- * Instagram) o lo detecta como archivo directo. `loop` aplica parámetros de
- * bucle/autoplay cuando la plataforma lo permite (YouTube/Vimeo).
+ * Instagram/Facebook) o lo detecta como archivo directo. `loop` aplica
+ * parámetros de bucle/autoplay cuando la plataforma lo permite (YouTube/Vimeo).
  */
 export function toVideoSource(raw: string, loop: boolean): { src: string; kind: 'file' | 'embed' } {
   const url = raw.trim();
@@ -73,6 +74,18 @@ export function toVideoSource(raw: string, loop: boolean): { src: string; kind: 
 
   const ig = url.match(/instagram\.com\/(?:p|reel|tv)\/([\w-]+)/);
   if (ig?.[1]) return { src: `https://www.instagram.com/p/${ig[1]}/embed`, kind: 'embed' };
+
+  // Facebook (videos y reels): el reproductor oficial acepta la URL completa
+  // como `href`. El video debe ser PÚBLICO; si es privado, el iframe sale vacío.
+  if (/facebook\.com|fb\.watch|fb\.com|fb\.me/i.test(url)) {
+    const params = new URLSearchParams({ href: url, show_text: 'false' });
+    if (loop) {
+      // El plugin no repite en bucle, pero sí puede arrancar solo y en silencio.
+      params.set('autoplay', 'true');
+      params.set('mute', '1');
+    }
+    return { src: `https://www.facebook.com/plugins/video.php?${params.toString()}`, kind: 'embed' };
+  }
 
   return { src: url, kind: 'embed' };
 }

@@ -6,7 +6,7 @@ import { VideoCover } from './video-cover';
 
 /**
  * Portada de un elemento: pinta una imagen, un video subido (con bucle/GIF
- * opcional) o un embed (YouTube/Vimeo/TikTok/Instagram), según la URL.
+ * opcional) o un embed (YouTube/Vimeo/TikTok/Instagram/Facebook), según la URL.
  * Debe ir dentro de un contenedor con `position: relative` y un aspect ratio.
  */
 export function Cover({
@@ -54,7 +54,7 @@ export function Cover({
     );
   }
 
-  // Embed (YouTube/Vimeo/TikTok/Instagram)
+  // Embed (YouTube/Vimeo/TikTok/Instagram/Facebook)
   const { src: embedSrc } = toVideoSource(src, loop);
   return (
     <iframe
