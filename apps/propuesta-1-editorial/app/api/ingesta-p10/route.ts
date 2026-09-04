@@ -212,13 +212,38 @@ export async function POST(request: NextRequest) {
     if (portada === origen) portada = resultado.url;
   }
 
-  const { data: existente } = await supabase
+  let existente: { id: string; slug: string } | null = null;
+  let slug = '';
+
+  const { data: porOrigen } = await supabase
     .from('posts')
     .select('id, slug')
     .eq('p10_post_id', postId)
     .maybeSingle();
 
-  const slug = existente?.slug ?? (await slugLibre(supabase, paquete.slug ?? '', titulo, postId));
+  if (porOrigen) {
+    existente = porOrigen;
+    slug = porOrigen.slug;
+  } else {
+    // Adopción: en `posts` ya hay columnas traídas de pagina10.com a mano (el
+    // seed de articulos-mario), y esas filas no tienen `p10_post_id`. Si el
+    // slug coincide con una de ellas se actualiza ESA fila, en lugar de
+    // publicar un duplicado con el slug terminado en "-2".
+    const propuesto = baseSlug(paquete.slug ?? '', titulo, postId);
+    const { data: porSlug } = await supabase
+      .from('posts')
+      .select('id, slug, p10_post_id')
+      .eq('slug', propuesto)
+      .maybeSingle();
+
+    if (porSlug && porSlug.p10_post_id == null) {
+      existente = { id: porSlug.id, slug: porSlug.slug };
+      slug = porSlug.slug;
+      avisos.push('Se actualizó la nota que ya existía con este mismo enlace en lugar de duplicarla.');
+    } else {
+      slug = await slugLibre(supabase, paquete.slug ?? '', titulo, postId);
+    }
+  }
 
   const fila = {
     titulo,
@@ -319,14 +344,9 @@ async function copiar(
   }
 }
 
-/** Busca un slug libre, respetando el de Página 10 siempre que se pueda. */
-async function slugLibre(
-  supabase: Admin,
-  propuesto: string,
-  titulo: string,
-  postId: number,
-): Promise<string> {
-  const base =
+/** Slug base a partir del de Página 10 (o del titular si no lo hay). */
+function baseSlug(propuesto: string, titulo: string, postId: number): string {
+  return (
     (propuesto || titulo)
       .toLowerCase()
       // NFD separa la letra de su tilde; al quitar lo que no es ASCII quedan
@@ -335,7 +355,18 @@ async function slugLibre(
       .replace(/[^\x00-\x7F]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
-      .slice(0, 90) || `nota-p10-${postId}`;
+      .slice(0, 90) || `nota-p10-${postId}`
+  );
+}
+
+/** Busca un slug libre, respetando el de Página 10 siempre que se pueda. */
+async function slugLibre(
+  supabase: Admin,
+  propuesto: string,
+  titulo: string,
+  postId: number,
+): Promise<string> {
+  const base = baseSlug(propuesto, titulo, postId);
 
   for (let intento = 0; intento < 20; intento++) {
     const candidato = intento === 0 ? base : `${base}-${intento + 1}`;
