@@ -107,6 +107,14 @@ export type Post = {
   fecha: string;
   created_at: string;
   updated_at: string;
+  /**
+   * Origen cuando la nota llega sindicada desde Página 10 (ver la ruta
+   * `/api/ingesta-p10`). En las columnas propias de Mario van a null:
+   * `p10_post_id` evita duplicados al reeditarla allí y `p10_url` alimenta la
+   * canónica y el crédito a la fuente.
+   */
+  p10_post_id?: number | null;
+  p10_url?: string | null;
 }
 
 /** Proyecto / hito de la sección Trabajo. */

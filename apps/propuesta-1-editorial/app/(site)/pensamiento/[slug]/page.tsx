@@ -34,7 +34,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.titulo,
     description: description ?? undefined,
-    alternates: { canonical: url },
+    // Las notas sindicadas desde Página 10 declaran como canónica la original.
+    // Es lo estándar en prensa: evita que Google penalice el contenido
+    // duplicado entre los dos medios y concentra la autoridad en la fuente.
+    alternates: { canonical: post.p10_url ?? url },
     openGraph: {
       title: post.titulo,
       description: description ?? undefined,
@@ -134,6 +137,21 @@ export default async function PensamientoDetailPage({ params }: Props) {
               // El contenido proviene del editor del admin (confiable).
               dangerouslySetInnerHTML={{ __html: post.contenido }}
             />
+          ) : null}
+
+          {/* Crédito a la fuente cuando la nota llega sindicada desde Página 10 */}
+          {post.p10_url ? (
+            <p className="mx-auto mt-12 max-w-[68ch] border-t border-line px-5 pt-5 text-sm text-ink-muted sm:px-8">
+              Publicado originalmente en{' '}
+              <a
+                href={post.p10_url}
+                target="_blank"
+                rel="noopener"
+                className="font-semibold text-accent hover:underline"
+              >
+                Página 10 &rarr;
+              </a>
+            </p>
           ) : null}
         </article>
 
