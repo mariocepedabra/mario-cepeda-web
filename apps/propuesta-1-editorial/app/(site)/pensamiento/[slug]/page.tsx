@@ -27,9 +27,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const rawImage = post.portada_url?.split('#')[0]?.trim();
   const image = rawImage && /^https?:\/\//.test(rawImage) ? rawImage : undefined;
   const url = `/pensamiento/${post.slug}`;
-  const images = image
-    ? [{ url: image, alt: post.titulo, width: 1200, height: 630 }]
-    : undefined;
+  // Sin width/height fijos: las portadas tienen tamaños variados y unas
+  // dimensiones falsas hacen que WhatsApp recorte o achique la tarjeta.
+  const images = image ? [{ url: image, alt: post.titulo }] : undefined;
 
   return {
     title: post.titulo,
@@ -103,7 +103,6 @@ export default async function PensamientoDetailPage({ params }: Props) {
                     title={post.titulo}
                     text={post.bajada ?? post.resumen ?? undefined}
                     path={`/pensamiento/${post.slug}`}
-                    image={post.portada_url?.split('#')[0]?.trim() || undefined}
                   />
                   <ShareButton
                     title={post.titulo}
