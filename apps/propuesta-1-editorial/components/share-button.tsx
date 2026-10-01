@@ -167,22 +167,20 @@ export function ShareButton({
 
 /* -------------------------------------------------------------------------- */
 /*  Botón EXCLUSIVO de WhatsApp.                                               */
-/*  En móvil intenta la hoja de compartir nativa ADJUNTANDO la imagen de la     */
-/*  nota junto al texto (título + resumen + enlace). Si el navegador no admite  */
-/*  compartir archivos (o la imagen no se puede descargar por CORS), abre       */
-/*  wa.me con el texto; al llevar el enlace, WhatsApp arma además la tarjeta    */
-/*  con la imagen a partir de las etiquetas Open Graph de la nota.              */
+/*  Abre wa.me con UN solo mensaje de texto (título + resumen + enlace). La     */
+/*  imagen NO se adjunta como archivo: WhatsApp la enviaría en un mensaje       */
+/*  aparte. En su lugar, al llevar el enlace, WhatsApp arma la tarjeta con la   */
+/*  imagen a partir de las etiquetas Open Graph de la nota, dentro del mismo    */
+/*  mensaje que el resumen.                                                     */
 /* -------------------------------------------------------------------------- */
 export function WhatsAppShareButton({
   title,
   text,
   path,
-  image,
 }: {
   title: string;
   text?: string;
   path: string;
-  image?: string;
 }) {
   const [url, setUrl] = React.useState('');
 
@@ -195,31 +193,8 @@ export function WhatsAppShareButton({
   const summary = text?.trim();
   const message = `*${title}*${summary ? `\n\n${summary}` : ''}\n\n${url}`;
 
-  async function handleClick() {
+  function handleClick() {
     if (!url) return;
-
-    // 1) Móvil: hoja nativa con la IMAGEN adjunta + texto con el enlace.
-    if (image && typeof navigator !== 'undefined' && typeof navigator.canShare === 'function') {
-      try {
-        const res = await fetch(image, { mode: 'cors' });
-        if (res.ok) {
-          const blob = await res.blob();
-          const ext = (blob.type.split('/')[1] || 'jpg').split('+')[0];
-          const file = new File([blob], `nota.${ext}`, { type: blob.type || 'image/jpeg' });
-          if (navigator.canShare({ files: [file] })) {
-            await navigator.share({ files: [file], title, text: message });
-            return;
-          }
-        }
-      } catch (err) {
-        // Si el usuario canceló la hoja nativa, no abrimos nada más.
-        if (err instanceof Error && err.name === 'AbortError') return;
-        // CORS u otro fallo: caemos a wa.me.
-      }
-    }
-
-    // 2) Respaldo universal: wa.me con el texto; WhatsApp arma la tarjeta
-    //    (imagen + título + resumen) a partir del Open Graph del enlace.
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   }
 
