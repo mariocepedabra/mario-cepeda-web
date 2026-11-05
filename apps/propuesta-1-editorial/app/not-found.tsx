@@ -7,12 +7,20 @@ export default function NotFound() {
         <p className="font-display text-7xl font-semibold text-accent">404</p>
         <h1 className="mt-4 font-display text-3xl font-semibold text-ink">Página no encontrada</h1>
         <p className="mt-2 text-ink-soft">La página que buscas no existe o fue movida.</p>
-        <Link
-          href="/"
-          className="mt-6 inline-block rounded-card bg-ink px-6 py-3 font-medium text-paper transition-colors hover:bg-accent"
-        >
-          Volver al inicio
-        </Link>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/"
+            className="inline-block rounded-card bg-ink px-6 py-3 font-medium text-paper transition-colors hover:bg-accent"
+          >
+            Volver al inicio
+          </Link>
+          <Link
+            href="/buscar"
+            className="inline-block rounded-card border border-ink px-6 py-3 font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
+          >
+            Buscar en el sitio
+          </Link>
+        </div>
       </div>
     </div>
   );

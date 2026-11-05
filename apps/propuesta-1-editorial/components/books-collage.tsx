@@ -73,7 +73,10 @@ function distribute<T>(items: T[], cols: number): T[][] {
 /** Tarjeta vertical de un libro dentro del collage: portada grande + reseña. */
 function BookTile({ book }: { book: Book }) {
   return (
-    <article className="group overflow-hidden rounded-card bg-paper-2 shadow-soft transition-shadow duration-300 hover:shadow-lift">
+    <article
+      id={`libro-${book.id}`}
+      className="group overflow-hidden rounded-card bg-paper-2 shadow-soft transition-shadow duration-300 hover:shadow-lift"
+    >
       <div className="relative aspect-[2/3] w-full overflow-hidden bg-paper">
         <Cover
           url={book.portada_url}

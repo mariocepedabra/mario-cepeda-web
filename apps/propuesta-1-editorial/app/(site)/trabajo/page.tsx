@@ -65,7 +65,7 @@ export default async function TrabajoPage() {
           <div className="mt-12 space-y-16 sm:space-y-24">
             {projects.map((project, i) => (
               <Reveal key={project.id}>
-                <article className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+                <article id={`proyecto-${project.id}`} className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
                   <div className={`relative aspect-[4/3] overflow-hidden rounded-card bg-paper-2 shadow-soft ${i % 2 === 1 ? 'lg:order-2' : ''}`}>
                     <Cover
                       url={project.imagen_url}
@@ -122,7 +122,7 @@ export default async function TrabajoPage() {
           <div className="mt-10 divide-y divide-line border-y border-line">
             {experiences.map((exp, i) => (
               <Reveal key={exp.id} delay={i * 0.05}>
-                <div className="grid gap-2 py-7 sm:grid-cols-[0.28fr_0.72fr] sm:gap-8">
+                <div id={`trayectoria-${exp.id}`} className="grid gap-2 py-7 sm:grid-cols-[0.28fr_0.72fr] sm:gap-8">
                   <p className="font-display text-lg text-accent">{exp.periodo}</p>
                   <div>
                     <h3 className="font-display text-2xl font-semibold">{exp.titulo}</h3>

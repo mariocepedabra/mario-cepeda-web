@@ -11,6 +11,7 @@ import { MAIN_SECTIONS, type MainSectionId } from '@mario/core/lib';
 import type { NavMedia, NavText } from '@mario/database';
 
 import { Cover } from './cover';
+import { SearchTrigger } from './search/search-trigger';
 
 /** ¿La ruta actual pertenece a esta sección? */
 function isActive(pathname: string, href: string): boolean {
@@ -173,6 +174,8 @@ export function SiteHeader({
 
               {/* Acciones (der., ancho flexible para centrar el menú) */}
               <div className="flex flex-1 items-center justify-end gap-1.5">
+                <SearchTrigger />
+
                 <Link
                   href="/contacto"
                   className="hidden rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-accent-deep sm:inline-block"

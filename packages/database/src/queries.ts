@@ -27,7 +27,7 @@ import {
   placeholderSubscribers,
   placeholderVideos,
 } from './placeholder';
-import { createServerSupabase } from './server';
+import { createPublicSupabase, createServerSupabase } from './server';
 import type {
   Award,
   Book,
@@ -201,6 +201,68 @@ export async function getSettings(): Promise<Record<string, string>> {
   // escrito a mano; casteamos al tipo correcto (los datos sí son Setting).
   const rows = data as unknown as Setting[];
   return Object.fromEntries(rows.map((s) => [s.clave, s.valor ?? '']));
+}
+
+/** Todo el contenido público que alimenta el buscador del sitio. */
+export interface SearchCorpus {
+  posts: Post[];
+  projects: Project[];
+  experiences: Experience[];
+  books: Book[];
+  narino: NarinoProfile[];
+  videos: Video[];
+  profile: Profile;
+  settings: Record<string, string>;
+}
+
+/**
+ * Lee de una vez el contenido indexable. A diferencia del resto de lecturas
+ * públicas, un fallo LANZA en vez de caer a los datos de ejemplo: el buscador
+ * prefiere conservar su índice anterior antes que mostrar ejemplos como reales.
+ */
+export async function getSearchCorpus(): Promise<SearchCorpus> {
+  if (!isSupabaseConfigured) {
+    return {
+      posts: placeholderPosts,
+      projects: placeholderProjects,
+      experiences: placeholderExperiences,
+      books: placeholderBooks,
+      narino: placeholderNarinoProfiles,
+      videos: placeholderVideos,
+      profile: placeholderProfile,
+      settings: placeholderSettingsMap,
+    };
+  }
+
+  const supabase = createPublicSupabase();
+  const [posts, projects, experiences, books, narino, videos, profile, settings] =
+    await Promise.all([
+      supabase.from('posts').select('*').eq('publicado', true).order('fecha', { ascending: false }),
+      supabase.from('projects').select('*'),
+      supabase.from('experiences').select('*'),
+      supabase.from('books').select('*'),
+      supabase.from('narino_profiles').select('*'),
+      supabase.from('videos').select('*'),
+      supabase.from('profile').select('*').limit(1).maybeSingle(),
+      supabase.from('settings').select('*'),
+    ]);
+
+  const failed = [posts, projects, experiences, books, narino, videos, profile, settings].find(
+    (result) => result.error,
+  );
+  if (failed?.error) throw new Error(`No se pudo leer el contenido: ${failed.error.message}`);
+
+  const rows = (settings.data ?? []) as unknown as Setting[];
+  return {
+    posts: (posts.data ?? []) as unknown as Post[],
+    projects: (projects.data ?? []) as unknown as Project[],
+    experiences: (experiences.data ?? []) as unknown as Experience[],
+    books: (books.data ?? []) as unknown as Book[],
+    narino: (narino.data ?? []) as unknown as NarinoProfile[],
+    videos: (videos.data ?? []) as unknown as Video[],
+    profile: (profile.data as unknown as Profile | null) ?? placeholderProfile,
+    settings: Object.fromEntries(rows.map((s) => [s.clave, s.valor ?? ''])),
+  };
 }
 
 // ---------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from './env';
@@ -29,5 +30,17 @@ export async function createServerSupabase() {
         }
       },
     },
+  });
+}
+
+/**
+ * Cliente anónimo SIN cookies para lecturas públicas fuera del ciclo de una
+ * petición (p. ej. el índice del buscador, que se reconstruye en segundo plano).
+ * Nunca hereda la sesión del visitante y siempre lee datos frescos.
+ */
+export function createPublicSupabase() {
+  return createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { fetch: (input, init) => fetch(input, { ...init, cache: 'no-store' }) },
   });
 }
