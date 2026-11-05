@@ -18,14 +18,15 @@ function isTyping(target: EventTarget | null): boolean {
  * Botón de búsqueda de la cabecera y atajos globales (Ctrl/⌘ + K y «/»).
  *
  * El diálogo se descarga aparte para no pesar en la carga inicial, pero se monta
- * en cuanto el navegador queda libre: así, al pulsar el botón se abre en el mismo
- * gesto y el teclado del móvil aparece de inmediato (iOS no lo abre si el foco
- * llega después de una espera).
+ * oculto en cuanto el navegador queda libre: al pulsar el botón solo hay que
+ * mostrarlo, así que la animación arranca limpia y el teclado del móvil aparece de
+ * inmediato (iOS no lo abre si el foco llega después de una espera).
  */
 export function SearchTrigger() {
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [shortcut, setShortcut] = React.useState('Ctrl K');
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
 
   const show = React.useCallback(() => {
     setMounted(true);
@@ -50,15 +51,17 @@ export function SearchTrigger() {
         event.key === '/' && !event.metaKey && !event.ctrlKey && !isTyping(event.target);
       if (!combo && !slash) return;
       event.preventDefault();
-      show();
+      setMounted(true);
+      setOpen((value) => (combo ? !value : true));
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [show]);
+  }, []);
 
   return (
     <>
       <button
+        ref={buttonRef}
         type="button"
         onClick={(event) => {
           // Safari no enfoca los botones al hacer clic; el diálogo devuelve el foco aquí.
@@ -68,7 +71,7 @@ export function SearchTrigger() {
         aria-label="Buscar en el sitio"
         aria-haspopup="dialog"
         aria-keyshortcuts="Control+K Meta+K /"
-        className="text-paper/80 hover:text-paper inline-flex size-10 shrink-0 items-center justify-center gap-2 rounded-full transition-colors hover:bg-white/10 xl:h-10 xl:w-auto xl:bg-white/5 xl:pl-3.5 xl:pr-2"
+        className="text-paper/80 hover:text-paper inline-flex size-10 shrink-0 items-center justify-center gap-2 rounded-full transition-[color,background-color,transform] duration-200 hover:bg-white/10 active:scale-95 xl:h-10 xl:w-auto xl:bg-white/5 xl:pl-3.5 xl:pr-2"
       >
         <Search aria-hidden className="size-5 xl:size-4" />
         <span className="hidden text-sm font-medium xl:inline">Buscar</span>
@@ -76,7 +79,7 @@ export function SearchTrigger() {
           {shortcut}
         </kbd>
       </button>
-      {mounted ? <SearchDialog open={open} onClose={hide} /> : null}
+      {mounted ? <SearchDialog open={open} onClose={hide} originRef={buttonRef} /> : null}
     </>
   );
 }
