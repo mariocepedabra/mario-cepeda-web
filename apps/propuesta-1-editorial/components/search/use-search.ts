@@ -72,11 +72,10 @@ export function useSearch(query: string, seccion: SearchSection | null) {
 }
 
 /** Carga los temas y las notas recientes. También despierta el índice del servidor. */
-export function useExplore(enabled: boolean): SearchExplore | null {
+export function useExplore(): SearchExplore | null {
   const [data, setData] = React.useState<SearchExplore | null>(null);
 
   React.useEffect(() => {
-    if (!enabled || data) return;
     const controller = new AbortController();
     fetch('/api/buscar/explorar', { signal: controller.signal })
       .then((response) => (response.ok ? response.json() : null))
@@ -85,7 +84,7 @@ export function useExplore(enabled: boolean): SearchExplore | null {
         // Sin sugerencias el buscador sigue funcionando.
       });
     return () => controller.abort();
-  }, [enabled, data]);
+  }, []);
 
   return data;
 }
