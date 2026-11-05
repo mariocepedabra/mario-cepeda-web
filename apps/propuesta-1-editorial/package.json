@@ -15,6 +15,7 @@
     "@mario/database": "workspace:*",
     "framer-motion": "^11.15.0",
     "lucide-react": "^0.469.0",
+    "minisearch": "^7.2.0",
     "next": "^15.1.4",
     "next-themes": "^0.4.4",
     "react": "^19.0.0",

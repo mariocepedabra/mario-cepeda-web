@@ -291,7 +291,7 @@ export function MultimediaStrip({ videos }: { videos: Video[] }) {
   const items = videos.slice(0, 2);
 
   return (
-    <section className="border-t border-line py-16 sm:py-24">
+    <section id="multimedia" className="border-t border-line py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHead eyebrow="Multimedia" title="En video" />
 
