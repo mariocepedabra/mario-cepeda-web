@@ -227,10 +227,12 @@
   background: transparent;
 }
 
+/* Sin `backdrop-filter`: medido en una pantalla grande, desenfocar el fondo dejaba
+   la animación en la mitad de fotogramas, con tirones de hasta 80 ms. */
 .search-backdrop {
   position: absolute;
   inset: 0;
-  background-color: rgb(30 27 22 / 0.45);
+  background-color: rgb(30 27 22 / 0.52);
   opacity: 0;
   transition: opacity var(--search-exit) ease-out;
 }
@@ -279,9 +281,6 @@
   .search-dialog {
     --search-hidden: translateY(-10px) scale(0.965);
   }
-  .search-backdrop {
-    backdrop-filter: blur(3px);
-  }
   /* En móvil el panel ocupa toda la pantalla y su alto no cambia. */
   .search-list {
     height: var(--search-list-height, auto);
@@ -299,5 +298,5 @@
    de `html` nada cambia de ancho; el hueco de la barra toma el tono del velo. */
 html:has(.search-dialog[open]) {
   overflow: hidden;
-  background-color: color-mix(in srgb, var(--color-paper) 55%, var(--color-ink));
+  background-color: color-mix(in srgb, var(--color-paper) 48%, var(--color-ink));
 }
